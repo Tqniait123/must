@@ -116,19 +116,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Small drag indicator at the top of the sheet
-                        Center(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 12, bottom: 20),
-                            width: 40,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: AppColors.grey60.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(2.5),
-                            ),
-                          ),
-                        ),
-
                         30.gap,
                         Form(
                           key: _formKey,

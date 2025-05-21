@@ -3,12 +3,7 @@ class AppImages {
 
   static const String logo = '$_assetsPath/logo.png';
   static const String wideLogo = '$_assetsPath/wide_logo.png';
-  static const String onBoarding1 = '$_assetsPath/on_boarding_1.svg';
-  static const String onBoarding2 = '$_assetsPath/on_boarding_2.svg';
-  static const String onBoarding3 = '$_assetsPath/on_boarding_3.svg';
-  static const String parents = '$_assetsPath/parents.svg';
-  static const String teen = '$_assetsPath/teen.svg';
-  static const String emptyCard = '$_assetsPath/empty_card.png';
+  static const String sun = '$_assetsPath/sun.png';
 }
 
 class AppAnimations {

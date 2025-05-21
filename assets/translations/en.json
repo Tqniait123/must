@@ -117,5 +117,13 @@
   "enter_otp": "Enter OTP",
   "otp_verification": "OTP Verification",
   "enter_the_new_password": "Enter The New password",
-  "new_password": "New Password"
+  "new_password": "New Password",
+  "find_an_easy_parking_spot": "Find an easy parking spot",
+  "hola_name": "Hola, {name} 👋🏻",
+  "search": "Search",
+  "my_points": "My Points",
+  "point": "Point",
+  "add_points": "Add Points",
+  "nearst_parking_spaces": "Nearst Parking Spaces",
+  "see_more": "See More"
 }

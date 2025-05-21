@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
-import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
@@ -27,7 +26,7 @@ class _AccountTypeSelectorWidgetState extends State<AccountTypeSelectorWidget> {
         OptionWidget(
           option: LocaleKeys.user.tr(),
           isSelected: selectedOption == AccountType.user,
-          assetPath: AppImages.parents,
+
           selectedOption: AccountType.user,
           onTap: (option) {
             setState(() {
@@ -40,7 +39,7 @@ class _AccountTypeSelectorWidgetState extends State<AccountTypeSelectorWidget> {
         OptionWidget(
           option: LocaleKeys.security_man.tr(),
           isSelected: selectedOption == AccountType.securityMan,
-          assetPath: AppImages.teen,
+
           selectedOption: AccountType.securityMan,
           onTap: (option) {
             setState(() {
@@ -57,14 +56,14 @@ class _AccountTypeSelectorWidgetState extends State<AccountTypeSelectorWidget> {
 class OptionWidget extends StatelessWidget {
   final String option;
   final bool isSelected;
-  final String assetPath;
+
   final AccountType selectedOption;
   final void Function(AccountType option)? onTap;
   const OptionWidget({
     super.key,
     required this.option,
     required this.isSelected,
-    required this.assetPath,
+
     required this.selectedOption,
     this.onTap,
   });

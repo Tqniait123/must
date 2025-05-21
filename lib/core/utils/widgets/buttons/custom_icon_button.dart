@@ -23,9 +23,9 @@ class CustomIconButton extends StatefulWidget {
     this.iconColor,
     this.borderColor,
     this.isBordered = false,
-    this.width = 51.0,
-    this.height = 51.0,
-    this.radius = 15.0,
+    this.width = 44.0,
+    this.height = 44.0,
+    this.radius = 10.0,
     this.boxShadow,
   });
 

@@ -133,7 +133,15 @@ class CodegenLoader extends AssetLoader{
   "enter_otp": "Enter OTP",
   "otp_verification": "OTP Verification",
   "enter_the_new_password": "Enter The New password",
-  "new_password": "New Password"
+  "new_password": "New Password",
+  "find_an_easy_parking_spot": "Find an easy parking spot",
+  "hola_name": "Hola, {name} 👋🏻",
+  "search": "Search",
+  "my_points": "My Points",
+  "point": "Point",
+  "add_points": "Add Points",
+  "nearst_parking_spaces": "Nearst Parking Spaces",
+  "see_more": "See More"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -254,7 +262,15 @@ static const Map<String,dynamic> _ar = {
   "enter_otp": "أدخل OTP",
   "otp_verification": "التحقق من OTP",
   "enter_the_new_password": "أدخل كلمة المرور الجديدة",
-  "new_password": "كلمة المرور الجديدة"
+  "new_password": "كلمة المرور الجديدة",
+  "find_an_easy_parking_spot": "ابحث عن موقف سيارات بسهولة",
+  "hola_name": "مرحباً {name} 👋🏻",
+  "search": "بحث",
+  "my_points": "نقاطي",
+  "point": "نقطة",
+  "add_points": "إضافة نقاط",
+  "nearst_parking_spaces": "أقرب مواقف السيارات",
+  "see_more": "عرض المزيد"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

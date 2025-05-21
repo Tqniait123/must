@@ -4,9 +4,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:must_invest/core/extensions/flipped_for_lcale.dart';
 import 'package:must_invest/core/extensions/sized_box.dart';
 import 'package:must_invest/core/static/app_styles.dart';
+import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 
@@ -238,28 +240,27 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                       )
                       : null,
               suffixIcon:
-                  // widget.isPassword
-                  //     ? Padding(
-                  //       padding: const EdgeInsets.all(16.0),
-                  //       child: GestureDetector(
-                  //         onTap: () {
-                  //           setState(() {
-                  //             _isObscure = !_isObscure;
-                  //           });
-                  //         },
-                  //         child: SvgPicture.asset(
-                  //           // _isObscure ? AppIcons.eyeSlashIc : AppIcons.eyeIc,
-                  //           height: 24.r,
-                  //           width: 24.r,
-                  //           colorFilter: const ColorFilter.mode(
-                  //             AppColors.grey,
-                  //             BlendMode.srcIn,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     )
-                  // :
-                  widget.suffixIC != null
+                  widget.isPassword
+                      ? Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isObscure = !_isObscure;
+                            });
+                          },
+                          child: SvgPicture.asset(
+                            _isObscure ? AppIcons.eyeSlashIc : AppIcons.eyeIc,
+                            height: 24.r,
+                            width: 24.r,
+                            colorFilter: const ColorFilter.mode(
+                              Color(0xffACB5BB),
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      )
+                      : widget.suffixIC != null
                       ? Padding(
                         padding: const EdgeInsets.all(5),
                         child: widget.suffixIC?.flippedForLocale(context),

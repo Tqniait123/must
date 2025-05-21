@@ -119,5 +119,13 @@ abstract class  LocaleKeys {
   static const otp_verification = 'otp_verification';
   static const enter_the_new_password = 'enter_the_new_password';
   static const new_password = 'new_password';
+  static const find_an_easy_parking_spot = 'find_an_easy_parking_spot';
+  static const hola_name = 'hola_name';
+  static const search = 'search';
+  static const my_points = 'my_points';
+  static const point = 'point';
+  static const add_points = 'add_points';
+  static const nearst_parking_spaces = 'nearst_parking_spaces';
+  static const see_more = 'see_more';
 
 }
