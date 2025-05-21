@@ -203,10 +203,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     UserCubit.get(
                                       context,
                                     ).setCurrentUser(state.user);
-                                    if (state.user.type == UserType.parent) {
-                                      context.go(Routes.layoutParent);
+                                    if (state.user.type == UserType.user) {
+                                      context.go(Routes.homeUser);
                                     } else {
-                                      context.go(Routes.layoutTeen);
+                                      context.go(Routes.homeParkingMan);
                                     }
                                   }
                                   if (state is AuthError) {

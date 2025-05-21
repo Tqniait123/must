@@ -64,7 +64,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     child: GestureDetector(
                       onTap: () {
                         preferences.setOnBoardingCompleted();
-                        context.pushReplacement(Routes.accountType);
+                        context.pushReplacement(Routes.login);
                       },
                       child: Text(
                         LocaleKeys.skip.tr(),

@@ -15,10 +15,10 @@ import 'package:must_invest/features/all/auth/presentation/pages/register_screen
 import 'package:must_invest/features/all/auth/presentation/pages/register_step_three.dart';
 import 'package:must_invest/features/all/auth/presentation/pages/register_step_two.dart';
 import 'package:must_invest/features/all/auth/presentation/pages/reset_password.dart';
-import 'package:must_invest/features/all/layout/presentation/pages/layout_parent.dart';
-import 'package:must_invest/features/all/layout/presentation/pages/layout_teen.dart';
 import 'package:must_invest/features/all/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/all/splash/presentation/pages/splash.dart';
+import 'package:must_invest/features/parking_man/home/presentation/pages/home_parking_man.dart';
+import 'package:must_invest/features/user/home/presentation/pages/home_user.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -102,17 +102,17 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: Routes.layoutParent,
+        path: Routes.homeUser,
         builder: (context, state) {
-          // Return the Layout widget
-          return const LayoutParent();
+          // Return the HomeUser widget
+          return const HomeUser();
         },
       ),
       GoRoute(
-        path: Routes.layoutTeen,
+        path: Routes.homeParkingMan,
         builder: (context, state) {
-          // Return the Layout widget
-          return const LayoutTeen();
+          // Return the HomeParkingMan widget
+          return const HomeParkingMan();
         },
       ),
       GoRoute(

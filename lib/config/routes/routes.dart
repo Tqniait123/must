@@ -7,8 +7,8 @@ class Routes {
   static const String registerStepTwo = '/registerStepTwo';
   static const String registerStepThree = '/registerStepThree';
   static const String login = '/login';
-  static const String layoutParent = '/layoutParent';
-  static const String layoutTeen = '/layoutTeen';
+  static const String homeUser = '/homeUser';
+  static const String homeParkingMan = '/homeParkingMan';
   static const String otpScreen = '/otpScreen';
   static const String forgetPassword = '/forgetPassword';
   static const String resetPassword = '/resetPassword';
