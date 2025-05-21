@@ -141,7 +141,13 @@ class CodegenLoader extends AssetLoader{
   "point": "Point",
   "add_points": "Add Points",
   "nearst_parking_spaces": "Nearst Parking Spaces",
-  "see_more": "See More"
+  "see_more": "See More",
+  "explore": "explore",
+  "nearst": "Nearst",
+  "most_popular": "Most Popular",
+  "most_wanted": "Most Wanted",
+  "hour": "hour",
+  "min": "min"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -192,7 +198,7 @@ static const Map<String,dynamic> _ar = {
   "enter_amount": "أدخل المبلغ",
   "submit": "إرسال",
   "amount": "المبلغ",
-  "all": "الكل",
+  "all": "الجميع",
   "title": "العنوان",
   "description": "الوصف",
   "logout": "تسجيل الخروج",
@@ -270,7 +276,13 @@ static const Map<String,dynamic> _ar = {
   "point": "نقطة",
   "add_points": "إضافة نقاط",
   "nearst_parking_spaces": "أقرب مواقف السيارات",
-  "see_more": "عرض المزيد"
+  "see_more": "عرض المزيد",
+  "explore": "استكشف",
+  "nearst": "قريب",
+  "most_popular": "الأكثر شعبية",
+  "most_wanted": "الأكثر مطلوبة",
+  "hour": "ساعة",
+  "min": "دقيقة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

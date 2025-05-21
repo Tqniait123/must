@@ -34,6 +34,7 @@ class CustomTextFormField extends StatefulWidget {
     this.disabled = false,
     this.onTap,
     this.backgroundColor,
+    this.hintColor,
     this.gender = 'male',
     this.isBordered,
     this.isPassword = false,
@@ -47,6 +48,7 @@ class CustomTextFormField extends StatefulWidget {
   final String? hint;
   final Widget? prefixIC;
   final Color? backgroundColor;
+  final Color? hintColor;
   final Widget? suffixIC;
   final bool? isBordered;
   final String? title;
@@ -214,7 +216,10 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 color: AppColors.primary,
               ),
               hintMaxLines: widget.large ? 2 : 1,
-              hintStyle: TextStyle(color: Colors.grey[300], fontSize: 14),
+              hintStyle: TextStyle(
+                color: widget.hintColor ?? Colors.grey[300],
+                fontSize: 14,
+              ),
               prefixIcon:
                   widget.prefixIC != null
                       ? widget.large

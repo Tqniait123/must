@@ -16,4 +16,5 @@ class Routes {
 
   static const String notifications = '/notifications';
   static const String checkYourEmail = '/checkYourEmail';
+  static const String explore = '/explore';
 }

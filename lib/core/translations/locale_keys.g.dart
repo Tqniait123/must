@@ -127,5 +127,11 @@ abstract class  LocaleKeys {
   static const add_points = 'add_points';
   static const nearst_parking_spaces = 'nearst_parking_spaces';
   static const see_more = 'see_more';
+  static const explore = 'explore';
+  static const nearst = 'nearst';
+  static const most_popular = 'most_popular';
+  static const most_wanted = 'most_wanted';
+  static const hour = 'hour';
+  static const min = 'min';
 
 }

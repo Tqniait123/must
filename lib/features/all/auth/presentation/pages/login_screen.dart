@@ -257,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ) => CustomElevatedButton(
                                       heroTag: 'faceId',
                                       icon: AppIcons.faceIdIc,
-                                      loading: state is AuthLoading,
+
                                       title: LocaleKeys.face_id.tr(),
                                       onPressed: () {
                                         // if (_formKey.currentState!.validate()) {

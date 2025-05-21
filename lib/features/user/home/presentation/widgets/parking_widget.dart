@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 
 class ParkingCard extends StatelessWidget {
@@ -68,19 +70,20 @@ class ParkingCard extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 // Price per hour
-                RichText(
-                  text: TextSpan(
+                Text.rich(
+                  TextSpan(
                     children: [
                       TextSpan(
-                        text: "\$${parking.pricePerHour.toStringAsFixed(0)}",
+                        text:
+                            "${LocaleKeys.EGP.tr()} ${parking.pricePerHour.toStringAsFixed(0)}",
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF2B3085),
                         ),
                       ),
-                      const TextSpan(
-                        text: "/hour",
+                      TextSpan(
+                        text: "/${LocaleKeys.hour.tr()}",
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xFF2B3085),
@@ -104,7 +107,7 @@ class ParkingCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  "${parking.distanceInMinutes} min",
+                  "${parking.distanceInMinutes} ${LocaleKeys.min.tr()}",
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

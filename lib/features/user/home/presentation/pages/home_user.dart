@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
@@ -10,7 +12,9 @@ import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 import 'package:must_invest/features/user/home/presentation/widgets/my_points_card.dart';
 import 'package:must_invest/features/user/home/presentation/widgets/parking_widget.dart';
@@ -24,7 +28,7 @@ class HomeUser extends StatefulWidget {
 
 class _HomeUserState extends State<HomeUser> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isRemembered = true;
 
@@ -85,16 +89,12 @@ class _HomeUserState extends State<HomeUser> {
                               ),
                             ],
                           ),
-                          CustomIconButton(
-                            iconAsset: AppIcons.notificationsIc,
-                            color: Color(0xff6468AC),
-                            onPressed: () {},
-                          ),
+                          NotificationsButton(),
                         ],
                       ),
                       40.gap,
                       CustomTextFormField(
-                        controller: _emailController,
+                        controller: _searchController,
                         backgroundColor: Color(0xff6468AC),
                         isBordered: false,
                         margin: 0,
@@ -171,6 +171,11 @@ class _HomeUserState extends State<HomeUser> {
                               style: context.bodyMedium.regular.s14.copyWith(
                                 color: AppColors.primary.withValues(alpha: 0.5),
                               ),
+                            ).withPressEffect(
+                              onTap: () {
+                                // Handle "See More" button tap
+                                context.push(Routes.explore);
+                              },
                             ),
                           ],
                         ),
