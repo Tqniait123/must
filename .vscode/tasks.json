@@ -1,0 +1,365 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Change App Name",
+            "type": "shell",
+            "command": "dart",
+            "args": [
+                "${workspaceFolder}/scripts/change_app_name.dart",
+                "${input:newAppName}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always"
+            },
+            "detail": "Changes the app name in both iOS and Android configurations"
+        },
+        {
+            "label": "Add New Translation",
+            "type": "shell",
+            "command": "dart",
+            "args": [
+                "${workspaceFolder}/scripts/add_translation.dart",
+                "${input:fieldKey}",
+                "${input:englishTranslation}",
+                "${input:arabicTranslation}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Add Translation & Generate",
+            "dependsOn": [
+                "Add New Translation",
+                "Generate Easy Localization with Keys",
+                "Generate Easy Localization"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate Easy Localization with Keys",
+            "type": "shell",
+            "command": "dart",
+            "args": [
+                "run",
+                "easy_localization:generate",
+                "-S",
+                "assets/translations",
+                "-O",
+                "lib/core/translations",
+                "-f",
+                "keys",
+                "-o",
+                "locale_keys.g.dart"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate Easy Localization",
+            "type": "shell",
+            "command": "dart",
+            "args": [
+                "run",
+                "easy_localization:generate",
+                "-S",
+                "assets/translations",
+                "-O",
+                "lib/core/translations"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+    
+    
+
+    {
+      "label": "Handle iOS Files",
+      "type": "shell",
+      "command": "flutter clean && flutter pub get && cd ios && pod install && pod install --repo-update",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Flutter Pub Upgrade ⬆️", 
+      "type": "shell",
+      "command": "flutter pub upgrade && flutter pub upgrade --major-versions && flutter pub outdated",
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+      {
+          "label": "Generate Native Splash",
+          "type": "shell",
+          "command": "flutter pub run flutter_native_splash:create",
+          "problemMatcher": [],
+          "group": {
+            "kind": "build",
+            "isDefault": false
+          },
+          "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared"
+          },
+          "detail": "Generates the native splash screen for Android and iOS"
+        },
+      {
+          "label": "Generate App Icons with Icons Launcher",
+          "type": "shell",
+          "command": "flutter pub run icons_launcher:create",
+          "problemMatcher": [],
+          "group": {
+            "kind": "build",
+            "isDefault": true
+          },
+          "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared"
+          },
+          "detail": "Generates app icons for Android and iOS using icons_launcher package"
+        },
+      {
+          "label": "Reset Lib Folder",
+          "type": "shell",
+          "command": "rm -rf lib",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": [],
+          "dependsOn": []
+      },
+      {
+          "label": "Generate flutter template",
+          "type": "shell",
+          "command": "cp -r D:/flutter-projects/template/lib",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": [],
+          "dependsOn": "Reset Lib Folder"
+      },
+      {
+          "label": "Download Flutter Template from GitHub",
+          "type": "shell",
+          "command": "rm -rf lib && git clone --depth 1 https://github.com/Eldeengawy/flutter_project_template.git lib && cp -r template/lib ./lib && rm -rf lib",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": [],
+          "dependsOn": "Reset Lib Folder"
+      },
+       {
+          "label": "Add General Packages",
+          "type": "shell",
+          "command": "flutter pub add intl logger file_picker equatable flutter_bloc flutter_svg flutter_screenutil flutter_spinkit easy_localization dio connectivity_plus json_annotation url_launcher permission_handler cached_network_image go_router pretty_dio_logger get_it smooth_page_indicator pin_code_fields dartz auto_size_text dropdown_button2 shimmer percent_indicator fluttertoast bot_toast",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Add Dev Dependencies",
+          "type": "shell",
+          "command": "flutter pub add --dev build_runner json_serializable",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": []
+      },
+      
+
+      {
+    "label": "Create Dart File",
+    "type": "shell",
+    "command": "${input:dartFileName}",
+    "options": {
+      "cwd": "${workspaceFolder}"
+    },
+    "presentation": {
+      "echo": false,
+      "reveal": "silent",
+      "focus": true,
+      "panel": "shared"
+    },
+    "problemMatcher": []
+  },
+  {
+  "label": "Build Flutter APK",
+  "type": "shell",
+  "command": "flutter",
+  "args": ["build", "apk"],
+  "group": {
+      "kind": "build",
+      "isDefault": true
+  },
+  
+  },
+  {
+      "label": "Run Flutter App (Release)",
+      "type": "shell",
+      "command": "flutter",
+      "args": ["run", "--release"],
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+  },
+  {
+  "label": "Copy Git Diff to Clipboard",
+  "type": "shell",
+  "command": "git diff --cached | clip.exe",
+  "options": {
+      "env": {
+          "PATH": "${env:PATH};C:\\path\\to\\git\\bin" // Modify this path accordingly
+      }
+  },
+  "problemMatcher": []
+},
+{
+          "label": "Run build_runner build",
+          "type": "shell",
+          "command": "dart",
+          "args": [
+              "run",
+              "build_runner",
+              "build"
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "presentation": {
+              "reveal": "silent",
+              "panel": "shared"
+          },
+          "problemMatcher": []
+      },
+       {
+    "label": "Generate AppIcons",
+    "type": "shell",
+    "command": "dart",
+    "args": [
+      "generate_icons.dart"
+    ],
+    "group": {
+      "kind": "build",
+      "isDefault": true
+    },
+    "problemMatcher": [],
+    "detail": "Generate Dart class for icons"
+  },
+   {
+    "label": "Generate Translations Strings 'en.json' folder 🌍",
+    "type": "shell",
+    "command": "dart",
+    "args": [
+      "generate_localization.dart"
+    ],
+    "group": {
+      "kind": "build",
+      "isDefault": true
+    },
+    "problemMatcher": [],
+    "detail": "Generates the en.json file for localization"
+  },
+{
+    "label": "Add Auto Translation",
+    "type": "shell",
+    "command": "dart",
+    "args": [
+        "${workspaceFolder}/scripts/auto_translate.dart",
+        "${input:englishText}",
+        "${input:customFieldKey}"
+    ],
+    "group": {
+        "kind": "build",
+        "isDefault": false
+    },
+    "problemMatcher": []
+},
+{
+    "label": "Auto Translate & Generate",
+    "dependsOn": [
+        "Add Auto Translation",
+        "Generate Easy Localization with Keys",
+        "Generate Easy Localization"
+    ],
+    "dependsOrder": "sequence",
+    "problemMatcher": []
+},
+],
+
+  "inputs": [
+    {
+        "id": "newAppName",
+        "type": "promptString",
+        "description": "Enter the new app name:",
+        "default": ""
+    },
+    {
+      "id": "dartFileName",
+      "type": "promptString",
+      "description": "Enter the name of the Dart file:"
+    },
+        {
+            "id": "fieldKey",
+            "description": "Enter the field key (e.g. first_name)",
+            "default": "",
+            "type": "promptString"
+        },
+        {
+            "id": "englishTranslation",
+            "description": "Enter the English translation",
+            "default": "",
+            "type": "promptString"
+        },
+        {
+            "id": "arabicTranslation",
+            "description": "Enter the Arabic translation",
+            "default": "",
+            "type": "promptString"
+        },
+        {
+          "id": "englishText",
+          "description": "Enter the English text to translate",
+          "default": "",
+          "type": "promptString"
+      },
+      {
+          "id": "customFieldKey",
+          "description": "Enter custom field key (leave empty to auto-generate)",
+          "default": "",
+          "type": "promptString"
+      }
+      ]
+
+}
