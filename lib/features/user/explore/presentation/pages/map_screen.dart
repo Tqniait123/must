@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' hide PermissionStatus;
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -13,8 +13,7 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
-import 'package:permission_handler/permission_handler.dart'
-    hide PermissionStatus;
+import 'package:permission_handler/permission_handler.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -161,11 +160,11 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
 
-      // Check location permission using the location package as well
-      PermissionStatus locationPermission = await _location.hasPermission();
-      if (locationPermission == PermissionStatus.denied) {
-        locationPermission = await _location.requestPermission();
-        if (locationPermission != PermissionStatus.granted) {
+      // Check location permission using permission handler
+      final permissionStatus = await Permission.location.status;
+      if (permissionStatus.isDenied) {
+        final newStatus = await Permission.location.request();
+        if (!newStatus.isGranted) {
           return;
         }
       }
