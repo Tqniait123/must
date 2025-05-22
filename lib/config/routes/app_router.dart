@@ -20,6 +20,8 @@ import 'package:must_invest/features/all/splash/presentation/pages/splash.dart';
 import 'package:must_invest/features/parking_man/home/presentation/pages/home_parking_man.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/explore_screen.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/map_screen.dart';
+import 'package:must_invest/features/user/explore/presentation/pages/parking_details_screen.dart';
+import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 import 'package:must_invest/features/user/home/presentation/pages/home_user.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -150,6 +152,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the MapsScreen widget
           return MapScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.parkingDetails,
+        builder: (context, state) {
+          // Return the ParkingDetails widget
+          return ParkingDetailsScreen(parking: state.extra as Parking);
         },
       ),
     ],

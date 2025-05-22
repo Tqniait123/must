@@ -134,5 +134,6 @@ abstract class  LocaleKeys {
   static const hour = 'hour';
   static const min = 'min';
   static const start_now = 'start_now';
+  static const details = 'details';
 
 }

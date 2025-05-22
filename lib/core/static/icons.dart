@@ -2,7 +2,9 @@ class AppIcons {
   static const String _iconsPath = 'assets/images/icons';
 static const String splashPattern = '$_iconsPath/splash_pattern.svg';
 static const String homePattern = '$_iconsPath/home_pattern.svg';
+static const String outlinedPriceIc = '$_iconsPath/outlined_price_ic.svg';
 static const String checkMailIllu = '$_iconsPath/check_mail_illu.svg';
+static const String outlinedClockIc = '$_iconsPath/outlined_clock_ic.svg';
 static const String currentLocationIc = '$_iconsPath/current_location_ic.svg';
 static const String splashLogo = '$_iconsPath/splash_logo.svg';
 static const String editIc = '$_iconsPath/edit_ic.svg';
@@ -16,6 +18,7 @@ static const String qrCodeIc = '$_iconsPath/qr_code_ic.svg';
 static const String onBoarding2 = '$_iconsPath/on_boarding_2.svg';
 static const String onBoarding1 = '$_iconsPath/on_boarding_1.svg';
 static const String eyeIc = '$_iconsPath/eye_ic.svg';
+static const String outlinedLocationIc = '$_iconsPath/outlined_location_ic.svg';
 static const String faceIdIc = '$_iconsPath/face_id_ic.svg';
 static const String notificationsIc = '$_iconsPath/notifications_ic.svg';
 }

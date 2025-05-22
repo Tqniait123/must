@@ -18,4 +18,5 @@ class Routes {
   static const String checkYourEmail = '/checkYourEmail';
   static const String explore = '/explore';
   static const String maps = '/maps';
+  static const String parkingDetails = '/parkingDetails';
 }
