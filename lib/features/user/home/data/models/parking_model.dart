@@ -5,6 +5,10 @@ class Parking {
   final double pricePerHour;
   final String imageUrl;
   final int distanceInMinutes;
+  final double lat;
+  final double lng;
+  final bool isBusy;
+  final List<String> gallery;
 
   Parking({
     required this.id,
@@ -13,56 +17,74 @@ class Parking {
     required this.pricePerHour,
     required this.imageUrl,
     required this.distanceInMinutes,
+    required this.lat,
+    required this.lng,
+    required this.isBusy,
+    required this.gallery,
   });
 
-  // Fake list of parking spots in Arabic
   static List<Parking> getFakeArabicParkingList() {
     return [
       Parking(
         id: '1',
-        title: 'موقف وسط المدينة',
-        address: 'شارع الملك فهد، الرياض',
-        pricePerHour: 7,
+        title: 'موقف كورنيش النيل',
+        address: 'كورنيش النيل، القاهرة',
+        pricePerHour: 10,
+
+        distanceInMinutes: 7,
+
         imageUrl:
             'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
-        distanceInMinutes: 7,
+
+        lat: 30.0444,
+        lng: 31.2357,
+        isBusy: false,
+        gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+        ],
       ),
       Parking(
-        id: '2',
         title: 'موقف برج المملكة',
         address: 'طريق الملك فهد، حي العليا، الرياض',
         pricePerHour: 12,
         imageUrl:
             'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         distanceInMinutes: 15,
+
+        // imageUrl: 'https://images.unsplash.com/photo-1549924231-f129b911e442',
+        // id: '2',
+        // title: 'موقف مصر الجديدة',
+        // address: 'شارع الثورة، مصر الجديدة، القاهرة',
+        // pricePerHour: 8,
+
+        // distanceInMinutes: 6,
+        lat: 30.0866,
+        lng: 31.3300,
+        isBusy: true,
+        gallery: [
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+        ],
+        id: '2',
       ),
       Parking(
         id: '3',
-        title: 'موقف الفيصلية',
-        address: 'شارع الأمير سلطان، الخبر',
-        pricePerHour: 9,
-        imageUrl:
-            'https://parkplus-bkt-img.parkplus.io/production/team/public/FS_20241211153149659441.webp',
-        distanceInMinutes: 5,
-      ),
-      Parking(
-        id: '4',
-        title: 'موقف المركز التجاري',
-        address: 'شارع التحلية، جدة',
-        pricePerHour: 8,
+        title: 'موقف المعادي',
+        address: 'طريق النصر، المعادي، القاهرة',
+        pricePerHour: 7,
         imageUrl:
             'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
-        distanceInMinutes: 10,
-      ),
-      Parking(
-        id: '5',
-        title: 'موقف المدينة الطبية',
-        address: 'طريق الملك عبدالله، الدمام',
-        pricePerHour: 5,
-        imageUrl:
-            'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
-        distanceInMinutes: 3,
+        distanceInMinutes: 9,
+        lat: 29.9603,
+        lng: 31.2596,
+        isBusy: false,
+        gallery: [
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+        ],
       ),
     ];
   }
 }
+
+

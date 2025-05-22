@@ -61,6 +61,7 @@ dependencies:
   percent_indicator: ^4.2.5
   fluttertoast: ^8.2.12
   bot_toast: ^4.1.3
+  flutter_map: ^8.1.1
 
 dev_dependencies:
   flutter_test:

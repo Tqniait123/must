@@ -19,6 +19,7 @@ import 'package:must_invest/features/all/on_boarding/presentation/pages/on_board
 import 'package:must_invest/features/all/splash/presentation/pages/splash.dart';
 import 'package:must_invest/features/parking_man/home/presentation/pages/home_parking_man.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/explore_screen.dart';
+import 'package:must_invest/features/user/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/user/home/presentation/pages/home_user.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -142,6 +143,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the ExploreScreen widget
           return ExploreScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.maps,
+        builder: (context, state) {
+          // Return the MapsScreen widget
+          return MapScreen();
         },
       ),
     ],

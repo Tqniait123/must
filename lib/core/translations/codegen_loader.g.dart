@@ -147,7 +147,8 @@ class CodegenLoader extends AssetLoader{
   "most_popular": "Most Popular",
   "most_wanted": "Most Wanted",
   "hour": "hour",
-  "min": "min"
+  "min": "min",
+  "start_now": "Start Now"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -282,7 +283,8 @@ static const Map<String,dynamic> _ar = {
   "most_popular": "الأكثر شعبية",
   "most_wanted": "الأكثر مطلوبة",
   "hour": "ساعة",
-  "min": "دقيقة"
+  "min": "دقيقة",
+  "start_now": "ابدأ الآن"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

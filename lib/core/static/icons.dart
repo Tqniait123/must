@@ -3,6 +3,7 @@ class AppIcons {
 static const String splashPattern = '$_iconsPath/splash_pattern.svg';
 static const String homePattern = '$_iconsPath/home_pattern.svg';
 static const String checkMailIllu = '$_iconsPath/check_mail_illu.svg';
+static const String currentLocationIc = '$_iconsPath/current_location_ic.svg';
 static const String splashLogo = '$_iconsPath/splash_logo.svg';
 static const String editIc = '$_iconsPath/edit_ic.svg';
 static const String cameraIc = '$_iconsPath/camera_ic.svg';
