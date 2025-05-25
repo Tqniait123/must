@@ -64,7 +64,10 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                           bottom: -20,
                           child: FloatingActionButton(
                             onPressed: () {
-                              context.push(Routes.maps);
+                              context.push(
+                                Routes.routing,
+                                extra: widget.parking,
+                              );
                             },
                             backgroundColor: AppColors.primary,
                             child: Icon(

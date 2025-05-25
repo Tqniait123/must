@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
+import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/static/constants.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -13,6 +14,7 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffF4F4FA),
       body: SafeArea(
         child: Column(
           children: [
@@ -21,7 +23,10 @@ class NotificationsScreen extends StatelessWidget {
               children: [
                 CustomBackButton(),
 
-                Text(LocaleKeys.notifications.tr()),
+                Text(
+                  LocaleKeys.notifications.tr(),
+                  style: context.titleLarge.copyWith(),
+                ),
                 const SizedBox(width: 51, height: 51),
               ],
             ),

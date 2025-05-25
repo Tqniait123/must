@@ -15,12 +15,14 @@ import 'package:must_invest/features/all/auth/presentation/pages/register_screen
 import 'package:must_invest/features/all/auth/presentation/pages/register_step_three.dart';
 import 'package:must_invest/features/all/auth/presentation/pages/register_step_two.dart';
 import 'package:must_invest/features/all/auth/presentation/pages/reset_password.dart';
+import 'package:must_invest/features/all/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/all/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/all/splash/presentation/pages/splash.dart';
 import 'package:must_invest/features/parking_man/home/presentation/pages/home_parking_man.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/explore_screen.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/parking_details_screen.dart';
+import 'package:must_invest/features/user/explore/presentation/pages/routing_parking_screen.dart';
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 import 'package:must_invest/features/user/home/presentation/pages/home_user.dart';
 
@@ -159,6 +161,20 @@ class AppRouter {
         builder: (context, state) {
           // Return the ParkingDetails widget
           return ParkingDetailsScreen(parking: state.extra as Parking);
+        },
+      ),
+      GoRoute(
+        path: Routes.routing,
+        builder: (context, state) {
+          // Return the Routing widget
+          return RoutingParkingScreen(parking: state.extra as Parking);
+        },
+      ),
+      GoRoute(
+        path: Routes.notifications,
+        builder: (context, state) {
+          // Return the Routing widget
+          return NotificationsScreen();
         },
       ),
     ],
