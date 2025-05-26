@@ -125,7 +125,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
                   ),
                 ).withPressEffect(
                   onTap: () {
-                    context.push(Routes.myCards);
+                    context.push(Routes.profile);
                   },
                 ),
                 10.gap,

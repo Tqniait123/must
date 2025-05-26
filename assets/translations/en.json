@@ -139,5 +139,11 @@
   "add_new_card": "Add New Card",
   "instapay": "InstaPay",
   "vodafone_cash": "Vodafone Cash",
-  "send_receipt_to_your_email": "Send Receipt To Your Email"
+  "send_receipt_to_your_email": "Send Receipt To Your Email",
+  "profile": "Profile",
+  "terms_and_conditions": "Terms and Conditions",
+  "faq": "FAQ",
+  "settings": "Settings",
+  "history": "History",
+  "how_can_we_help_you": "How can we help you?"
 }

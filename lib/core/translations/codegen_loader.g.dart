@@ -155,7 +155,13 @@ class CodegenLoader extends AssetLoader{
   "add_new_card": "Add New Card",
   "instapay": "InstaPay",
   "vodafone_cash": "Vodafone Cash",
-  "send_receipt_to_your_email": "Send Receipt To Your Email"
+  "send_receipt_to_your_email": "Send Receipt To Your Email",
+  "profile": "Profile",
+  "terms_and_conditions": "Terms and Conditions",
+  "faq": "FAQ",
+  "settings": "Settings",
+  "history": "History",
+  "how_can_we_help_you": "How can we help you?"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -251,7 +257,7 @@ static const Map<String,dynamic> _ar = {
   "find_your_perfect_parking_spac": "اعثر على موقف سيارتك المثالي أينما ومتى احتجت",
   "find_parking": "البحث عن موقف",
   "parking_man": "مسؤول الموقف",
-  "face_id": "بصمة الوجه",
+  "face_id": "معرف الوجه",
   "facebook": "فيسبوك",
   "or_login_with": "أو سجل الدخول باستخدام",
   "sign_in_to_your_account": "تسجيل الدخول إلى حسابك",
@@ -298,7 +304,13 @@ static const Map<String,dynamic> _ar = {
   "add_new_card": "إضافة بطاقة جديدة",
   "instapay": "انستا باي",
   "vodafone_cash": "فودافون كاش",
-  "send_receipt_to_your_email": "إرسال نسخة من الإيصال إلى بريدك الإلكتروني"
+  "send_receipt_to_your_email": "إرسال نسخة من الإيصال إلى بريدك الإلكتروني",
+  "profile": "الملف الشخصي",
+  "terms_and_conditions": "الشروط والأحكام",
+  "faq": "الأسئلة الشائعة",
+  "settings": "الإعدادات",
+  "history": "السجل",
+  "how_can_we_help_you": "كيف يمكننا مساعدتك؟"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

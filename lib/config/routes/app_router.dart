@@ -26,6 +26,8 @@ import 'package:must_invest/features/user/explore/presentation/pages/routing_par
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 import 'package:must_invest/features/user/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/user/my_cards/presentation/pages/my_cards_screen.dart';
+import 'package:must_invest/features/user/profile/presentation/pages/edit_profile_screen.dart';
+import 'package:must_invest/features/user/profile/presentation/pages/profile_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -183,6 +185,20 @@ class AppRouter {
         builder: (context, state) {
           // Return the MyCardsScreen widget
           return MyCardsScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.profile,
+        builder: (context, state) {
+          // Return the ProfileScreen widget
+          return ProfileScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.editProfile,
+        builder: (context, state) {
+          // Return the EditProfileScreen widget
+          return EditProfileScreen();
         },
       ),
     ],

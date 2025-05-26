@@ -141,5 +141,11 @@ abstract class  LocaleKeys {
   static const instapay = 'instapay';
   static const vodafone_cash = 'vodafone_cash';
   static const send_receipt_to_your_email = 'send_receipt_to_your_email';
+  static const profile = 'profile';
+  static const terms_and_conditions = 'terms_and_conditions';
+  static const faq = 'faq';
+  static const settings = 'settings';
+  static const history = 'history';
+  static const how_can_we_help_you = 'how_can_we_help_you';
 
 }

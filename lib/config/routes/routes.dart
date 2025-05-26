@@ -21,4 +21,6 @@ class Routes {
   static const String parkingDetails = '/parkingDetails';
   static const String routing = '/routing';
   static const String myCards = '/myCards';
+  static const String profile = '/profile';
+  static const String editProfile = '/editProfile';
 }
