@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/flipped_for_lcale.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
@@ -96,6 +98,9 @@ class ProfileScreen extends StatelessWidget {
           ProfileItemWidget(
             title: LocaleKeys.profile.tr(),
             iconPath: AppIcons.profileIc,
+            onPressed: () {
+              context.push(Routes.editProfile);
+            },
           ),
           ProfileItemWidget(
             title: LocaleKeys.face_id.tr(),
