@@ -164,7 +164,10 @@ class CodegenLoader extends AssetLoader{
   "how_can_we_help_you": "How can we help you?",
   "edit_profile": "Edit Profile",
   "type": "Type",
-  "id": "ID"
+  "id": "ID",
+  "my_qr": "My QR",
+  "re_generate": "Re Generate",
+  "generating": "Generating"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -316,7 +319,10 @@ static const Map<String,dynamic> _ar = {
   "how_can_we_help_you": "كيف نستطيع مساعدتك؟",
   "edit_profile": "تعديل الملف الشخصي",
   "type": "النوع",
-  "id": "رقم الهوية"
+  "id": "رقم الهوية",
+  "my_qr": "QR الخاص بي",
+  "re_generate": "إعادة توليد",
+  "generating": "توليد"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

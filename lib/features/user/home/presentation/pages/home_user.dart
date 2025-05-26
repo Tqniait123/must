@@ -160,7 +160,9 @@ class UserHomeHeaderWidget extends StatelessWidget {
               CustomIconButton(
                 iconAsset: AppIcons.qrCodeIc,
                 color: AppColors.primary,
-                onPressed: () {},
+                onPressed: () {
+                  context.push(Routes.myQrCode);
+                },
               ),
             ],
           ),

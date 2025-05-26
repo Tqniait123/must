@@ -150,5 +150,8 @@ abstract class  LocaleKeys {
   static const edit_profile = 'edit_profile';
   static const type = 'type';
   static const id = 'id';
+  static const my_qr = 'my_qr';
+  static const re_generate = 're_generate';
+  static const generating = 'generating';
 
 }
