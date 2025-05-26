@@ -161,7 +161,10 @@ class CodegenLoader extends AssetLoader{
   "faq": "FAQ",
   "settings": "Settings",
   "history": "History",
-  "how_can_we_help_you": "How can we help you?"
+  "how_can_we_help_you": "How can we help you?",
+  "edit_profile": "Edit Profile",
+  "type": "Type",
+  "id": "ID"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -310,7 +313,10 @@ static const Map<String,dynamic> _ar = {
   "faq": "الأسئلة الشائعة",
   "settings": "الإعدادات",
   "history": "السجل",
-  "how_can_we_help_you": "كيف يمكننا مساعدتك؟"
+  "how_can_we_help_you": "كيف نستطيع مساعدتك؟",
+  "edit_profile": "تعديل الملف الشخصي",
+  "type": "النوع",
+  "id": "رقم الهوية"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

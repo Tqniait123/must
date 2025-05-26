@@ -145,5 +145,8 @@
   "faq": "FAQ",
   "settings": "Settings",
   "history": "History",
-  "how_can_we_help_you": "How can we help you?"
+  "how_can_we_help_you": "How can we help you?",
+  "edit_profile": "Edit Profile",
+  "type": "Type",
+  "id": "ID"
 }

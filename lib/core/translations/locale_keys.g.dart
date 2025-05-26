@@ -147,5 +147,8 @@ abstract class  LocaleKeys {
   static const settings = 'settings';
   static const history = 'history';
   static const how_can_we_help_you = 'how_can_we_help_you';
+  static const edit_profile = 'edit_profile';
+  static const type = 'type';
+  static const id = 'id';
 
 }
