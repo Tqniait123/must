@@ -15,14 +15,9 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/features/user/profile/presentation/widgets/profile_item_widget.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
