@@ -109,6 +109,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           Expanded(
             child: CustomElevatedButton(
+              heroTag: 'cancel',
               onPressed: () {
                 context.pop();
               },

@@ -110,7 +110,9 @@ class ProfileScreen extends StatelessWidget {
           ProfileItemWidget(
             title: LocaleKeys.my_cards.tr(),
             iconPath: AppIcons.cardIc,
-            onPressed: () {},
+            onPressed: () {
+              context.push(Routes.myCards);
+            },
           ),
 
           ProfileItemWidget(
