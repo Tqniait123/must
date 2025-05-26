@@ -43,7 +43,26 @@ class _LoginScreenState extends State<LoginScreen> {
         topPadding: 70,
         contentPadding: const EdgeInsets.symmetric(horizontal: 24),
 
-        upperContent: _buildWelcomeSection(),
+        upperContent: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(child: LogoWidget(type: LogoType.svg)),
+              27.gap,
+              Text(
+                LocaleKeys.login_to_your_account.tr(),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
         children: [
           30.gap,
           Form(
@@ -230,28 +249,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Optional: Add this method if you want to include upper content
-  Widget _buildWelcomeSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(child: LogoWidget(type: LogoType.svg)),
-          27.gap,
-          Text(
-            LocaleKeys.login_to_your_account.tr(),
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildWelcomeSection() {
+  //   return
+  // }
 }
 
 class SocialMediaButtons extends StatelessWidget {

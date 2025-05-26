@@ -110,7 +110,22 @@ class CustomLayout extends StatelessWidget {
           children: [
             // Background pattern
             if (backgroundPattern != null || _shouldShowDefaultPattern())
-              Positioned.fill(child: _buildBackgroundPattern(screenSize)),
+              Positioned(
+                top: patternOffset?.dy ?? -200,
+                left: patternOffset?.dx,
+                child: Opacity(
+                  opacity: patternOpacity ?? 0.3,
+                  child: Image.asset(
+                    AppImages.pattern,
+                    // Use only width OR height, not both
+                    width: patternWidth ?? screenSize.width * 1.4,
+                    // Remove height to maintain aspect ratio
+                    fit:
+                        BoxFit
+                            .contain, // This ensures the image fits within the bounds
+                  ),
+                ),
+              ),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,21 +156,21 @@ class CustomLayout extends StatelessWidget {
         null; // Show default pattern if no custom pattern
   }
 
-  Widget _buildBackgroundPattern(Size screenSize) {
-    final pattern = Image.asset(
-      AppImages.pattern,
-      // Use only width OR height, not both
-      width: patternWidth ?? screenSize.width * 1.4,
-      // Remove height to maintain aspect ratio
-      fit: BoxFit.contain, // This ensures the image fits within the bounds
-    );
+  // Widget _buildBackgroundPattern(Size screenSize) {
+  //   final pattern = Image.asset(
+  //     AppImages.pattern,
+  //     // Use only width OR height, not both
+  //     width: patternWidth ?? screenSize.width * 1.4,
+  //     // Remove height to maintain aspect ratio
+  //     fit: BoxFit.contain, // This ensures the image fits within the bounds
+  //   );
 
-    return Positioned(
-      top: patternOffset?.dy ?? -200,
-      left: patternOffset?.dx,
-      child: Opacity(opacity: patternOpacity ?? 0.3, child: pattern),
-    );
-  }
+  //   return Positioned(
+  //     top: patternOffset?.dy ?? -200,
+  //     left: patternOffset?.dx,
+  //     child: Opacity(opacity: patternOpacity ?? 0.3, child: pattern),
+  //   );
+  // }
 
   Widget _buildHeader(BuildContext context) {
     if (customHeader != null) {
