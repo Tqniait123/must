@@ -135,5 +135,11 @@ abstract class  LocaleKeys {
   static const min = 'min';
   static const start_now = 'start_now';
   static const details = 'details';
+  static const my_cards = 'my_cards';
+  static const your_number_or_email = 'your_number_or_email';
+  static const add_new_card = 'add_new_card';
+  static const instapay = 'instapay';
+  static const vodafone_cash = 'vodafone_cash';
+  static const send_receipt_to_your_email = 'send_receipt_to_your_email';
 
 }

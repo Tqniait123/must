@@ -123,6 +123,10 @@ class UserHomeHeaderWidget extends StatelessWidget {
                   style: context.bodyMedium.s24.bold.copyWith(
                     color: AppColors.white,
                   ),
+                ).withPressEffect(
+                  onTap: () {
+                    context.push(Routes.myCards);
+                  },
                 ),
                 10.gap,
                 Text(

@@ -149,7 +149,13 @@ class CodegenLoader extends AssetLoader{
   "hour": "hour",
   "min": "min",
   "start_now": "Start Now",
-  "details": "Details"
+  "details": "Details",
+  "my_cards": "My Cards",
+  "your_number_or_email": "Your Number or Email",
+  "add_new_card": "Add New Card",
+  "instapay": "InstaPay",
+  "vodafone_cash": "Vodafone Cash",
+  "send_receipt_to_your_email": "Send Receipt To Your Email"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -280,13 +286,19 @@ static const Map<String,dynamic> _ar = {
   "nearst_parking_spaces": "أقرب مواقف السيارات",
   "see_more": "عرض المزيد",
   "explore": "استكشف",
-  "nearst": "قريب",
+  "nearst": "الأقرب",
   "most_popular": "الأكثر شعبية",
-  "most_wanted": "الأكثر مطلوبة",
+  "most_wanted": "الأكثر طلباً",
   "hour": "ساعة",
   "min": "دقيقة",
   "start_now": "ابدأ الآن",
-  "details": "تفاصيل"
+  "details": "التفاصيل",
+  "my_cards": "بطاقاتي",
+  "your_number_or_email": "رقم الهاتف أو البريد الإلكتروني",
+  "add_new_card": "إضافة بطاقة جديدة",
+  "instapay": "انستا باي",
+  "vodafone_cash": "فودافون كاش",
+  "send_receipt_to_your_email": "إرسال نسخة من الإيصال إلى بريدك الإلكتروني"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

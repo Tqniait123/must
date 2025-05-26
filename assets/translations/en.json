@@ -133,5 +133,11 @@
   "hour": "hour",
   "min": "min",
   "start_now": "Start Now",
-  "details": "Details"
+  "details": "Details",
+  "my_cards": "My Cards",
+  "your_number_or_email": "Your Number or Email",
+  "add_new_card": "Add New Card",
+  "instapay": "InstaPay",
+  "vodafone_cash": "Vodafone Cash",
+  "send_receipt_to_your_email": "Send Receipt To Your Email"
 }

@@ -20,4 +20,5 @@ class Routes {
   static const String maps = '/maps';
   static const String parkingDetails = '/parkingDetails';
   static const String routing = '/routing';
+  static const String myCards = '/myCards';
 }
