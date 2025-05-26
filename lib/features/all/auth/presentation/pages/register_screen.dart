@@ -4,11 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
-import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
-import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
@@ -50,20 +48,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
             decoration: BoxDecoration(color: AppColors.primary),
             child: Stack(
               children: [
-                Positioned(
-                  left: -100,
-                  top: -550,
-                  right: 0,
-                  bottom: 0,
-                  child: Opacity(
-                    opacity: 0.3,
-                    child: AppIcons.splashPattern.svg(
-                      width: MediaQuery.sizeOf(context).width * 0.8,
-                      height: MediaQuery.sizeOf(context).height * 0.8,
-                      // fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   left: -100,
+                //   top: -550,
+                //   right: 0,
+                //   bottom: 0,
+                //   child: Opacity(
+                //     opacity: 0.3,
+                //     child: AppIcons.splashPattern.svg(
+                //       width: MediaQuery.sizeOf(context).width * 0.8,
+                //       height: MediaQuery.sizeOf(context).height * 0.8,
+                //       // fit: BoxFit.cover,
+                //     ),
+                //   ),
+                // ),
                 // Logo positioned in the visible area above the bottom sheet
                 Positioned(
                   top: MediaQuery.sizeOf(context).height * 0.15,

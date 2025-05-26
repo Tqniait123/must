@@ -4,6 +4,7 @@ class AppImages {
   static const String logo = '$_assetsPath/logo.png';
   static const String wideLogo = '$_assetsPath/wide_logo.png';
   static const String sun = '$_assetsPath/sun.png';
+  static const String pattern = '$_assetsPath/pattern.png';
 }
 
 class AppAnimations {

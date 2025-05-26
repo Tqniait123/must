@@ -13,6 +13,7 @@ import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/all/auth/data/models/login_params.dart';
 import 'package:must_invest/features/all/auth/data/models/user.dart';
 import 'package:must_invest/features/all/auth/presentation/cubit/auth_cubit.dart';
@@ -36,217 +37,216 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomLayout(
-        title: LocaleKeys.sign_in_to_your_account.tr(),
+        withPadding: true,
+        patternOffset: const Offset(-150, -200),
+        spacerHeight: 35,
+        topPadding: 70,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+
+        upperContent: _buildWelcomeSection(),
         children: [
-          // Background container with primary color and pattern
-
-          // Bottom sheet with form
-          Container(
-            decoration: BoxDecoration(color: AppColors.white),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+          30.gap,
+          Form(
+            key: _formKey,
+            child: Hero(
+              tag: "form",
+              child: Material(
+                color: Colors.transparent,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    30.gap,
-                    Form(
-                      key: _formKey,
-                      child: Hero(
-                        tag: "form",
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Column(
-                            children: [
-                              CustomTextFormField(
-                                controller: _emailController,
-                                margin: 0,
-                                hint: LocaleKeys.email.tr(),
-                                title: LocaleKeys.email.tr(),
-                              ),
-                              16.gap,
-                              CustomTextFormField(
-                                margin: 0,
-                                controller: _passwordController,
-                                hint: LocaleKeys.password.tr(),
-                                title: LocaleKeys.password.tr(),
-                                obscureText: true,
-                                isPassword: true,
-                              ),
-                              19.gap,
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: Checkbox(
-                                          activeColor: AppColors.secondary,
-                                          checkColor: AppColors.white,
-                                          value: isRemembered,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              isRemembered = value ?? false;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                      8.gap,
-                                      Text(
-                                        LocaleKeys.remember_me.tr(),
-                                        style: context.bodyMedium.s12.regular,
-                                      ),
-                                    ],
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      context.push(Routes.forgetPassword);
-                                    },
-                                    child: Text(
-                                      LocaleKeys.forgot_password.tr(),
-                                      style: context.bodyMedium.s12.bold
-                                          .copyWith(color: AppColors.primary),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    CustomTextFormField(
+                      controller: _emailController,
+                      margin: 0,
+                      hint: LocaleKeys.email.tr(),
+                      title: LocaleKeys.email.tr(),
                     ),
-                    40.gap,
+                    16.gap,
+                    CustomTextFormField(
+                      margin: 0,
+                      controller: _passwordController,
+                      hint: LocaleKeys.password.tr(),
+                      title: LocaleKeys.password.tr(),
+                      obscureText: true,
+                      isPassword: true,
+                    ),
+                    19.gap,
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: BlocConsumer<AuthCubit, AuthState>(
-                            listener: (
-                              BuildContext context,
-                              AuthState state,
-                            ) async {
-                              if (state is AuthSuccess) {
-                                UserCubit.get(
-                                  context,
-                                ).setCurrentUser(state.user);
-                                if (state.user.type == UserType.user) {
-                                  context.go(Routes.homeUser);
-                                } else {
-                                  context.go(Routes.homeParkingMan);
-                                }
-                              }
-                              if (state is AuthError) {
-                                showErrorToast(context, state.message);
-                              }
-                            },
-                            builder:
-                                (
-                                  BuildContext context,
-                                  AuthState state,
-                                ) => CustomElevatedButton(
-                                  heroTag: 'button',
-                                  loading: state is AuthLoading,
-                                  title: LocaleKeys.login.tr(),
-                                  onPressed: () {
-                                    // if (_formKey.currentState!.validate()) {
-                                    AuthCubit.get(context).login(
-                                      LoginParams(
-                                        email: _emailController.text,
-                                        password: _passwordController.text,
-                                        isRemembered: isRemembered,
-                                      ),
-                                    );
-                                    // }
-                                  },
-                                ),
-                          ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: Checkbox(
+                                activeColor: AppColors.secondary,
+                                checkColor: AppColors.white,
+                                value: isRemembered,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isRemembered = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            8.gap,
+                            Text(
+                              LocaleKeys.remember_me.tr(),
+                              style: context.bodyMedium.s12.regular,
+                            ),
+                          ],
                         ),
-                        20.gap,
-                        Expanded(
-                          child: BlocConsumer<AuthCubit, AuthState>(
-                            listener: (
-                              BuildContext context,
-                              AuthState state,
-                            ) async {
-                              if (state is AuthSuccess) {
-                                UserCubit.get(
-                                  context,
-                                ).setCurrentUser(state.user);
-                                if (state.user.type == UserType.user) {
-                                  context.go(Routes.homeUser);
-                                } else {
-                                  context.go(Routes.homeParkingMan);
-                                }
-                              }
-                              if (state is AuthError) {
-                                showErrorToast(context, state.message);
-                              }
-                            },
-                            builder:
-                                (
-                                  BuildContext context,
-                                  AuthState state,
-                                ) => CustomElevatedButton(
-                                  heroTag: 'faceId',
-                                  icon: AppIcons.faceIdIc,
-
-                                  title: LocaleKeys.face_id.tr(),
-                                  onPressed: () {
-                                    // if (_formKey.currentState!.validate()) {
-                                    AuthCubit.get(context).login(
-                                      LoginParams(
-                                        email: _emailController.text,
-                                        password: _passwordController.text,
-                                        isRemembered: isRemembered,
-                                      ),
-                                    );
-                                    // }
-                                  },
-                                ),
+                        GestureDetector(
+                          onTap: () {
+                            context.push(Routes.forgetPassword);
+                          },
+                          child: Text(
+                            LocaleKeys.forgot_password.tr(),
+                            style: context.bodyMedium.s12.bold.copyWith(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    71.gap,
-                    // or login with divider
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: AppColors.grey60.withOpacity(0.3),
-                            thickness: 1,
-                          ),
-                        ),
-                        16.gap,
-                        Text(
-                          LocaleKeys.or_login_with.tr(),
-                          style: context.bodyMedium.s12.regular,
-                        ),
-                        16.gap,
-                        Expanded(
-                          child: Divider(
-                            color: AppColors.grey60.withOpacity(0.3),
-                            thickness: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                    20.gap,
-                    SocialMediaButtons(),
-                    20.gap,
-                    SignUpButton(
-                      isLogin: true,
-                      onTap: () {
-                        context.push(Routes.accountType);
-                      },
-                    ),
-                    30.gap, // Add extra bottom padding
                   ],
                 ),
               ),
             ),
+          ),
+          40.gap,
+          Row(
+            children: [
+              Expanded(
+                child: BlocConsumer<AuthCubit, AuthState>(
+                  listener: (BuildContext context, AuthState state) async {
+                    if (state is AuthSuccess) {
+                      UserCubit.get(context).setCurrentUser(state.user);
+                      if (state.user.type == UserType.user) {
+                        context.go(Routes.homeUser);
+                      } else {
+                        context.go(Routes.homeParkingMan);
+                      }
+                    }
+                    if (state is AuthError) {
+                      showErrorToast(context, state.message);
+                    }
+                  },
+                  builder:
+                      (BuildContext context, AuthState state) =>
+                          CustomElevatedButton(
+                            heroTag: 'button',
+                            loading: state is AuthLoading,
+                            title: LocaleKeys.login.tr(),
+                            onPressed: () {
+                              // if (_formKey.currentState!.validate()) {
+                              AuthCubit.get(context).login(
+                                LoginParams(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  isRemembered: isRemembered,
+                                ),
+                              );
+                              // }
+                            },
+                          ),
+                ),
+              ),
+              20.gap,
+              Expanded(
+                child: BlocConsumer<AuthCubit, AuthState>(
+                  listener: (BuildContext context, AuthState state) async {
+                    if (state is AuthSuccess) {
+                      UserCubit.get(context).setCurrentUser(state.user);
+                      if (state.user.type == UserType.user) {
+                        context.go(Routes.homeUser);
+                      } else {
+                        context.go(Routes.homeParkingMan);
+                      }
+                    }
+                    if (state is AuthError) {
+                      showErrorToast(context, state.message);
+                    }
+                  },
+                  builder:
+                      (BuildContext context, AuthState state) =>
+                          CustomElevatedButton(
+                            heroTag: 'faceId',
+                            icon: AppIcons.faceIdIc,
+                            title: LocaleKeys.face_id.tr(),
+                            onPressed: () {
+                              // if (_formKey.currentState!.validate()) {
+                              AuthCubit.get(context).login(
+                                LoginParams(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  isRemembered: isRemembered,
+                                ),
+                              );
+                              // }
+                            },
+                          ),
+                ),
+              ),
+            ],
+          ),
+          71.gap,
+          // or login with divider
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: AppColors.grey60.withOpacity(0.3),
+                  thickness: 1,
+                ),
+              ),
+              16.gap,
+              Text(
+                LocaleKeys.or_login_with.tr(),
+                style: context.bodyMedium.s12.regular,
+              ),
+              16.gap,
+              Expanded(
+                child: Divider(
+                  color: AppColors.grey60.withOpacity(0.3),
+                  thickness: 1,
+                ),
+              ),
+            ],
+          ),
+          20.gap,
+          const SocialMediaButtons(),
+          20.gap,
+          SignUpButton(
+            isLogin: true,
+            onTap: () {
+              context.push(Routes.accountType);
+            },
+          ),
+          30.gap, // Add extra bottom padding
+        ],
+      ),
+    );
+  }
+
+  // Optional: Add this method if you want to include upper content
+  Widget _buildWelcomeSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: LogoWidget(type: LogoType.svg)),
+          27.gap,
+          Text(
+            LocaleKeys.login_to_your_account.tr(),
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.white,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -265,7 +265,6 @@ class SocialMediaButtons extends StatelessWidget {
         Expanded(
           child: CustomElevatedButton(
             heroTag: 'google',
-            // isFilled: false,
             height: 48,
             icon: AppIcons.google,
             iconColor: null,
@@ -281,7 +280,6 @@ class SocialMediaButtons extends StatelessWidget {
           child: CustomElevatedButton(
             heroTag: 'facebook',
             height: 48,
-            // isFilled: false,
             isBordered: true,
             icon: AppIcons.facebook,
             iconColor: null,
