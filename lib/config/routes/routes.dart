@@ -24,4 +24,5 @@ class Routes {
   static const String profile = '/profile';
   static const String editProfile = '/editProfile';
   static const String myQrCode = '/myQrCode';
+  static const String history = '/history';
 }

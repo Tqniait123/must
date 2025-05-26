@@ -15,6 +15,7 @@ static const String profileIc = '$_iconsPath/profile_ic.svg';
 static const String splashLogo = '$_iconsPath/splash_logo.svg';
 static const String editIc = '$_iconsPath/edit_ic.svg';
 static const String cameraIc = '$_iconsPath/camera_ic.svg';
+static const String filterIc = '$_iconsPath/filter_ic.svg';
 static const String facebook = '$_iconsPath/facebook.svg';
 static const String eyeSlashIc = '$_iconsPath/eye_slash_ic.svg';
 static const String google = '$_iconsPath/google.svg';

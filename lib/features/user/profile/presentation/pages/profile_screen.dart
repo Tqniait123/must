@@ -123,7 +123,9 @@ class ProfileScreen extends StatelessWidget {
           ProfileItemWidget(
             title: LocaleKeys.history.tr(),
             iconPath: AppIcons.historyIc,
-            onPressed: () {},
+            onPressed: () {
+              context.push(Routes.history);
+            },
           ),
           ProfileItemWidget(
             title: LocaleKeys.faq.tr(),

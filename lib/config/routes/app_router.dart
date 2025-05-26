@@ -23,6 +23,7 @@ import 'package:must_invest/features/user/explore/presentation/pages/explore_scr
 import 'package:must_invest/features/user/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/parking_details_screen.dart';
 import 'package:must_invest/features/user/explore/presentation/pages/routing_parking_screen.dart';
+import 'package:must_invest/features/user/history/presentation/pages/history_screen.dart';
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 import 'package:must_invest/features/user/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/user/my_cards/presentation/pages/my_cards_screen.dart';
@@ -207,6 +208,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the MyQrCodeScreen widget
           return MyQrCodeScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.history,
+        builder: (context, state) {
+          // Return the HistoryScreen widget
+          return HistoryScreen();
         },
       ),
     ],
