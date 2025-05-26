@@ -221,6 +221,11 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
             size: 250.0,
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
+            dataModuleStyle: QrDataModuleStyle(
+              dataModuleShape: QrDataModuleShape.circle,
+              color: AppColors.primary,
+            ),
+            eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.circle),
             errorCorrectionLevel: QrErrorCorrectLevel.M,
             embeddedImage: AssetImage(
               AppImages.logo,
