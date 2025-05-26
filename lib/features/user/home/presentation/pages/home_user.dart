@@ -7,10 +7,11 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
@@ -37,179 +38,130 @@ class _HomeUserState extends State<HomeUser> {
     final parkingList = Parking.getFakeArabicParkingList();
 
     return Scaffold(
-      body: Stack(
+      body: CustomLayout(
+        withPadding: true,
+        patternOffset: const Offset(-100, -200),
+        spacerHeight: 35,
+        topPadding: 70,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+
+        upperContent: UserHomeHeaderWidget(searchController: _searchController),
+        backgroundPatternAssetPath: AppImages.homePattern,
+
         children: [
-          // Background container with primary color and pattern
-          Container(
-            height: MediaQuery.sizeOf(context).height,
-            width: MediaQuery.sizeOf(context).width,
-            decoration: BoxDecoration(color: AppColors.primary),
-            child: Stack(
+          30.gap,
+          MyPointsCard(),
+          32.gap,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                LocaleKeys.nearst_parking_spaces.tr(),
+                style: context.bodyMedium.bold.s16.copyWith(
+                  color: AppColors.primary,
+                ),
+              ),
+              // see more text button
+              Text(
+                LocaleKeys.see_more.tr(),
+                style: context.bodyMedium.regular.s14.copyWith(
+                  color: AppColors.primary.withValues(alpha: 0.5),
+                ),
+              ).withPressEffect(
+                onTap: () {
+                  // Handle "See More" button tap
+                  context.push(Routes.explore);
+                },
+              ),
+            ],
+          ),
+          16.gap, // Add a gap before the ListView
+          SizedBox(
+            height:
+                MediaQuery.of(context).size.height *
+                0.35, // Set a fixed height for the ListView
+            child: ListView.separated(
+              physics:
+                  const BouncingScrollPhysics(), // Add physics for better scrolling
+              shrinkWrap: false, // Don't use shrinkWrap as we've set a height
+              padding: EdgeInsets.zero, // Remove padding to avoid extra space
+              itemCount: parkingList.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                return ParkingCard(parking: parkingList[index]);
+              },
+            ),
+          ),
+          30.gap, // Add some padding at the bottom
+        ],
+      ),
+    );
+  }
+}
+
+class UserHomeHeaderWidget extends StatelessWidget {
+  const UserHomeHeaderWidget({
+    super.key,
+    required TextEditingController searchController,
+  }) : _searchController = searchController;
+
+  final TextEditingController _searchController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               children: [
-                Positioned(
-                  left: -0,
-                  top: -700,
-                  right: 0,
-                  bottom: 0,
-                  child: Opacity(
-                    opacity: 0.3,
-                    child: AppIcons.homePattern.svg(
-                      width: MediaQuery.sizeOf(context).width * 2,
-                      height: MediaQuery.sizeOf(context).height * 2,
-                      // fit: BoxFit.cover,
-                    ),
+                Text(
+                  LocaleKeys.hola_name.tr(
+                    namedArgs: {"name": context.user.name},
+                  ),
+                  style: context.bodyMedium.s24.bold.copyWith(
+                    color: AppColors.white,
                   ),
                 ),
-                // Logo positioned in the visible area above the bottom sheet
-                Positioned(
-                  top: MediaQuery.sizeOf(context).height * 0.10,
-                  left: 0,
-                  right: 0,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                LocaleKeys.hola_name.tr(
-                                  namedArgs: {"name": context.user.name},
-                                ),
-                                style: context.bodyMedium.s24.bold.copyWith(
-                                  color: AppColors.white,
-                                ),
-                              ),
-                              10.gap,
-                              Text(
-                                LocaleKeys.find_an_easy_parking_spot.tr(),
-                                style: context.bodyMedium.s16.regular.copyWith(
-                                  color: AppColors.white.withValues(alpha: 0.5),
-                                ),
-                              ),
-                            ],
-                          ),
-                          NotificationsButton(),
-                        ],
-                      ),
-                      40.gap,
-                      CustomTextFormField(
-                        controller: _searchController,
-                        backgroundColor: Color(0xff6468AC),
-                        isBordered: false,
-                        margin: 0,
-                        prefixIC: AppIcons.searchIc.icon(),
-                        hint: LocaleKeys.search.tr(),
-                        suffixIC: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CustomIconButton(
-                              iconAsset: AppIcons.cameraIc,
-                              color: AppColors.primary,
-                              onPressed: () {},
-                            ),
-                            6.gap,
-                            CustomIconButton(
-                              iconAsset: AppIcons.qrCodeIc,
-                              color: AppColors.primary,
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ).paddingHorizontal(20),
+                10.gap,
+                Text(
+                  LocaleKeys.find_an_easy_parking_spot.tr(),
+                  style: context.bodyMedium.s16.regular.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.5),
+                  ),
                 ),
               ],
             ),
+            NotificationsButton(),
+          ],
+        ),
+        40.gap,
+        CustomTextFormField(
+          controller: _searchController,
+          backgroundColor: Color(0xff6468AC),
+          isBordered: false,
+          margin: 0,
+          prefixIC: AppIcons.searchIc.icon(),
+          hint: LocaleKeys.search.tr(),
+          suffixIC: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomIconButton(
+                iconAsset: AppIcons.cameraIc,
+                color: AppColors.primary,
+                onPressed: () {},
+              ),
+              6.gap,
+              CustomIconButton(
+                iconAsset: AppIcons.qrCodeIc,
+                color: AppColors.primary,
+                onPressed: () {},
+              ),
+            ],
           ),
-
-          // Bottom sheet with form
-          DraggableScrollableSheet(
-            initialChildSize:
-                0.65, // Take up 65% of the screen height initially
-            minChildSize: 0.65, // Minimum size
-            maxChildSize: 0.65, // Maximum size when expanded
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: Offset(0, -3),
-                    ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        30.gap,
-                        MyPointsCard(),
-                        32.gap,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              LocaleKeys.nearst_parking_spaces.tr(),
-                              style: context.bodyMedium.bold.s16.copyWith(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            // see more text button
-                            Text(
-                              LocaleKeys.see_more.tr(),
-                              style: context.bodyMedium.regular.s14.copyWith(
-                                color: AppColors.primary.withValues(alpha: 0.5),
-                              ),
-                            ).withPressEffect(
-                              onTap: () {
-                                // Handle "See More" button tap
-                                context.push(Routes.explore);
-                              },
-                            ),
-                          ],
-                        ),
-                        16.gap, // Add a gap before the ListView
-                        SizedBox(
-                          height:
-                              MediaQuery.of(context).size.height *
-                              0.35, // Set a fixed height for the ListView
-                          child: ListView.separated(
-                            physics:
-                                const BouncingScrollPhysics(), // Add physics for better scrolling
-                            shrinkWrap:
-                                false, // Don't use shrinkWrap as we've set a height
-                            padding:
-                                EdgeInsets
-                                    .zero, // Remove padding to avoid extra space
-                            itemCount: parkingList.length,
-                            separatorBuilder:
-                                (context, index) => const SizedBox(height: 16),
-                            itemBuilder: (context, index) {
-                              return ParkingCard(parking: parkingList[index]);
-                            },
-                          ),
-                        ),
-                        30.gap, // Add some padding at the bottom
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

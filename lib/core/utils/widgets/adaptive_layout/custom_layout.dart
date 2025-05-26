@@ -26,6 +26,7 @@ class CustomLayout extends StatelessWidget {
   // Background control
   final Color? backgroundColor;
   final Widget? backgroundPattern;
+  final String? backgroundPatternAssetPath;
   final double? patternOpacity;
   final double? patternWidth;
   final double? patternHeight;
@@ -68,6 +69,7 @@ class CustomLayout extends StatelessWidget {
     // Background
     this.backgroundColor,
     this.backgroundPattern,
+    this.backgroundPatternAssetPath,
     this.patternOpacity = 0.3,
     this.patternWidth,
     this.patternHeight,
@@ -110,22 +112,23 @@ class CustomLayout extends StatelessWidget {
           children: [
             // Background pattern
             if (backgroundPattern != null || _shouldShowDefaultPattern())
-              Positioned(
-                top: patternOffset?.dy ?? -200,
-                left: patternOffset?.dx,
-                child: Opacity(
-                  opacity: patternOpacity ?? 0.3,
-                  child: Image.asset(
-                    AppImages.pattern,
-                    // Use only width OR height, not both
-                    width: patternWidth ?? screenSize.width * 1.4,
-                    // Remove height to maintain aspect ratio
-                    fit:
-                        BoxFit
-                            .contain, // This ensures the image fits within the bounds
+              backgroundPattern ??
+                  Positioned(
+                    top: patternOffset?.dy ?? -200,
+                    left: patternOffset?.dx,
+                    child: Opacity(
+                      opacity: patternOpacity ?? 0.3,
+                      child: Image.asset(
+                        backgroundPatternAssetPath ?? AppImages.pattern,
+                        // Use only width OR height, not both
+                        width: patternWidth ?? screenSize.width * 1.4,
+                        // Remove height to maintain aspect ratio
+                        fit:
+                            BoxFit
+                                .contain, // This ensures the image fits within the bounds
+                      ),
+                    ),
                   ),
-                ),
-              ),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
