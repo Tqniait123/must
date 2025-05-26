@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
@@ -103,7 +105,9 @@ class MyPointsCard extends StatelessWidget {
                 child: CustomElevatedButton(
                   height: 44,
                   title: LocaleKeys.add_points.tr(),
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push(Routes.myCards);
+                  },
                 ),
               ),
             ],
