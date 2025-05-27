@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (state.user.type == UserType.user) {
                         context.go(Routes.homeUser);
                       } else {
-                        context.go(Routes.homeParkingMan);
+                        // context.go(Routes.homeParkingMan);
                       }
                     }
                     if (state is AuthError) {

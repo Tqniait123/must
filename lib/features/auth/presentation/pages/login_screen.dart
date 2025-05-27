@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (state.user.type == UserType.user) {
                         context.go(Routes.homeUser);
                       } else {
-                        context.go(Routes.homeParkingMan);
+                        // context.go(Routes.homeParkingMan);
                       }
                     }
                     if (state is AuthError) {
@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (state.user.type == UserType.user) {
                         context.go(Routes.homeUser);
                       } else {
-                        context.go(Routes.homeParkingMan);
+                        // context.go(Routes.homeParkingMan);
                       }
                     }
                     if (state is AuthError) {
@@ -239,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SignUpButton(
             isLogin: true,
             onTap: () {
-              context.push(Routes.accountType);
+              context.push(Routes.register);
             },
           ),
           30.gap, // Add extra bottom padding

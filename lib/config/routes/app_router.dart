@@ -6,7 +6,6 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/observers/router_observer.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
-import 'package:must_invest/features/auth/presentation/pages/account_type_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/check_your_email_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/forget_password_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/login_screen.dart';
@@ -15,10 +14,6 @@ import 'package:must_invest/features/auth/presentation/pages/register_screen.dar
 import 'package:must_invest/features/auth/presentation/pages/register_step_three.dart';
 import 'package:must_invest/features/auth/presentation/pages/register_step_two.dart';
 import 'package:must_invest/features/auth/presentation/pages/reset_password.dart';
-import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
-import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
-import 'package:must_invest/features/splash/presentation/pages/splash.dart';
-import 'package:must_invest/features/parking_man/home/presentation/pages/home_parking_man.dart';
 import 'package:must_invest/features/explore/presentation/pages/explore_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/parking_details_screen.dart';
@@ -27,9 +22,12 @@ import 'package:must_invest/features/history/presentation/pages/history_screen.d
 import 'package:must_invest/features/home/data/models/parking_model.dart';
 import 'package:must_invest/features/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen.dart';
+import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_qr_code_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/profile_screen.dart';
+import 'package:must_invest/features/splash/presentation/pages/splash.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -67,13 +65,6 @@ class AppRouter {
         builder: (context, state) {
           // Return the SplashScreen widget
           return const OnBoardingScreen();
-        },
-      ),
-      GoRoute(
-        path: Routes.accountType,
-        builder: (context, state) {
-          // Return the AccountTypeScreen widget
-          return const AccountTypeScreen();
         },
       ),
 
@@ -119,13 +110,7 @@ class AppRouter {
           return const HomeUser();
         },
       ),
-      GoRoute(
-        path: Routes.homeParkingMan,
-        builder: (context, state) {
-          // Return the HomeParkingMan widget
-          return const HomeParkingMan();
-        },
-      ),
+
       GoRoute(
         path: Routes.registerStepTwo,
         builder: (context, state) {

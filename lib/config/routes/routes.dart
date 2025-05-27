@@ -8,11 +8,10 @@ class Routes {
   static const String registerStepThree = '/registerStepThree';
   static const String login = '/login';
   static const String homeUser = '/homeUser';
-  static const String homeParkingMan = '/homeParkingMan';
+
   static const String otpScreen = '/otpScreen';
   static const String forgetPassword = '/forgetPassword';
   static const String resetPassword = '/resetPassword';
-  static const String accountType = '/accountType';
 
   static const String notifications = '/notifications';
   static const String checkYourEmail = '/checkYourEmail';
