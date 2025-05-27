@@ -91,12 +91,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': 'eldengaawy@gmail.com',
           'link_id': '#565678',
           'type':
-              (params.email) == 'parkingMan@gmail.com' ? 'parkingMan' : 'user',
+              (params.email == 'parkingMan@gmail.com') ? 'parkingMan' : 'user',
           'badges': (params.email == 'parent@gmail.com') ? [] : ['gold'],
-
           'phone': '01012345678',
           'photo':
               'https://turntable.kagiso.io/images/single_parent_wikimedia.width-800.jpg',
+          // ✅ فقط لو النوع "user" نضيف السيارات
+          if (params.email != 'parkingMan@gmail.com')
+            'cars': [
+              {
+                'id': 'car-1',
+                'model': 'Toyota Corolla',
+                'plate_number': 'س ي د 1234',
+              },
+              {
+                'id': 'car-2',
+                'model': 'Hyundai Elantra',
+                'plate_number': 'م ك و 5678',
+              },
+            ],
         },
       },
     }, (json) => AuthModel.fromJson(json as Map<String, dynamic>));

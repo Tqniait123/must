@@ -5,6 +5,13 @@ import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 
+// Enum to define scroll behavior
+enum ScrollType {
+  scrollable, // Uses SingleChildScrollView - default
+  nonScrollable, // No scroll wrapper - use for ListView/Expanded content
+  custom, // Uses custom scroll physics/controller settings
+}
+
 class CustomLayout extends StatelessWidget {
   // Content control
   final List<Widget> children;
@@ -41,10 +48,10 @@ class CustomLayout extends StatelessWidget {
   // System UI control
   final SystemUiOverlayStyle? systemUiOverlayStyle;
 
-  // Scroll control
+  // Enhanced scroll control
+  final ScrollType scrollType;
   final ScrollController? scrollController;
   final ScrollPhysics? scrollPhysics;
-  final bool enableScroll;
 
   const CustomLayout({
     super.key,
@@ -84,10 +91,10 @@ class CustomLayout extends StatelessWidget {
     // System UI
     this.systemUiOverlayStyle,
 
-    // Scroll
+    // Enhanced scroll control
+    this.scrollType = ScrollType.scrollable, // Default is scrollable
     this.scrollController,
     this.scrollPhysics,
-    this.enableScroll = true,
   });
 
   @override
@@ -158,22 +165,6 @@ class CustomLayout extends StatelessWidget {
     return backgroundPattern ==
         null; // Show default pattern if no custom pattern
   }
-
-  // Widget _buildBackgroundPattern(Size screenSize) {
-  //   final pattern = Image.asset(
-  //     AppImages.pattern,
-  //     // Use only width OR height, not both
-  //     width: patternWidth ?? screenSize.width * 1.4,
-  //     // Remove height to maintain aspect ratio
-  //     fit: BoxFit.contain, // This ensures the image fits within the bounds
-  //   );
-
-  //   return Positioned(
-  //     top: patternOffset?.dy ?? -200,
-  //     left: patternOffset?.dx,
-  //     child: Opacity(opacity: patternOpacity ?? 0.3, child: pattern),
-  //   );
-  // }
 
   Widget _buildHeader(BuildContext context) {
     if (customHeader != null) {
@@ -248,32 +239,44 @@ class CustomLayout extends StatelessWidget {
         duration: animationDuration ?? const Duration(milliseconds: 700),
         child: Padding(
           padding: const EdgeInsets.only(top: 16),
-          child: _buildScrollableContent(),
+          child: _buildContentByScrollType(),
         ),
       ),
     );
   }
 
-  Widget _buildScrollableContent() {
-    final content =
-        withPadding
-            ? Padding(
-              padding:
-                  contentPadding ??
-                  const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(children: children),
-            )
-            : Column(children: children);
+  Widget _buildContentByScrollType() {
+    final content = _buildContent();
 
-    if (!enableScroll) {
-      return content;
+    switch (scrollType) {
+      case ScrollType.scrollable:
+        return SingleChildScrollView(
+          controller: scrollController,
+          physics: scrollPhysics,
+          child: content,
+        );
+
+      case ScrollType.nonScrollable:
+        return content;
+
+      case ScrollType.custom:
+        return SingleChildScrollView(
+          controller: scrollController,
+          physics: scrollPhysics,
+          child: content,
+        );
     }
+  }
 
-    return SingleChildScrollView(
-      controller: scrollController,
-      physics: scrollPhysics,
-      child: content,
-    );
+  Widget _buildContent() {
+    if (withPadding) {
+      return Padding(
+        padding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(children: children),
+      );
+    } else {
+      return Column(children: children);
+    }
   }
 }
 
@@ -286,6 +289,7 @@ extension CustomLayoutPresets on CustomLayout {
     Widget? upperContent,
     bool showNotification = true,
     VoidCallback? onNotificationTap,
+    ScrollType scrollType = ScrollType.scrollable,
   }) {
     return CustomLayout(
       title: title,
@@ -293,6 +297,7 @@ extension CustomLayoutPresets on CustomLayout {
       showNotification: showNotification,
       onNotificationTap: onNotificationTap,
       spacerHeight: 150,
+      scrollType: scrollType,
       children: children,
     );
   }
@@ -302,11 +307,13 @@ extension CustomLayoutPresets on CustomLayout {
     required List<Widget> children,
     Widget? customHeader,
     Widget? upperContent,
+    ScrollType scrollType = ScrollType.scrollable,
   }) {
     return CustomLayout(
       customHeader: customHeader,
       upperContent: upperContent,
       spacerHeight: 100,
+      scrollType: scrollType,
       containerBorderRadius: const BorderRadius.only(
         topLeft: Radius.circular(30),
         topRight: Radius.circular(30),
@@ -320,12 +327,33 @@ extension CustomLayoutPresets on CustomLayout {
     required List<Widget> children,
     Color? backgroundColor,
     double spacerHeight = 50,
+    ScrollType scrollType = ScrollType.scrollable,
   }) {
     return CustomLayout(
       backgroundColor: backgroundColor,
       spacerHeight: spacerHeight,
       backgroundPattern: const SizedBox.shrink(),
+      scrollType: scrollType,
       children: children, // No pattern
+    );
+  }
+
+  // New preset specifically for list views
+  static CustomLayout listView({
+    required List<Widget> children,
+    String? title,
+    Widget? upperContent,
+    bool showNotification = false,
+    VoidCallback? onNotificationTap,
+  }) {
+    return CustomLayout(
+      title: title,
+      upperContent: upperContent,
+      showNotification: showNotification,
+      onNotificationTap: onNotificationTap,
+      spacerHeight: 150,
+      scrollType: ScrollType.nonScrollable, // Perfect for ListView/Expanded
+      children: children,
     );
   }
 }

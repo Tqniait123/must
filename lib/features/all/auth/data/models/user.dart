@@ -35,6 +35,8 @@ sealed class AppUser {
 }
 
 class User extends AppUser {
+  final List<Car> cars;
+
   const User({
     required super.id,
     required super.name,
@@ -43,9 +45,9 @@ class User extends AppUser {
     super.hasSubscription,
     super.address,
     required super.linkId,
-
     super.isOnline,
     super.phoneNumber,
+    this.cars = const [],
   }) : super(type: UserType.user);
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,11 @@ class User extends AppUser {
       linkId: json['link_id'],
       isOnline: json['is_online'],
       phoneNumber: json['phone_number'],
+      cars:
+          (json['cars'] as List<dynamic>?)
+              ?.map((car) => Car.fromJson(car))
+              .toList() ??
+          [],
     );
   }
 }
@@ -86,5 +93,25 @@ class ParkingMan extends AppUser {
       isOnline: json['is_online'],
       phoneNumber: json['phone_number'],
     );
+  }
+}
+
+class Car {
+  final String id;
+  final String model;
+  final String plateNumber;
+
+  const Car({required this.id, required this.model, required this.plateNumber});
+
+  factory Car.fromJson(Map<String, dynamic> json) {
+    return Car(
+      id: json['id'],
+      model: json['model'],
+      plateNumber: json['plate_number'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'model': model, 'plate_number': plateNumber};
   }
 }
