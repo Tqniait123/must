@@ -29,6 +29,7 @@ static const String onBoarding1 = '$_iconsPath/on_boarding_1.svg';
 static const String eyeIc = '$_iconsPath/eye_ic.svg';
 static const String outlinedLocationIc = '$_iconsPath/outlined_location_ic.svg';
 static const String faceIdIc = '$_iconsPath/face_id_ic.svg';
+static const String carIc = '$_iconsPath/car_ic.svg';
 static const String notificationLabelIc = '$_iconsPath/notification_label_ic.svg';
 static const String notificationsIc = '$_iconsPath/notifications_ic.svg';
 }

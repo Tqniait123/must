@@ -1,12 +1,21 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:must_invest/core/extensions/num_extension.dart';
+import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/theme/colors.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/features/user/explore/presentation/widgets/routing/current_location_marker.dart';
+import 'package:must_invest/features/user/explore/presentation/widgets/routing/loading_indicator.dart';
+import 'package:must_invest/features/user/explore/presentation/widgets/routing/navigation_info_card.dart';
+import 'package:must_invest/features/user/explore/presentation/widgets/routing/parking_location_marker.dart';
+import 'package:must_invest/features/user/explore/presentation/widgets/routing/route_service_widget.dart';
 import 'package:must_invest/features/user/home/data/models/parking_model.dart';
 
 class RoutingParkingScreen extends StatefulWidget {
@@ -32,13 +41,22 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
   late AnimationController _routeAnimationController;
   late AnimationController _pulseAnimationController;
   late AnimationController _markerAnimationController;
+  late AnimationController _cardAnimationController;
   late Animation<double> _routeAnimation;
   late Animation<double> _pulseAnimation;
   late Animation<double> _markerAnimation;
+  late Animation<Offset> _cardSlideAnimation;
+  late Animation<double> _cardFadeAnimation;
 
   bool _isNavigating = false;
+  bool _isLoadingRoute = false;
   double _distanceRemaining = 0.0;
   double _estimatedTime = 0.0;
+  String _routeDuration = '';
+
+  // OpenRouteService API Key - Get free from openrouteservice.org
+  static const String _apiKey =
+      '5b3ce3597851110001cf6248c4040779fe8e41d8ba6f918bf3b007b6';
 
   @override
   void initState() {
@@ -47,41 +65,195 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     _requestLocationPermission();
   }
 
+  // Add this method to decode polyline (Google's polyline encoding)
+  List<LatLng> _decodePolyline(String encoded) {
+    List<LatLng> polylineCoordinates = [];
+    int index = 0;
+    int len = encoded.length;
+    int lat = 0;
+    int lng = 0;
+
+    while (index < len) {
+      int b;
+      int shift = 0;
+      int result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      polylineCoordinates.add(LatLng(lat / 1E5, lng / 1E5));
+    }
+    return polylineCoordinates;
+  }
+
+  Future<void> _getTrafficAwareDirections() async {
+    if (_currentLocation == null) return;
+
+    setState(() {
+      _isLoadingRoute = true;
+    });
+
+    final routeService = RouteServiceWidget(
+      parking: widget.parking,
+      currentLocation: _currentLocation,
+      onRouteFound: _processRouteData,
+      onRouteError: _drawStraightLine,
+    );
+
+    await routeService.getTrafficAwareDirections();
+
+    setState(() {
+      _isLoadingRoute = false;
+    });
+  }
+
+  // Process route data from any service
+  void _processRouteData(List<LatLng> points, Map<String, dynamic> routeInfo) {
+    // Extract route information
+    double distance = (routeInfo['distance'] ?? 0) / 1000.0; // Convert to km
+    double duration = (routeInfo['duration'] ?? 0) / 60.0; // Convert to minutes
+
+    // Determine traffic condition based on duration vs distance ratio
+    double speedKmh = distance / (duration / 60.0);
+    // String trafficCondition;
+    // if (speedKmh > 40) {
+    //   trafficCondition = 'ممتازة';
+    // } else if (speedKmh > 25) {
+    //   trafficCondition = 'جيدة';
+    // } else if (speedKmh > 15) {
+    //   trafficCondition = 'متوسطة';
+    // } else {
+    //   trafficCondition = 'مزدحمة';
+    // }
+
+    setState(() {
+      _routePoints = points;
+      _distanceRemaining = distance;
+      _estimatedTime = duration;
+      _routeDuration = '${duration.toStringAsFixed(0)} دقيقة';
+      // _trafficCondition = trafficCondition;
+    });
+
+    print(
+      'Route processed: ${points.length} points, ${distance.toStringAsFixed(1)}km, ${duration.toStringAsFixed(0)}min',
+    );
+    _animateRoute();
+  }
+
+  // Add this method to validate route points
+  bool _validateRoutePoints(List<LatLng> points) {
+    if (points.length < 2) return false;
+
+    // Check if points are actually following roads (not just straight line)
+    if (points.length == 2) {
+      // If only 2 points, it's likely a straight line
+      double directDistance = _calculateDistance(
+        points[0].latitude,
+        points[0].longitude,
+        points[1].latitude,
+        points[1].longitude,
+      );
+
+      // If the route distance is very close to direct distance, it might be a straight line
+      return directDistance > 0.1; // At least 100m to be considered valid
+    }
+
+    return true;
+  }
+
+  // Improved straight line method with better error handling
+  void _drawStraightLine() {
+    if (_currentLocation == null) return;
+
+    List<LatLng> straightLinePoints = [
+      LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+      LatLng(widget.parking.lat, widget.parking.lng),
+    ];
+
+    setState(() {
+      _routePoints = straightLinePoints;
+    });
+
+    _animateRoute();
+    _calculateDirectDistance();
+
+    // Show a message to user that we're using direct route
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('تعذر الحصول على مسار مفصل، يتم عرض المسار المباشر'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
   void _initializeAnimations() {
     _routeAnimationController = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
       vsync: this,
     );
 
     _pulseAnimationController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
 
     _markerAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat(reverse: true);
+
+    _cardAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
 
     _routeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _routeAnimationController,
-        curve: Curves.easeInOut,
+        curve: Curves.easeOutCubic,
       ),
     );
 
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.1).animate(
       CurvedAnimation(
         parent: _pulseAnimationController,
         curve: Curves.easeInOut,
       ),
     );
 
-    _markerAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+    _markerAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
       CurvedAnimation(
         parent: _markerAnimationController,
         curve: Curves.easeInOut,
       ),
+    );
+
+    _cardSlideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _cardAnimationController,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    _cardFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _cardAnimationController, curve: Curves.easeIn),
     );
   }
 
@@ -109,9 +281,10 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
       _currentLocation = await _location.getLocation();
       if (_currentLocation != null) {
         _updateMarkers();
-        _getDirections();
+        _getTrafficAwareDirections();
         _startLocationTracking();
         _centerMapOnRoute();
+        _cardAnimationController.forward();
       }
     } catch (e) {
       print('Error getting location: $e');
@@ -140,35 +313,18 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     setState(() {
       _markers.clear();
 
-      // Current location marker (animated)
+      // Current location marker
       _markers.add(
         Marker(
           point: LatLng(
             _currentLocation!.latitude!,
             _currentLocation!.longitude!,
           ),
-          width: 60,
-          height: 60,
-          child: AnimatedBuilder(
+          width: 120,
+          height: 50,
+          child: CurrentLocationMarker(
             animation: _markerAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _isNavigating ? _markerAnimation.value : 1.0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.my_location,
-                      color: Colors.blue,
-                      size: 30,
-                    ),
-                  ),
-                ),
-              );
-            },
+            isNavigating: _isNavigating,
           ),
         ),
       );
@@ -177,89 +333,12 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
       _markers.add(
         Marker(
           point: LatLng(widget.parking.lat, widget.parking.lng),
-          width: 60,
-          height: 60,
-          child: Container(
-            decoration: BoxDecoration(
-              color:
-                  widget.parking.isBusy
-                      ? Colors.red.withOpacity(0.2)
-                      : Colors.green.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                Icons.local_parking,
-                color: widget.parking.isBusy ? Colors.red : Colors.green,
-                size: 35,
-              ),
-            ),
-          ),
+          width: 80,
+          height: 80,
+          child: ParkingLocationMarker(parking: widget.parking),
         ),
       );
     });
-  }
-
-  Future<void> _getDirections() async {
-    if (_currentLocation == null) return;
-
-    // Using OpenRouteService API (free alternative to Google Directions)
-    // You can also use OSRM or Mapbox
-    final String apiKey =
-        'YOUR_OPENROUTESERVICE_API_KEY'; // Get free key from openrouteservice.org
-    final String coordinates =
-        '${_currentLocation!.longitude},${_currentLocation!.latitude}|${widget.parking.lng},${widget.parking.lat}';
-
-    final String url =
-        'https://api.openrouteservice.org/v2/directions/driving-car?'
-        'api_key=$apiKey&start=${_currentLocation!.longitude},${_currentLocation!.latitude}'
-        '&end=${widget.parking.lng},${widget.parking.lat}';
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'Authorization': apiKey},
-      );
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['features'].isNotEmpty) {
-          _decodeGeoJsonRoute(data['features'][0]['geometry']['coordinates']);
-          _calculateDistanceAndTime(data['features'][0]['properties']);
-        }
-      } else {
-        // Fallback to straight line
-        _drawStraightLine();
-      }
-    } catch (e) {
-      print('Error getting directions: $e');
-      // Fallback: draw straight line
-      _drawStraightLine();
-    }
-  }
-
-  void _decodeGeoJsonRoute(List<dynamic> coordinates) {
-    List<LatLng> points =
-        coordinates
-            .map((coord) => LatLng(coord[1].toDouble(), coord[0].toDouble()))
-            .toList();
-
-    setState(() {
-      _routePoints = points;
-    });
-    _animateRoute();
-  }
-
-  void _drawStraightLine() {
-    if (_currentLocation == null) return;
-
-    setState(() {
-      _routePoints = [
-        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-        LatLng(widget.parking.lat, widget.parking.lng),
-      ];
-    });
-    _animateRoute();
-    _calculateDirectDistance();
   }
 
   void _calculateDirectDistance() {
@@ -275,6 +354,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     setState(() {
       _distanceRemaining = distance;
       _estimatedTime = distance * 2; // Rough estimate: 2 minutes per km
+      _routeDuration = '${(_estimatedTime).toStringAsFixed(0)} دقيقة';
     });
   }
 
@@ -297,51 +377,37 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
 
     setState(() {
       _polylines.clear();
-      _polylines.add(
-        Polyline(
-          points: animatedPoints,
-          color: _isNavigating ? Colors.blue : Colors.orange,
-          strokeWidth: 5.0,
-          // isDotted: !_isNavigating,
-        ),
-      );
 
-      // Add a shadow polyline for better visibility
+      // Shadow polyline for depth
       if (animatedPoints.length > 1) {
-        _polylines.insert(
-          0,
+        _polylines.add(
           Polyline(
             points: animatedPoints,
-            color: Colors.black.withOpacity(0.3),
-            strokeWidth: 7.0,
+            color: Colors.black.withOpacity(0.2),
+            strokeWidth: 8.0,
           ),
         );
       }
-    });
-  }
 
-  void _calculateDistanceAndTime(Map<String, dynamic> properties) {
-    setState(() {
-      _distanceRemaining =
-          (properties['segments'][0]['distance'] / 1000.0); // Convert to km
-      _estimatedTime =
-          (properties['segments'][0]['duration'] / 60.0); // Convert to minutes
-    });
-  }
+      // Main route polyline - Changed to AppColors.primary
+      _polylines.add(
+        Polyline(
+          points: animatedPoints,
+          color: AppColors.primary, // Changed here
+          strokeWidth: 6.0,
+        ),
+      );
 
-  void _updateDistanceAndTime() {
-    if (_currentLocation == null) return;
-
-    double distance = _calculateDistance(
-      _currentLocation!.latitude!,
-      _currentLocation!.longitude!,
-      widget.parking.lat,
-      widget.parking.lng,
-    );
-
-    setState(() {
-      _distanceRemaining = distance;
-      _estimatedTime = distance * 2; // Rough estimate: 2 minutes per km
+      // Animated gradient effect for navigation mode
+      if (_isNavigating && animatedPoints.length > 5) {
+        _polylines.add(
+          Polyline(
+            points: animatedPoints.take(5).toList(),
+            color: Colors.white.withOpacity(0.8),
+            strokeWidth: 4.0,
+          ),
+        );
+      }
     });
   }
 
@@ -418,25 +484,27 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     }
   }
 
+  void _updateDistanceAndTime() {
+    if (_currentLocation == null) return;
+
+    double distance = _calculateDistance(
+      _currentLocation!.latitude!,
+      _currentLocation!.longitude!,
+      widget.parking.lat,
+      widget.parking.lng,
+    );
+
+    setState(() {
+      _distanceRemaining = distance;
+      _estimatedTime = distance * 2;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.parking.title),
-        backgroundColor: Colors.blue.shade600,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.my_location),
-            onPressed: _centerOnCurrentLocation,
-          ),
-          IconButton(
-            icon: const Icon(Icons.center_focus_strong),
-            onPressed: _centerMapOnRoute,
-          ),
-        ],
-      ),
+      extendBodyBehindAppBar: true,
+
       body: Stack(
         children: [
           // Flutter Map
@@ -474,10 +542,20 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
             ],
           ),
 
-          // Navigation Info Card
-          if (_isNavigating)
+          // Loading indicator
+          if (_isLoadingRoute)
             Positioned(
-              top: 20,
+              top: 120,
+              left: 20,
+
+              right: 20,
+              child: RouteLoadingIndicator(),
+            ),
+
+          // Enhanced Navigation Info Card
+          if (_isNavigating && !_isLoadingRoute)
+            Positioned(
+              top: 120,
               left: 20,
               right: 20,
               child: AnimatedBuilder(
@@ -485,273 +563,253 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
                 builder: (context, child) {
                   return Transform.scale(
                     scale: _pulseAnimation.value,
-                    child: Card(
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.shade600,
-                              Colors.blue.shade400,
-                            ],
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${_distanceRemaining.toStringAsFixed(1)} كم',
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'المسافة المتبقية',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Icon(
-                                    Icons.navigation,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '${_estimatedTime.toStringAsFixed(0)} دقيقة',
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'الوقت المتوقع',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    child: NavigationInfoCard(
+                      distanceRemaining: _distanceRemaining,
+                      estimatedTime: _estimatedTime.toString(),
+                      pulseAnimation: _pulseAnimation,
+                      // estimatedTime: _estimatedTime,
+                      // trafficCondition: _trafficCondition,
                     ),
                   );
                 },
               ),
             ),
 
-          // Parking Info Card
+          // Enhanced Parking Info Card
           Positioned(
-            bottom: 100,
+            bottom: 50,
             left: 20,
             right: 20,
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.white, Colors.grey.shade50],
+            child: SlideTransition(
+              position: _cardSlideAnimation,
+              child: FadeTransition(
+                opacity: _cardFadeAnimation,
+                child: Card(
+                  elevation: 12,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.white, Colors.grey.shade50],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              widget.parking.imageUrl,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  width: 60,
-                                  height: 60,
-                                  color: Colors.grey.shade300,
-                                  child: const Icon(Icons.local_parking),
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.parking.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  widget.parking.imageUrl,
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 70,
+                                      height: 70,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.local_parking,
+                                        color: Colors.grey.shade400,
+                                        size: 30,
+                                      ),
+                                    );
+                                  },
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  widget.parking.address,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      Icons.access_time,
-                                      size: 16,
-                                      color: Colors.blue.shade600,
-                                    ),
-                                    const SizedBox(width: 4),
                                     Text(
-                                      '${widget.parking.distanceInMinutes} دقيقة',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.blue.shade600,
-                                        fontWeight: FontWeight.w500,
+                                      widget.parking.title,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
-                                    Icon(
-                                      Icons.attach_money,
-                                      size: 16,
-                                      color: Colors.green.shade600,
-                                    ),
+                                    const SizedBox(height: 6),
                                     Text(
-                                      '${widget.parking.pricePerHour} ج.م/ساعة',
+                                      widget.parking.address,
                                       style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.green.shade600,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                        color: Colors.grey.shade600,
                                       ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.access_time,
+                                                size: 14,
+                                                color: Colors.blue.shade600,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${widget.parking.distanceInMinutes} دقيقة',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.blue.shade700,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.attach_money,
+                                                size: 14,
+                                                color: Colors.green.shade600,
+                                              ),
+                                              Text(
+                                                '${widget.parking.pricePerHour} ج.م/ساعة',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.green.shade700,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  widget.parking.isBusy
-                                      ? Colors.red
-                                      : Colors.green,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (widget.parking.isBusy
-                                          ? Colors.red
-                                          : Colors.green)
-                                      .withOpacity(0.3),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Text(
-                              widget.parking.isBusy ? 'مشغول' : 'متاح',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
                               ),
-                            ),
+                              Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          widget.parking.isBusy
+                                              ? Colors.red
+                                              : Colors.green,
+                                      borderRadius: BorderRadius.circular(25),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: (widget.parking.isBusy
+                                                  ? Colors.red
+                                                  : Colors.green)
+                                              .withOpacity(0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      widget.parking.isBusy ? 'مشغول' : 'متاح',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          20.gap,
+                          CustomElevatedButton(
+                            title:
+                                _isNavigating ? 'إيقاف التنقل' : 'بدء التنقل',
+                            onPressed:
+                                _isLoadingRoute
+                                    ? null
+                                    : (_isNavigating
+                                        ? _stopNavigation
+                                        : _startNavigation),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
 
-          // Navigation Button
+          // Enhanced Navigation Button
+          // Positioned(
+          //   bottom: 20,
+          //   left: 20,
+          //   right: 20,
+          //   child:
+          // ),
           Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: (_isNavigating ? Colors.red : Colors.blue)
-                        .withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+            top: 40,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width - 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomBackButton(),
+                  Text(''),
+                  NotificationsButton(
+                    color: Color(0xffEAEAF3),
+                    iconColor: AppColors.primary,
                   ),
                 ],
               ),
-              child: ElevatedButton(
-                onPressed: _isNavigating ? _stopNavigation : _startNavigation,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isNavigating ? Colors.red : Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(_isNavigating ? Icons.stop : Icons.navigation),
-                    const SizedBox(width: 8),
-                    Text(
-                      _isNavigating ? 'إيقاف التنقل' : 'بدء التنقل',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            ).paddingAll(20),
           ),
         ],
       ),
@@ -765,6 +823,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     _routeAnimationController.dispose();
     _pulseAnimationController.dispose();
     _markerAnimationController.dispose();
+    _cardAnimationController.dispose();
     super.dispose();
   }
 }
