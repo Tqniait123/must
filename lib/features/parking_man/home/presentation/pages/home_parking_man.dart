@@ -11,8 +11,8 @@ import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
-import 'package:must_invest/features/all/auth/data/models/user.dart';
-import 'package:must_invest/features/user/home/presentation/widgets/home_user_header_widget.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 
 class HomeParkingMan extends StatefulWidget {
   const HomeParkingMan({super.key});

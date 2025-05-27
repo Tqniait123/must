@@ -6,7 +6,7 @@ import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
-import 'package:must_invest/features/all/auth/presentation/languages_cubit/languages_cubit.dart';
+import 'package:must_invest/features/auth/presentation/languages_cubit/languages_cubit.dart';
 
 void showLanguageBottomSheet(BuildContext context) {
   showModalBottomSheet(

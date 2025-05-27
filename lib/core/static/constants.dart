@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:must_invest/features/all/auth/data/models/user.dart';
-import 'package:must_invest/features/all/notifications/data/models/notification_model.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/notifications/data/models/notification_model.dart';
 
 class Constants {
   static const String photosPath = 'assets/images/';

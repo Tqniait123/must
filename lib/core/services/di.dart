@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:must_invest/core/api/dio_client.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
-import 'package:must_invest/features/all/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:must_invest/features/all/auth/data/repositories/auth_repo.dart';
-import 'package:must_invest/features/all/auth/presentation/cubit/auth_cubit.dart';
-import 'package:must_invest/features/all/auth/presentation/cubit/user_cubit/user_cubit.dart';
+import 'package:must_invest/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:must_invest/features/auth/data/repositories/auth_repo.dart';
+import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
