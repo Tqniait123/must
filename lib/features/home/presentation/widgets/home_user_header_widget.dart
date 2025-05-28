@@ -60,12 +60,12 @@ class UserHomeHeaderWidget extends StatelessWidget {
             15.gap,
             Row(
               children: [
-                CustomIconButton(
-                  iconAsset: AppIcons.cameraIc,
-                  color: Color(0xff6468AC),
-                  onPressed: () {},
-                ),
-                10.gap,
+                // CustomIconButton(
+                //   iconAsset: AppIcons.cameraIc,
+                //   color: Color(0xff6468AC),
+                //   onPressed: () {},
+                // ),
+                // 10.gap,
                 NotificationsButton(),
               ],
             ),

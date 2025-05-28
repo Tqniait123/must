@@ -25,24 +25,27 @@ class ParkingCard extends StatelessWidget {
         child: Row(
           children: [
             // Parking Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                parking.imageUrl,
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 90,
-                    height: 90,
-                    color: Colors.grey[300],
-                    child: const Icon(
-                      Icons.image_not_supported,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
+            Hero(
+              tag: '${parking.id}-${parking.imageUrl}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  parking.imageUrl,
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 90,
+                      height: 90,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(width: 12),

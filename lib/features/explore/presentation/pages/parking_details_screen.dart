@@ -12,6 +12,7 @@ import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
 import 'package:must_invest/features/home/data/models/parking_model.dart';
 
 class ParkingDetailsScreen extends StatefulWidget {
@@ -56,9 +57,13 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                       clipBehavior: Clip.none,
                       alignment: Alignment.bottomCenter,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(widget.parking.imageUrl),
+                        Hero(
+                          tag:
+                              '${widget.parking.id}-${widget.parking.imageUrl}',
+                          child: ClipPath(
+                            clipper: CurveCustomClipper(),
+                            child: Image.network(widget.parking.imageUrl),
+                          ),
                         ),
                         Positioned(
                           bottom: -20,

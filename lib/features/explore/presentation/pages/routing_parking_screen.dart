@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
-import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
-import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/features/explore/presentation/widgets/parking_details_card.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/current_location_marker.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/loading_indicator.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/navigation_info_card.dart';
@@ -576,215 +575,15 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
             ),
 
           // Enhanced Parking Info Card
-          Positioned(
-            bottom: 50,
-            left: 20,
-            right: 20,
-            child: SlideTransition(
-              position: _cardSlideAnimation,
-              child: FadeTransition(
-                opacity: _cardFadeAnimation,
-                child: Card(
-                  elevation: 12,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.white, Colors.grey.shade50],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  widget.parking.imageUrl,
-                                  width: 70,
-                                  height: 70,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      width: 70,
-                                      height: 70,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(
-                                        Icons.local_parking,
-                                        color: Colors.grey.shade400,
-                                        size: 30,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      widget.parking.title,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      widget.parking.address,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue.shade50,
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.access_time,
-                                                size: 14,
-                                                color: Colors.blue.shade600,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                '${widget.parking.distanceInMinutes} دقيقة',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Colors.blue.shade700,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.green.shade50,
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.attach_money,
-                                                size: 14,
-                                                color: Colors.green.shade600,
-                                              ),
-                                              Text(
-                                                '${widget.parking.pricePerHour} ج.م/ساعة',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Colors.green.shade700,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          widget.parking.isBusy
-                                              ? Colors.red
-                                              : Colors.green,
-                                      borderRadius: BorderRadius.circular(25),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: (widget.parking.isBusy
-                                                  ? Colors.red
-                                                  : Colors.green)
-                                              .withOpacity(0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Text(
-                                      widget.parking.isBusy ? 'مشغول' : 'متاح',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          20.gap,
-                          CustomElevatedButton(
-                            title:
-                                _isNavigating ? 'إيقاف التنقل' : 'بدء التنقل',
-                            onPressed:
-                                _isLoadingRoute
-                                    ? null
-                                    : (_isNavigating
-                                        ? _stopNavigation
-                                        : _startNavigation),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          ParkingDetailsCard(
+            slideAnimation: _cardSlideAnimation,
+            fadeAnimation: _cardFadeAnimation,
+            parking: widget.parking,
+            isNavigating: _isNavigating,
+            isLoadingRoute: _isLoadingRoute,
+            onStartNavigation: () {},
+            onStopNavigation: () {},
+            currentLocationName: '',
           ),
 
           // Enhanced Navigation Button

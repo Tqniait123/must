@@ -3,6 +3,7 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
+import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
 
 class FilterOptionWidget extends StatefulWidget {
   final String title;
@@ -66,68 +67,59 @@ class _FilterOptionWidgetState extends State<FilterOptionWidget> {
             clipBehavior: Clip.none,
             children: [
               // Main container
-              Container(
-                key: _containerKey,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 15,
-                ),
-                decoration: BoxDecoration(
-                  color:
-                      widget.isSelected
-                          ? AppColors.primary
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.title,
-                      style: context.bodyMedium.s14.regular.copyWith(
-                        color:
-                            widget.isSelected
-                                ? AppColors.white
-                                : AppColors.primary.withValues(alpha: 0.4),
-                      ),
-                      softWrap: true,
-                      overflow: TextOverflow.visible,
-                      textAlign: TextAlign.center,
+              ClipPath(
+                clipper: CurveCustomClipper(),
+                child: CustomPaint(
+                  // size: Size(_containerWidth, 100),
+                  // painter: RPSCustomPainter(isSelected: widget.isSelected),
+                  // clipper: CurveClipper(),
+                  child: AnimatedContainer(
+                    key: _containerKey,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 15,
                     ),
-                    5.gap,
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color:
-                            widget.isSelected
-                                ? AppColors.white
-                                : Colors.transparent,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
+                    decoration: BoxDecoration(
+                      color:
+                          widget.isSelected
+                              ? AppColors.primary
+                              : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    5.gap,
-                  ],
-                ),
-              ),
-
-              // Triangle indicator that overlaps with the container
-              if (widget.isSelected && _containerWidth > 0)
-                Positioned(
-                  bottom: -6, // Negative value to overlap with the container
-                  left: 0,
-                  child: SizedBox(
-                    width: _containerWidth,
-                    child: ClipPath(
-                      clipper: TriangleClipper(),
-                      child: Container(
-                        width: _containerWidth,
-                        height: 6,
-                        color: AppColors.primary,
-                      ),
+                    duration: const Duration(milliseconds: 300),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: context.bodyMedium.s14.regular.copyWith(
+                            color:
+                                widget.isSelected
+                                    ? AppColors.white
+                                    : AppColors.primary.withValues(alpha: 0.4),
+                          ),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                          textAlign: TextAlign.center,
+                        ),
+                        5.gap,
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color:
+                                widget.isSelected
+                                    ? AppColors.white
+                                    : Colors.transparent,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                        5.gap,
+                      ],
                     ),
                   ),
                 ),
+              ),
             ],
           ),
           10.gap,
@@ -135,19 +127,4 @@ class _FilterOptionWidgetState extends State<FilterOptionWidget> {
       ),
     );
   }
-}
-
-class TriangleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(0, 0); // Left point
-    path.lineTo(size.width / 2, size.height); // Bottom middle point
-    path.lineTo(size.width, 0); // Right point
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
