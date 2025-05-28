@@ -166,5 +166,18 @@ abstract class  LocaleKeys {
   static const try_again = 'try_again';
   static const rescan = 'rescan';
   static const ready_to_scan = 'ready_to_scan';
+  static const my_cars = 'my_cars';
+  static const no_cars_added_yet = 'no_cars_added_yet';
+  static const add_first_car_hint = 'add_first_car_hint';
+  static const add_new_car = 'add_new_car';
+  static const model = 'model';
+  static const enter_car_model = 'enter_car_model';
+  static const plate_number = 'plate_number';
+  static const enter_car_plate_number = 'enter_car_plate_number';
+  static const update = 'update';
+  static const edit_car = 'edit_car';
+  static const delete_car = 'delete_car';
+  static const delete_confirmation = 'delete_confirmation';
+  static const cannot_be_undone = 'cannot_be_undone';
 
 }

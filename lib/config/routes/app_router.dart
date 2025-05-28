@@ -25,6 +25,7 @@ import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
+import 'package:must_invest/features/profile/presentation/pages/my_cars_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_qr_code_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/scan_qr_code_screen.dart';
@@ -208,6 +209,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the ScanQrcodeScreen widget
           return ScanQrCodeScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.myCars,
+        builder: (context, state) {
+          // Return the MyCarsScreen widget
+          return MyCarsScreen();
         },
       ),
     ],

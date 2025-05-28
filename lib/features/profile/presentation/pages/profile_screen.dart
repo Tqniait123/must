@@ -103,6 +103,13 @@ class ProfileScreen extends StatelessWidget {
             },
           ),
           ProfileItemWidget(
+            title: LocaleKeys.my_cars.tr(),
+            iconPath: AppIcons.outlinedCarIc,
+            onPressed: () {
+              context.push(Routes.myCars);
+            },
+          ),
+          ProfileItemWidget(
             title: LocaleKeys.face_id.tr(),
             iconPath: AppIcons.faceIdIc,
             trailing: Switch.adaptive(value: true, onChanged: (value) {}),

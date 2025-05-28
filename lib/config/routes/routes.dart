@@ -25,4 +25,5 @@ class Routes {
   static const String myQrCode = '/myQrCode';
   static const String history = '/history';
   static const String scanQrcode = '/scanQrcode';
+  static const String myCars = '/myCars';
 }

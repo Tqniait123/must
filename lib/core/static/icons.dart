@@ -2,11 +2,13 @@ class AppIcons {
   static const String _iconsPath = 'assets/images/icons';
 static const String splashPattern = '$_iconsPath/splash_pattern.svg';
 static const String homePattern = '$_iconsPath/home_pattern.svg';
+static const String outlinedCarIc = '$_iconsPath/outlined_car_ic.svg';
 static const String outlinedPriceIc = '$_iconsPath/outlined_price_ic.svg';
 static const String logout = '$_iconsPath/logout.svg';
 static const String supportIc = '$_iconsPath/support_ic.svg';
 static const String checkMailIllu = '$_iconsPath/check_mail_illu.svg';
 static const String historyIc = '$_iconsPath/history_ic.svg';
+static const String removeIc = '$_iconsPath/remove_ic.svg';
 static const String settingsIc = '$_iconsPath/settings_ic.svg';
 static const String outlinedClockIc = '$_iconsPath/outlined_clock_ic.svg';
 static const String currentLocationIc = '$_iconsPath/current_location_ic.svg';

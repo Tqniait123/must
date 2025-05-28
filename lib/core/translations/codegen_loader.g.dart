@@ -180,7 +180,20 @@ class CodegenLoader extends AssetLoader{
   "error_processing_qr": "Error occurred while processing QR code. Please try again.",
   "try_again": "Try Again",
   "rescan": "Rescan",
-  "ready_to_scan": "Ready to Scan"
+  "ready_to_scan": "Ready to Scan",
+  "my_cars": "My Cars",
+  "no_cars_added_yet": "No cars added yet",
+  "add_first_car_hint": "Tap the button below to add your first car",
+  "add_new_car": "Add New Car",
+  "model": "Model",
+  "enter_car_model": "Enter car model",
+  "plate_number": "Plate Number",
+  "enter_car_plate_number": "Enter car plate number",
+  "update": "Update",
+  "edit_car": "Edit Car",
+  "delete_car": "Delete Car",
+  "delete_confirmation": "Are you sure you want to delete \"{carModel}\"?",
+  "cannot_be_undone": "This action cannot be undone."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -348,7 +361,20 @@ static const Map<String,dynamic> _ar = {
   "error_processing_qr": "حدث خطأ أثناء معالجة رمز الاستجابة السريعة. يرجى المحاولة مرة أخرى.",
   "try_again": "حاول مرة أخرى",
   "rescan": "إعادة المسح",
-  "ready_to_scan": "جاهز لمسح الكود"
+  "ready_to_scan": "جاهز لمسح الكود",
+  "my_cars": "سياراتي",
+  "no_cars_added_yet": "لا توجد سيارات مضافة بعد",
+  "add_first_car_hint": "اضغط على الزر أدناه لإضافة سيارتك الأولى",
+  "add_new_car": "إضافة سيارة جديدة",
+  "model": "الموديل",
+  "enter_car_model": "أدخل موديل السيارة",
+  "plate_number": "رقم اللوحة",
+  "enter_car_plate_number": "أدخل رقم لوحة السيارة",
+  "update": "تحديث",
+  "edit_car": "تعديل السيارة",
+  "delete_car": "حذف السيارة",
+  "delete_confirmation": "هل أنت متأكد أنك تريد حذف \"{carModel}\"؟",
+  "cannot_be_undone": "لا يمكن التراجع عن هذا الإجراء."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
