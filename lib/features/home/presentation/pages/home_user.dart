@@ -45,7 +45,7 @@ class _HomeUserState extends State<HomeUser> {
 
         children: [
           30.gap,
-          MyPointsCard(),
+          MyPointsCardMinimal(),
           32.gap,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
