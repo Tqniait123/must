@@ -27,6 +27,7 @@ import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_qr_code_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/profile_screen.dart';
+import 'package:must_invest/features/profile/presentation/pages/scan_qr_code_screen.dart';
 import 'package:must_invest/features/splash/presentation/pages/splash.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -200,6 +201,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the HistoryScreen widget
           return HistoryScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.scanQrcode,
+        builder: (context, state) {
+          // Return the ScanQrcodeScreen widget
+          return ScanQrCodeScreen();
         },
       ),
     ],

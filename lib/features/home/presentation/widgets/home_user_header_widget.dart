@@ -88,7 +88,9 @@ class UserHomeHeaderWidget extends StatelessWidget {
                       CustomIconButton(
                         iconAsset: AppIcons.cameraIc,
                         color: AppColors.primary,
-                        onPressed: () {},
+                        onPressed: () {
+                          context.push(Routes.scanQrcode);
+                        },
                       ),
                       6.gap,
                       CustomIconButton(

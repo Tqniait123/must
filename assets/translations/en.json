@@ -151,5 +151,18 @@
   "id": "ID",
   "my_qr": "My QR",
   "re_generate": "Re Generate",
-  "generating": "Generating"
+  "generating": "Generating",
+  "scan_qr_code": "Scan QR Code",
+  "scan_qr_instructions": "Point your camera at a QR code to scan it. Make sure the QR code is clearly visible and well-lit.",
+  "processing": "Processing...",
+  "qr_scanned_successfully": "QR Code Scanned Successfully",
+  "scanned_data": "Scanned Data:",
+  "scan_another": "Scan Another",
+  "done": "Done",
+  "error": "Error",
+  "invalid_qr_code": "Invalid QR code. Please try scanning a valid QR code.",
+  "error_processing_qr": "Error occurred while processing QR code. Please try again.",
+  "try_again": "Try Again",
+  "rescan": "Rescan",
+  "ready_to_scan": "Ready to Scan"
 }

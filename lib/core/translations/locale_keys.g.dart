@@ -153,5 +153,18 @@ abstract class  LocaleKeys {
   static const my_qr = 'my_qr';
   static const re_generate = 're_generate';
   static const generating = 'generating';
+  static const scan_qr_code = 'scan_qr_code';
+  static const scan_qr_instructions = 'scan_qr_instructions';
+  static const processing = 'processing';
+  static const qr_scanned_successfully = 'qr_scanned_successfully';
+  static const scanned_data = 'scanned_data';
+  static const scan_another = 'scan_another';
+  static const done = 'done';
+  static const error = 'error';
+  static const invalid_qr_code = 'invalid_qr_code';
+  static const error_processing_qr = 'error_processing_qr';
+  static const try_again = 'try_again';
+  static const rescan = 'rescan';
+  static const ready_to_scan = 'ready_to_scan';
 
 }
