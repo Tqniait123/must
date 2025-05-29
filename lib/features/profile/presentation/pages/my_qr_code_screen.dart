@@ -7,15 +7,22 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/static/app_assets.dart';
+import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
+import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart'; // Add this dependency
 
 class MyQrCodeScreen extends StatefulWidget {
-  const MyQrCodeScreen({super.key});
+  final Car car;
+  const MyQrCodeScreen({super.key, required this.car});
 
   @override
   State<MyQrCodeScreen> createState() => _MyQrCodeScreenState();
@@ -26,10 +33,12 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
   bool _isRegenerating = false;
   String _userId = '';
   String _qrData = '';
+  late Car selectedCar;
 
   @override
   void initState() {
     super.initState();
+    selectedCar = widget.car;
     _generateInitialQrCode();
   }
 
@@ -107,9 +116,51 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
 
             // QR Code Section
             Expanded(
-              child: Center(
-                child:
-                    _isLoading ? _buildLoadingWidget() : _buildQrCodeWidget(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CarWidget.custom(
+                    car: selectedCar,
+                    trailing: CustomIconButton(
+                      height: 30,
+                      width: 30,
+                      color: Color(0xffEAEAF3),
+                      iconColor: AppColors.primary,
+                      iconAsset: AppIcons.changeIc,
+
+                      onPressed: () {
+                        showAllCarsBottomSheet(
+                          context,
+                          onChooseCar: (car) {
+                            setState(() {
+                              selectedCar = car;
+                              _regenerateQrCode();
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ).withPressEffect(
+                    onTap: () {
+                      showAllCarsBottomSheet(
+                        context,
+                        onChooseCar: (car) {
+                          setState(() {
+                            selectedCar = car;
+                            _regenerateQrCode();
+                          });
+                        },
+                      );
+                    },
+                  ),
+                  24.gap,
+                  Center(
+                    child:
+                        _isLoading
+                            ? _buildLoadingWidget()
+                            : _buildQrCodeWidget(),
+                  ),
+                ],
               ),
             ),
           ],

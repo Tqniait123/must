@@ -6,15 +6,62 @@ import 'package:must_invest/features/auth/data/models/user.dart';
 
 class CarWidget extends StatelessWidget {
   final Car car;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const CarWidget({
+  final bool isSelectable;
+  final bool isSelect;
+  final ValueChanged<bool?>? onSelectChanged;
+
+  final Widget? trailing;
+
+  // 🔐 Private base constructor
+  const CarWidget._({
     super.key,
     required this.car,
-    required this.onEdit,
-    required this.onDelete,
+    this.onEdit,
+    this.onDelete,
+    this.isSelectable = false,
+    this.isSelect = false,
+    this.onSelectChanged,
+    this.trailing,
   });
+
+  /// 🛠 Editable version with edit/delete buttons
+  factory CarWidget.editable({
+    Key? key,
+    required Car car,
+    VoidCallback? onEdit,
+    VoidCallback? onDelete,
+  }) {
+    return CarWidget._(key: key, car: car, onEdit: onEdit, onDelete: onDelete);
+  }
+
+  /// ✅ Selectable version with checkbox
+  factory CarWidget.selectable({
+    Key? key,
+    required Car car,
+    required bool isSelect,
+    required ValueChanged<bool?> onSelectChanged,
+  }) {
+    return CarWidget._(
+      key: key,
+      car: car,
+      isSelectable: true,
+      isSelect: isSelect,
+      onSelectChanged: onSelectChanged,
+    );
+  }
+
+  /// 🔧 Custom version with any trailing widget
+  factory CarWidget.custom({
+    Key? key,
+    required Car car,
+    required Widget trailing,
+    
+  }) {
+    return CarWidget._(key: key, car: car, trailing: trailing);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +69,10 @@ class CarWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border:
+            isSelectable && isSelect
+                ? Border.all(color: AppColors.primary, width: 2)
+                : null,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -39,7 +90,7 @@ class CarWidget extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -64,7 +115,7 @@ class CarWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     car.plateNumber,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
                       fontWeight: FontWeight.w500,
@@ -73,29 +124,36 @@ class CarWidget extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CustomIconButton(
-                  onPressed: onEdit,
-                  height: 30,
-                  width: 30,
-
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  iconColor: AppColors.primary,
-                  iconAsset: AppIcons.editIc,
-                ),
-                const SizedBox(width: 12),
-                CustomIconButton(
-                  onPressed: onDelete,
-                  height: 30,
-                  width: 30,
-                  color: AppColors.redD2.withValues(alpha: 0.1),
-                  iconColor: AppColors.redD2,
-                  iconAsset: AppIcons.removeIc,
-                ),
-              ],
-            ),
+            // 🧠 Use trailing if provided
+            trailing ??
+                (isSelectable
+                    ? Checkbox(
+                      value: isSelect,
+                      onChanged: onSelectChanged,
+                      activeColor: AppColors.primary,
+                    )
+                    : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomIconButton(
+                          onPressed: onEdit ?? () {},
+                          height: 30,
+                          width: 30,
+                          color: AppColors.primary.withOpacity(0.1),
+                          iconColor: AppColors.primary,
+                          iconAsset: AppIcons.editIc,
+                        ),
+                        const SizedBox(width: 12),
+                        CustomIconButton(
+                          onPressed: onDelete ?? () {},
+                          height: 30,
+                          width: 30,
+                          color: AppColors.redD2.withOpacity(0.1),
+                          iconColor: AppColors.redD2,
+                          iconAsset: AppIcons.removeIc,
+                        ),
+                      ],
+                    )),
           ],
         ),
       ),

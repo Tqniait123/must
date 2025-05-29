@@ -7,6 +7,7 @@ static const String outlinedPriceIc = '$_iconsPath/outlined_price_ic.svg';
 static const String logout = '$_iconsPath/logout.svg';
 static const String supportIc = '$_iconsPath/support_ic.svg';
 static const String checkMailIllu = '$_iconsPath/check_mail_illu.svg';
+static const String changeIc = '$_iconsPath/change_ic.svg';
 static const String historyIc = '$_iconsPath/history_ic.svg';
 static const String removeIc = '$_iconsPath/remove_ic.svg';
 static const String settingsIc = '$_iconsPath/settings_ic.svg';

@@ -166,7 +166,6 @@
   "rescan": "Rescan",
   "ready_to_scan": "Ready to Scan",
   "my_cars": "My Cars",
-
   "no_cars_added_yet": "No cars added yet",
   "add_first_car_hint": "Tap the button below to add your first car",
   "add_new_car": "Add New Car",
@@ -174,10 +173,10 @@
   "enter_car_model": "Enter car model",
   "plate_number": "Plate Number",
   "enter_car_plate_number": "Enter car plate number",
-
   "update": "Update",
   "edit_car": "Edit Car",
   "delete_car": "Delete Car",
   "delete_confirmation": "Are you sure you want to delete \"{carModel}\"?",
-  "cannot_be_undone": "This action cannot be undone."
+  "cannot_be_undone": "This action cannot be undone.",
+  "select_car": "Select Car"
 }

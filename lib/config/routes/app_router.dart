@@ -6,6 +6,7 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/observers/router_observer.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/auth/presentation/pages/check_your_email_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/forget_password_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/login_screen.dart';
@@ -194,7 +195,7 @@ class AppRouter {
         path: Routes.myQrCode,
         builder: (context, state) {
           // Return the MyQrCodeScreen widget
-          return MyQrCodeScreen();
+          return MyQrCodeScreen(car: state.extra as Car);
         },
       ),
       GoRoute(

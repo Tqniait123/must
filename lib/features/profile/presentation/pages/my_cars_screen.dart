@@ -136,7 +136,7 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: CarWidget(
+                        child: CarWidget.editable(
                           car: cars[index],
                           onEdit:
                               () =>

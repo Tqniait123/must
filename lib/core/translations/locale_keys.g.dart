@@ -179,5 +179,6 @@ abstract class  LocaleKeys {
   static const delete_car = 'delete_car';
   static const delete_confirmation = 'delete_confirmation';
   static const cannot_be_undone = 'cannot_be_undone';
+  static const select_car = 'select_car';
 
 }
