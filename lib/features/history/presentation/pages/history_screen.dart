@@ -19,9 +19,9 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final parkingList = Parking.getFakeArabicParkingList();
+    final parkingList = Parking.getFakeHistoryParkings();
     return Scaffold(
-      backgroundColor: Color(0xffF4F4FA),
+      // backgroundColor: Color(0xffF4F4FA),
       body: SafeArea(
         child: Column(
           children: [

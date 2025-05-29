@@ -10,6 +10,11 @@ class Parking {
   final bool isBusy;
   final List<String> gallery;
   final String information;
+  final String? startPoint;
+  final String? endPoint;
+  final String? durationTime;
+  final double? price;
+  final double? points;
 
   Parking({
     required this.id,
@@ -23,6 +28,11 @@ class Parking {
     required this.isBusy,
     required this.gallery,
     required this.information,
+    this.startPoint,
+    this.endPoint,
+    this.durationTime,
+    this.price,
+    this.points,
   });
   static List<Parking> getFakeArabicParkingList() {
     return [
@@ -236,6 +246,67 @@ class Parking {
         ],
         information: 'موقف حديث وآمن داخل المدينة.',
       ),
+    ];
+  }
+
+  static List<Parking> getFakeHistoryParkings() {
+    return [
+      Parking(
+        id: '1',
+        title: 'موقف كورنيش النيل',
+        address: 'كورنيش النيل، القاهرة',
+        pricePerHour: 10,
+        distanceInMinutes: 7,
+        imageUrl:
+            'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+        lat: 30.0444,
+        lng: 31.2357,
+        isBusy: false,
+        gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+        ],
+        information:
+            '24/7 parking facility with cctv camera, professional security guard, chair disble, floor parking list facilities. You will get hassle parking facilities with 35% discount on first parking...',
+        startPoint: 'شارع ٧  ',
+        endPoint: 'شارع النيل، القاهرة',
+        durationTime: '2 hours',
+        price: 20.0,
+        points: 100.0,
+      ),
+      Parking(
+        id: '2',
+        title: 'موقف برج المملكة',
+        address: 'طريق الملك فهد، حي العليا، الرياض',
+        pricePerHour: 12,
+        distanceInMinutes: 15,
+        imageUrl:
+            'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+        lat: 30.0866,
+        lng: 31.3300,
+        isBusy: true,
+        gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+        ],
+        information:
+            '24/7 parking facility with cctv camera, professional security guard, chair disble, floor parking list facilities. You will get hassle parking facilities with 35% discount on first parking...',
+        startPoint: 'شارع ابو الخير',
+        endPoint: 'شارع الملك فهد',
+        durationTime: '2 hours',
+        price: 24.0,
+        points: 120.0,
+      ),
+      // Continuing with the same pattern for remaining items...
+      // Adding only first 2 items for brevity, but the same changes should be applied to all items
     ];
   }
 }

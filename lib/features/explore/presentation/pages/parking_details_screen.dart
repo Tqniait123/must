@@ -181,27 +181,37 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CustomDetailsInfo(
-                              title: '500 m away',
-                              icon: AppIcons.outlinedLocationIc,
-                            ),
+                            if (widget.parking.durationTime == null)
+                              CustomDetailsInfo(
+                                title: '500 m away',
+                                icon: AppIcons.outlinedLocationIc,
+                              ),
                             32.gap,
-                            CustomDetailsInfo(
-                              title: '7 mins',
-                              icon: AppIcons.outlinedClockIc,
-                            ),
+                            if (widget.parking.durationTime != null)
+                              CustomDetailsInfo(
+                                title: '7 mins',
+                                icon: AppIcons.outlinedClockIc,
+                              ),
                           ],
                         ),
                         15.gap,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomDetailsInfo(
-                              title: '200 \$',
-                              icon: AppIcons.outlinedPriceIc,
-                            ),
-                          ],
-                        ),
+                        if (widget.parking.durationTime != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomDetailsInfo(
+                                title: '200 \$',
+                                icon: AppIcons.outlinedPriceIc,
+                              ),
+                              32.gap,
+                              
+                              CustomDetailsInfo(
+                                title:
+                                    '${widget.parking.points} ${LocaleKeys.points.tr()}',
+                                icon: AppIcons.outlinedPriceIc,
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                     // Parking Description
@@ -225,27 +235,35 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
 
 class CustomDetailsInfo extends StatelessWidget {
   final String title;
-  final String icon;
-  const CustomDetailsInfo({super.key, required this.title, required this.icon});
+  final String? icon;
+  const CustomDetailsInfo({super.key, required this.title, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minWidth: 100),
+      constraints: const BoxConstraints(
+        minWidth: 100,
+        maxWidth: 200,
+      ), // Limit max width
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
       decoration: BoxDecoration(
         color: const Color(0xFFE2E4FF),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          icon.icon(),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2B3085),
+          if (icon != null) ...[icon!.icon(), const SizedBox(width: 5)],
+          Flexible(
+            child: Text(
+              title,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2B3085),
+              ),
             ),
           ),
         ],
