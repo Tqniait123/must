@@ -163,7 +163,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               //     // address : _AddressController.text,
                               //   ),
                               // );
-                              context.push(Routes.registerStepTwo);
+                              context.push(
+                                Routes.otpScreen,
+                                extra: _emailController.text,
+                              );
                               // }
                             },
                           ),

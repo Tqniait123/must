@@ -9,6 +9,7 @@ import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/account_activation_sheet.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
@@ -142,7 +143,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
                       if (state.user.type == UserType.user) {
-                        context.go(Routes.homeUser);
+                        if (state.user.isActivated ?? false) {
+                          context.go(Routes.homeUser);
+                        } else {
+                          // Call this anywhere in your app
+                          showAccountActivationBottomSheet(
+                            context: context,
+
+                            onCompleteProfile: () {
+                              context.pop();
+                              context.push(Routes.registerStepTwo);
+                            },
+                          );
+                        }
                       } else {
                         // context.go(Routes.homeParkingMan);
                       }
@@ -178,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
                       if (state.user.type == UserType.user) {
-                        context.go(Routes.homeUser);
+                        // context.go(Routes.homeUser);
                       } else {
                         // context.go(Routes.homeParkingMan);
                       }

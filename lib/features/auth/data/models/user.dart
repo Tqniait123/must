@@ -9,6 +9,7 @@ class AppUser {
   final String? address;
   final String linkId;
   final bool? isOnline;
+  final bool? isActivated;
 
   final String? phoneNumber;
   final UserType type;
@@ -27,6 +28,7 @@ class AppUser {
     this.phoneNumber,
     required this.type,
     required this.cars,
+    this.isActivated = false,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,7 @@ class AppUser {
               ?.map((car) => Car.fromJson(car))
               .toList() ??
           [],
+      isActivated: json['is_activated'],
     );
   }
 }
