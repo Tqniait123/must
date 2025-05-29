@@ -12,6 +12,7 @@ import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
 import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
 import 'package:must_invest/features/home/data/models/parking_model.dart';
 
@@ -24,6 +25,21 @@ class ParkingDetailsScreen extends StatefulWidget {
 }
 
 class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
+  String _currentMainImage = ''; // Track the current main image
+
+  @override
+  void initState() {
+    super.initState();
+    _currentMainImage =
+        widget.parking.imageUrl; // Initialize with the parking image
+  }
+
+  Future<void> _selectImageFromParkingGallery(String image) async {
+    setState(() {
+      _currentMainImage = image;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,12 +73,44 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                       clipBehavior: Clip.none,
                       alignment: Alignment.bottomCenter,
                       children: [
-                        Hero(
-                          tag:
-                              '${widget.parking.id}-${widget.parking.imageUrl}',
-                          child: ClipPath(
-                            clipper: CurveCustomClipper(),
-                            child: Image.network(widget.parking.imageUrl),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          switchInCurve: Curves.easeInOut,
+                          switchOutCurve: Curves.easeInOut,
+                          transitionBuilder: (
+                            Widget child,
+                            Animation<double> animation,
+                          ) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: ScaleTransition(
+                                scale: Tween<double>(
+                                  begin: 0.95,
+                                  end: 1.0,
+                                ).animate(
+                                  CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeOut,
+                                  ),
+                                ),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Hero(
+                            key: ValueKey<String>(
+                              _currentMainImage,
+                            ), // Important for AnimatedSwitcher
+                            tag: '${widget.parking.id}-$_currentMainImage',
+                            child: ClipPath(
+                              clipper: CurveCustomClipper(),
+                              child: Image.network(
+                                _currentMainImage,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 250,
+                              ),
+                            ),
                           ),
                         ),
                         Positioned(
@@ -82,6 +130,35 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    30.gap,
+                    SizedBox(
+                      height: 80,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.parking.gallery.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final image = widget.parking.gallery[index];
+
+                          return AnimatedOpacity(
+                            opacity: _currentMainImage == image ? 1 : 0.7,
+                            duration: const Duration(milliseconds: 300),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                image,
+                                width: 129,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
+                            ).withPressEffect(
+                              onTap:
+                                  () => _selectImageFromParkingGallery(image),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     30.gap,
                     // Parking Name

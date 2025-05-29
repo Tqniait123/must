@@ -39,7 +39,11 @@ class Parking {
         isBusy: false,
         gallery: [
           'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
           'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information:
             '24/7 parking facility with cctv camera, professional security guard, chair disble, floor parking list facilities. You will get hassle parking facilities with 35% discount on first parking...',
@@ -56,6 +60,11 @@ class Parking {
         lng: 31.3300,
         isBusy: true,
         gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
           'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information:
@@ -73,7 +82,11 @@ class Parking {
         lng: 31.2596,
         isBusy: false,
         gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
           'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
           'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information:
@@ -92,6 +105,11 @@ class Parking {
         isBusy: true,
         gallery: [
           'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information:
             '24/7 parking facility with cctv camera, professional security guard, chair disble, floor parking list facilities...',
@@ -108,6 +126,11 @@ class Parking {
         lng: 31.3463,
         isBusy: false,
         gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
           'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information:
@@ -126,6 +149,11 @@ class Parking {
         isBusy: true,
         gallery: [
           'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information: 'موقف مفتوح على مدار الساعة مع خصم لأول مرة.',
       ),
@@ -141,6 +169,11 @@ class Parking {
         lng: 31.3300,
         isBusy: false,
         gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
           'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information: 'موقف آمن بوجود حراسة وكاميرات مراقبة.',
@@ -158,6 +191,11 @@ class Parking {
         isBusy: true,
         gallery: [
           'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information: 'موقف هادئ وآمن في منطقة الزمالك الراقية.',
       ),
@@ -189,6 +227,11 @@ class Parking {
         lng: 31.6018,
         isBusy: true,
         gallery: [
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
+          'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
+          'https://d19r6u3d126ojb.cloudfront.net/Free_parking_in_Sharjah_55663b6dce.webp',
           'https://blog.oneclickdrive.com/wp-content/uploads/2023/06/image-17.png',
         ],
         information: 'موقف حديث وآمن داخل المدينة.',
