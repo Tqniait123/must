@@ -4,17 +4,20 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
+import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/payment_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
+import 'package:must_invest/features/auth/data/models/payment_request_model.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
@@ -95,6 +98,36 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Opacity(
+        opacity: 0.1,
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            // Simulate payment request
+            showPaymentRequestBottomSheet(
+              context: context,
+              request: PaymentRequestModel(
+                requesterName: "محمد إبراهيم",
+                parkingName: "موقف النصر",
+                location: "أسوان - شارع السوق السياحي",
+                amount: 75.0,
+                pointsEquivalent: 150,
+              ),
+              onApprove: () {
+                // هتعمل ايه لما يوافق
+                print("تمت الموافقة على الدفع ✅");
+              },
+              onReject: (reason) {
+                // هتعمل ايه لما يرفض
+                print("تم رفض الدفع ❌ بسبب: $reason");
+              },
+            );
+          },
+          label: Text(
+            'Simulate Payment Request',
+            style: context.bodyMedium.s8.copyWith(color: Colors.white),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [

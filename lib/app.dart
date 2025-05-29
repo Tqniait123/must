@@ -8,6 +8,8 @@ import 'package:must_invest/config/routes/app_router.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/strings.dart';
 import 'package:must_invest/core/theme/light_theme.dart';
+import 'package:must_invest/core/utils/dialogs/payment_bottom_sheet.dart';
+import 'package:must_invest/features/auth/data/models/payment_request_model.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/languages_cubit/languages_cubit.dart';
@@ -46,16 +48,22 @@ class MustIvest extends StatelessWidget {
                           opacity: 0.1,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 20.0),
-                            child: FloatingActionButton(
-                              child: const Icon(Icons.refresh),
-                              onPressed: () async {
-                                await context.setLocale(
-                                  const Locale('en'),
-                                ); // Reload translations
-                                await context.setLocale(
-                                  const Locale('ar'),
-                                ); // Reload translations
-                              },
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                FloatingActionButton(
+                                  child: const Icon(Icons.refresh),
+                                  onPressed: () async {
+                                    await context.setLocale(
+                                      const Locale('en'),
+                                    ); // Reload translations
+                                    await context.setLocale(
+                                      const Locale('ar'),
+                                    ); // Reload translations
+                                  },
+                                ),
+                             
+                              ],
                             ),
                           ),
                         )
