@@ -116,7 +116,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.push(
-                              Routes.checkYourEmail,
+                              Routes.otpScreen,
                               extra: emailController.text,
                             );
                             // AuthCubit.get(
