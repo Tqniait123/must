@@ -26,7 +26,7 @@ class ForgetPasswordScreen extends StatefulWidget {
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,10 +76,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           child: Column(
                             children: [
                               CustomTextFormField(
-                                controller: emailController,
+                                controller: phoneController,
                                 margin: 0,
-                                hint: LocaleKeys.email.tr(),
-                                title: LocaleKeys.email.tr(),
+                                hint: LocaleKeys.phone_number.tr(),
+                                title: LocaleKeys.phone_number.tr(),
                                 isRequired: true,
                               ),
                               48.gap,
@@ -109,7 +109,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   context.push(
                     Routes.otpScreen,
                     extra: {
-                      'phone': emailController.text,
+                      'phone': phoneController.text,
                       'flow': OtpFlow.passwordReset,
                     },
                   );
@@ -122,13 +122,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         title: LocaleKeys.send.tr(),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // context.push(
-                            //   Routes.otpScreen,
-                            //   extra: emailController.text,
-                            // );
-                            // AuthCubit.get(
-                            //   context,
-                            // ).forgetPassword(phoneController.text);
+                            AuthCubit.get(
+                              context,
+                            ).forgetPassword(phoneController.text);
                           }
                         },
                       ),

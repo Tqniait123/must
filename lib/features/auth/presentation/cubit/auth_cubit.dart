@@ -187,6 +187,27 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// The `verifyPasswordReset` function handles the verification of password reset by calling the repository
+  /// method and emitting appropriate states based on the response.
+  ///
+  /// Args:
+  ///   params (VerifyParams): Contains the verification details needed for password reset verification,
+  /// such as verification code or token.
+  Future<void> verifyPasswordReset(VerifyParams params) async {
+    try {
+      emit(AuthLoading());
+      final response = await _repo.verifyPasswordReset(params);
+      response.fold(
+        (authModel) => emit(ResetPasswordSentOTP()),
+        (error) => emit(AuthError(error.message)),
+      );
+    } on AppError catch (e) {
+      emit(AuthError(e.message));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
   /// The `resendOTP` function handles resending OTP verification code by calling the repository
   /// method and emitting appropriate states based on the response.
   ///

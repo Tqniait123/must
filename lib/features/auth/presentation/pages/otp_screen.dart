@@ -171,6 +171,9 @@ class _OtpScreenState extends State<OtpScreen> {
                     if (state is AuthError) {
                       showErrorToast(context, state.message);
                     }
+                    if (state is ResetPasswordSentOTP) {
+                      _handleNavigationAfterVerification();
+                    }
                   },
                   builder:
                       (BuildContext context, state) => CustomElevatedButton(
@@ -178,9 +181,30 @@ class _OtpScreenState extends State<OtpScreen> {
                         title: LocaleKeys.confirm.tr(),
                         onPressed: () {
                           if (otp.length == pinLength) {
-                            AuthCubit.get(context).verifyRegistration(
-                              VerifyParams(phone: widget.phone, loginCode: otp),
-                            );
+                            switch (widget.flow) {
+                              case OtpFlow.passwordReset:
+                                AuthCubit.get(context).verifyPasswordReset(
+                                  VerifyParams(
+                                    phone: widget.phone,
+                                    loginCode: otp,
+                                    codeKey: 'reset_password_code',
+                                  ),
+                                );
+                              case OtpFlow.registration:
+                                AuthCubit.get(context).verifyRegistration(
+                                  VerifyParams(
+                                    phone: widget.phone,
+                                    loginCode: otp,
+                                  ),
+                                );
+                              case OtpFlow.login:
+                              // AuthCubit.get(context).verifyLogin(
+                              //   VerifyParams(
+                              //     phone: widget.phone,
+                              //     loginCode: otp,
+                              //   ),
+                              // );
+                            }
                           }
                         },
                       ),

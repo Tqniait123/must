@@ -69,3 +69,5 @@ class ResendOTPError extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+// class ResetPasswordSuccess extends AuthState {}

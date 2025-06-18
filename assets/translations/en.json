@@ -64,7 +64,7 @@
   "fill_details_create": "Fill in your details below to create an account now!",
   "create_account": "Create An Account",
   "terms_agreement": "By clicking Register, you agree to our Terms and Conditions of Use.",
-  "password_reset_instructions": "Enter the email associated with your account and we'll send an email with instructions to reset your password.",
+  "password_reset_instructions": "Enter the phone number associated with your account and we'll send an OTP with instructions to reset your password.",
   "activation_code_sent": "An activation code has been sent to {phone_number} to verify your registration.",
   "resend": "Resend",
   "didnt_receive_code": "Didn't receive code?",

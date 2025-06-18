@@ -19,6 +19,7 @@ abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> loginWithApple();
   Future<Either<void, AppError>> register(RegisterParams params);
   Future<Either<AuthModel, AppError>> verifyRegistration(VerifyParams params);
+  Future<Either<void, AppError>> verifyPasswordReset(VerifyParams params);
   Future<Either<void, AppError>> resendOTP(String phone);
   Future<Either<void, AppError>> forgetPassword(String email);
   Future<Either<void, AppError>> resetPassword(ResetPasswordParams params);
@@ -291,6 +292,29 @@ class AuthRepoImpl implements AuthRepo {
   Future<Either<void, AppError>> resendOTP(String phone) async {
     try {
       final response = await _remoteDataSource.resendOtp(phone);
+
+      if (response.isSuccess) {
+        return const Left(null);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage,
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<void, AppError>> verifyPasswordReset(
+    VerifyParams params,
+  ) async {
+    try {
+      final response = await _remoteDataSource.verifyPasswordReset(params);
 
       if (response.isSuccess) {
         return const Left(null);

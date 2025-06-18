@@ -26,6 +26,7 @@ abstract class AuthRemoteDataSource {
   );
   Future<ApiResponse<void>> register(RegisterParams params);
   Future<ApiResponse<AuthModel>> verifyRegistration(VerifyParams params);
+  Future<ApiResponse<void>> verifyPasswordReset(VerifyParams params);
   Future<ApiResponse<void>> resendOtp(String phone);
   Future<ApiResponse<void>> forgetPassword(String email);
   Future<ApiResponse<void>> resetPassword(ResetPasswordParams params);
@@ -172,11 +173,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// Returns:
   ///   The `forgetPassword` method is returning a `Future` that resolves to an `ApiResponse<void>`.
   @override
-  Future<ApiResponse<void>> forgetPassword(String email) async {
+  Future<ApiResponse<void>> forgetPassword(String phone) async {
     return dioClient.request<void>(
-      method: RequestMethod.post,
+      method: RequestMethod.get,
       EndPoints.forgetPassword,
-      data: {"email": email},
+      queryParams: {"phone": phone},
       fromJson: (json) => (),
     );
   }
@@ -299,6 +300,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       method: RequestMethod.post,
       EndPoints.resendOtp,
       data: {"phone": phone},
+      fromJson: (json) => (),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> verifyPasswordReset(VerifyParams params) async {
+    return dioClient.request<void>(
+      method: RequestMethod.post,
+      EndPoints.verifyPasswordReset,
+      data: params.toJson(),
       fromJson: (json) => (),
     );
   }
