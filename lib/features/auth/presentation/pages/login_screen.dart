@@ -9,14 +9,12 @@ import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
-import 'package:must_invest/core/utils/dialogs/account_activation_sheet.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
-import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/widgets/sign_up_button.dart';
@@ -30,7 +28,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isRemembered = true;
 
@@ -75,10 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     CustomTextFormField(
-                      controller: _emailController,
+                      controller: _phoneController,
                       margin: 0,
-                      hint: LocaleKeys.email.tr(),
-                      title: LocaleKeys.email.tr(),
+                      hint: LocaleKeys.phone_number.tr(),
+                      title: LocaleKeys.phone_number.tr(),
                     ),
                     16.gap,
                     CustomTextFormField(
@@ -142,12 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   listener: (BuildContext context, AuthState state) async {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
-                     
-                          context.go(Routes.homeUser);
-                    
-                      } else {
-                        // context.go(Routes.homeParkingMan);
-                      
+
+                      context.go(Routes.homeUser);
+                    } else {
+                      // context.go(Routes.homeParkingMan);
                     }
                     if (state is AuthError) {
                       showErrorToast(context, state.message);
@@ -163,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // if (_formKey.currentState!.validate()) {
                               AuthCubit.get(context).login(
                                 LoginParams(
-                                  email: _emailController.text,
+                                  phone: _phoneController.text,
                                   password: _passwordController.text,
                                   isRemembered: isRemembered,
                                 ),
@@ -176,9 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
               20.gap,
               Expanded(
                 child: BlocConsumer<AuthCubit, AuthState>(
-                  listener: (BuildContext context, AuthState state) async {
-                    
-                  },
+                  listener: (BuildContext context, AuthState state) async {},
                   builder:
                       (BuildContext context, AuthState state) =>
                           CustomElevatedButton(
@@ -189,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // if (_formKey.currentState!.validate()) {
                               AuthCubit.get(context).login(
                                 LoginParams(
-                                  email: _emailController.text,
+                                  phone: _phoneController.text,
                                   password: _passwordController.text,
                                   isRemembered: isRemembered,
                                 ),
