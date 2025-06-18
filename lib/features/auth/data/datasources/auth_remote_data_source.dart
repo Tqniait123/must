@@ -23,7 +23,7 @@ abstract class AuthRemoteDataSource {
   Future<ApiResponse<AuthModel>> loginWithApple(
     LoginWithAppleParams loginWithAppleParams,
   );
-  Future<ApiResponse<AuthModel>> register(RegisterParams params);
+  Future<ApiResponse<void>> register(RegisterParams params);
   Future<ApiResponse<void>> forgetPassword(String email);
   Future<ApiResponse<void>> resetPassword(ResetPasswordParams params);
   Future<ApiResponse<List<Country>>> getCountries();
@@ -146,12 +146,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   ///   The `register` method is returning a `Future` that resolves to an `ApiResponse` containing an
   /// `AuthModel` object.
   @override
-  Future<ApiResponse<AuthModel>> register(RegisterParams params) async {
-    return dioClient.request<AuthModel>(
+  Future<ApiResponse<void>> register(RegisterParams params) async {
+    return dioClient.request<void>(
       method: RequestMethod.post,
       EndPoints.register,
       data: params.toJson(),
-      fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
+      fromJson: (json) => (),
       onSuccess: () {
         // fcmService.subscribeToTopic(Constants.allTopic);
       },

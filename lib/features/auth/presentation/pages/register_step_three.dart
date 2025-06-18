@@ -12,7 +12,6 @@ import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dar
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
-import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/widgets/id_upload_widget.dart';
@@ -186,18 +185,18 @@ class _RegisterStepThreeScreenState extends State<RegisterStepThreeScreen> {
                             title: LocaleKeys.next.tr(),
                             onPressed: () {
                               // if (_formKey.currentState!.validate()) {
-                              AuthCubit.get(context).register(
-                                RegisterParams(
-                                  email: _modelYearController.text,
-                                  password: _carPlateNumberController.text,
-                                  name: _numberOfCarController.text,
-                                  phone: _carNameController.text,
-                                  passwordConfirmation:
-                                      _carPlateNumberController.text,
+                              // AuthCubit.get(context).register(
+                              //   RegisterParams(
+                              //     email: _modelYearController.text,
+                              //     password: _carPlateNumberController.text,
+                              //     name: _numberOfCarController.text,
+                              //     phone: _carNameController.text,
+                              //     passwordConfirmation:
+                              //         _carPlateNumberController.text,
 
-                                  // address : _AddressController.text,
-                                ),
-                              );
+                              //     // address : _AddressController.text,
+                              //   ),
+                              // );
                               // }
                             },
                           ),

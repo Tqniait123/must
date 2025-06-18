@@ -15,11 +15,11 @@ import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/city.dart';
 import 'package:must_invest/features/auth/data/models/country.dart';
 import 'package:must_invest/features/auth/data/models/governorate.dart';
+import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/cities_cubit/cities_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/countires_cubit/countries_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/governorates_cubit/governorates_cubit.dart';
-import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/widgets/sign_up_button.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -33,7 +33,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _governorateController = TextEditingController();
@@ -41,6 +40,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  int? selectedCityId;
 
   @override
   void initState() {
@@ -134,6 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           (country) => country.name,
                                       onSelect: (country) {
                                         setState(() {
+                                          selectedCityId = null;
                                           _cityController.clear();
                                           _governorateController.clear();
                                           _countryController.text =
@@ -183,6 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           (governorate) => governorate.name,
                                       onSelect: (governorate) {
                                         setState(() {
+                                          selectedCityId = null;
                                           _cityController.clear();
                                           _governorateController.text =
                                               governorate.name;
@@ -228,6 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       onSelect: (city) {
                                         setState(() {
                                           _cityController.text = city.name;
+                                          selectedCityId = city.id;
                                         });
                                       },
                                     );
@@ -270,10 +274,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Expanded(
                 child: BlocConsumer<AuthCubit, AuthState>(
                   listener: (BuildContext context, AuthState state) async {
-                    if (state is AuthSuccess) {
-                      UserCubit.get(context).setCurrentUser(state.user);
-
-                      context.go(Routes.homeUser);
+                    if (state is RegisterSuccess) {
+                      context.go(
+                        Routes.otpScreen,
+                        extra: _phoneController.text,
+                      );
                     }
                     if (state is AuthError) {
                       showErrorToast(context, state.message);
@@ -286,24 +291,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             loading: state is AuthLoading,
                             title: LocaleKeys.next.tr(),
                             onPressed: () {
-                              // if (_formKey.currentState!.validate()) {
-                              // AuthCubit.get(context).register(
-                              //   RegisterParams(
-                              //     email: _emailController.text,
-                              //     password: _passwordController.text,
-                              //     name: _userNameController.text,
-                              //     phone: _phoneController.text,
-                              //     passwordConfirmation:
-                              //         _passwordController.text,
+                              if (selectedCityId == null) {
+                                showErrorToast(context, LocaleKeys.city.tr());
+                              }
+                              if (_formKey.currentState!.validate()) {
+                                AuthCubit.get(context).register(
+                                  RegisterParams(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                    name: _userNameController.text,
+                                    phone: _phoneController.text,
+                                    passwordConfirmation:
+                                        _passwordController.text,
+                                    cityId: selectedCityId ?? 0,
 
-                              //     // address : _AddressController.text,
-                              //   ),
-                              // );
-                              context.push(
-                                Routes.otpScreen,
-                                extra: _emailController.text,
-                              );
-                              // }
+                                    // address : _AddressController.text,
+                                  ),
+                                );
+
+                                // }
+                              }
                             },
                           ),
                 ),

@@ -54,3 +54,5 @@ class ResetPasswordError extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+class RegisterSuccess extends AuthState {}
