@@ -20,6 +20,7 @@ import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/cities_cubit/cities_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/countires_cubit/countries_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/governorates_cubit/governorates_cubit.dart';
+import 'package:must_invest/features/auth/presentation/pages/otp_screen.dart';
 import 'package:must_invest/features/auth/presentation/widgets/sign_up_button.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -277,7 +278,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (state is RegisterSuccess) {
                       context.go(
                         Routes.otpScreen,
-                        extra: _phoneController.text,
+                        extra: {
+                          'phone': _phoneController.text,
+                          'flow': OtpFlow.registration,
+                        },
                       );
                     }
                     if (state is AuthError) {

@@ -18,9 +18,12 @@ import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cub
 import 'package:must_invest/features/auth/presentation/widgets/custom_pin_field.dart';
 import 'package:must_invest/features/auth/presentation/widgets/resend_otp_widget.dart';
 
+enum OtpFlow { passwordReset, registration, login }
+
 class OtpScreen extends StatefulWidget {
   final String phone;
-  const OtpScreen({super.key, required this.phone});
+  final OtpFlow flow;
+  const OtpScreen({super.key, required this.phone, required this.flow});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -52,6 +55,18 @@ class _OtpScreenState extends State<OtpScreen> {
     AuthCubit.get(context).resendOTP(widget.phone);
   }
 
+  void _handleNavigationAfterVerification() {
+    switch (widget.flow) {
+      case OtpFlow.passwordReset:
+        context.push(Routes.resetPassword, extra: widget.phone);
+        break;
+      case OtpFlow.registration:
+      case OtpFlow.login:
+        context.go(Routes.homeUser);
+        break;
+    }
+  }
+
   @override
   void dispose() {
     _otpController.dispose();
@@ -74,7 +89,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CustomBackButton(),
+                        const CustomBackButton(),
                         Text(
                           LocaleKeys.otp_verification.tr(),
                           style: context.titleLarge.copyWith(),
@@ -114,8 +129,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                       });
                                     },
                                     controller: _otpController,
-                                    readOnly:
-                                        true, // Make it read-only to prevent system keyboard
+                                    readOnly: true,
                                   ),
                                 ),
                                 BlocListener<AuthCubit, AuthState>(
@@ -152,10 +166,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   listener: (BuildContext context, AuthState state) async {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
-
-                      context.push(Routes.resetPassword, extra: widget.phone);
-                    } else {
-                      // context.go(Routes.homeParkingMan);
+                      _handleNavigationAfterVerification();
                     }
                     if (state is AuthError) {
                       showErrorToast(context, state.message);

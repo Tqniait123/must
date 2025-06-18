@@ -15,6 +15,7 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:must_invest/features/auth/presentation/pages/otp_screen.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -105,7 +106,13 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   showErrorToast(context, state.message);
                 }
                 if (state is ForgetPasswordSentOTP) {
-                  context.push(Routes.otpScreen);
+                  context.push(
+                    Routes.otpScreen,
+                    extra: {
+                      'phone': emailController.text,
+                      'flow': OtpFlow.passwordReset,
+                    },
+                  );
                 }
               },
               builder:
@@ -115,10 +122,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         title: LocaleKeys.send.tr(),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            context.push(
-                              Routes.otpScreen,
-                              extra: emailController.text,
-                            );
+                            // context.push(
+                            //   Routes.otpScreen,
+                            //   extra: emailController.text,
+                            // );
                             // AuthCubit.get(
                             //   context,
                             // ).forgetPassword(phoneController.text);

@@ -107,8 +107,11 @@ class AppRouter {
       GoRoute(
         path: Routes.otpScreen,
         builder: (context, state) {
-          // Return the OtpScreen widget
-          return OtpScreen(phone: state.extra as String);
+          final extras = state.extra as Map<String, dynamic>;
+          return OtpScreen(
+            phone: extras['phone'] as String,
+            flow: extras['flow'] as OtpFlow,
+          );
         },
       ),
       GoRoute(
