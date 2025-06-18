@@ -98,10 +98,11 @@ class User {
       phone: json['phone'] ?? '',
       image: json['image'],
       points:
-          (json['points'] as List<dynamic>?)
-              ?.map((point) => PointsRecord.fromJson(point))
-              .toList() ??
-          [],
+          json['points'] is List
+              ? (json['points'] as List)
+                  .map((point) => PointsRecord.fromJson(point))
+                  .toList()
+              : [],
     );
   }
 

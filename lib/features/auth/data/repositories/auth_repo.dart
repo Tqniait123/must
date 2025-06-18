@@ -10,6 +10,7 @@ import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/auth/data/models/verify_params.dart';
 
 abstract class AuthRepo {
   Future<Either<User, AppError>> autoLogin();
@@ -17,6 +18,8 @@ abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> loginWithGoogle();
   Future<Either<AuthModel, AppError>> loginWithApple();
   Future<Either<void, AppError>> register(RegisterParams params);
+  Future<Either<AuthModel, AppError>> verifyRegistration(VerifyParams params);
+  Future<Either<void, AppError>> resendOTP(String phone);
   Future<Either<void, AppError>> forgetPassword(String email);
   Future<Either<void, AppError>> resetPassword(ResetPasswordParams params);
   Future<Either<List<Country>, AppError>> getCountries(); // List<Country>
@@ -246,6 +249,51 @@ class AuthRepoImpl implements AuthRepo {
 
       if (response.isSuccess) {
         return Left(response.data!);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage,
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<AuthModel, AppError>> verifyRegistration(
+    VerifyParams params,
+  ) async {
+    try {
+      final response = await _remoteDataSource.verifyRegistration(params);
+
+      if (response.isSuccess) {
+        _localDataSource.saveToken(response.data?.token ?? '');
+        return Left(response.data!);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage,
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<void, AppError>> resendOTP(String phone) async {
+    try {
+      final response = await _remoteDataSource.resendOtp(phone);
+
+      if (response.isSuccess) {
+        return const Left(null);
       } else {
         return Right(
           AppError(

@@ -5,6 +5,7 @@ import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/auth/data/models/verify_params.dart';
 import 'package:must_invest/features/auth/data/repositories/auth_repo.dart';
 
 part 'auth_state.dart';
@@ -162,6 +163,47 @@ class AuthCubit extends Cubit<AuthState> {
       emit(ResetPasswordError(e.message));
     } catch (e) {
       emit(ResetPasswordError(e.toString()));
+    }
+  }
+
+  /// The `verifyRegistration` function handles the verification of user registration by calling the repository
+  /// method and emitting appropriate states based on the response.
+  ///
+  /// Args:
+  ///   params (VerifyParams): Contains the verification details needed for registration verification,
+  /// such as verification code or token.
+  Future<void> verifyRegistration(VerifyParams params) async {
+    try {
+      emit(AuthLoading());
+      final response = await _repo.verifyRegistration(params);
+      response.fold(
+        (authModel) => emit(AuthSuccess(authModel.user)),
+        (error) => emit(AuthError(error.message)),
+      );
+    } on AppError catch (e) {
+      emit(AuthError(e.message));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  /// The `resendOTP` function handles resending OTP verification code by calling the repository
+  /// method and emitting appropriate states based on the response.
+  ///
+  /// Args:
+  ///   phone (String): The phone number to which the OTP should be resent
+  Future<void> resendOTP(String phone) async {
+    try {
+      emit(ResendOTPLoading());
+      final response = await _repo.resendOTP(phone);
+      response.fold(
+        (_) => emit(ResendOTPSuccess()),
+        (error) => emit(ResendOTPError(error.message)),
+      );
+    } on AppError catch (e) {
+      emit(ResendOTPError(e.message));
+    } catch (e) {
+      emit(ResendOTPError(e.toString()));
     }
   }
 }

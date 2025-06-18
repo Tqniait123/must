@@ -12,6 +12,7 @@ import 'package:must_invest/features/auth/data/models/login_with_google_params.d
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/auth/data/models/verify_params.dart';
 
 abstract class AuthRemoteDataSource {
   // Future<ApiResponse> login();
@@ -24,6 +25,8 @@ abstract class AuthRemoteDataSource {
     LoginWithAppleParams loginWithAppleParams,
   );
   Future<ApiResponse<void>> register(RegisterParams params);
+  Future<ApiResponse<AuthModel>> verifyRegistration(VerifyParams params);
+  Future<ApiResponse<void>> resendOtp(String phone);
   Future<ApiResponse<void>> forgetPassword(String email);
   Future<ApiResponse<void>> resetPassword(ResetPasswordParams params);
   Future<ApiResponse<List<Country>>> getCountries();
@@ -262,6 +265,41 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
                   Governorate.fromJson(governorate as Map<String, dynamic>),
             ),
           ),
+    );
+  }
+
+  @override
+  /// Sends a POST request to verify user registration using the provided parameters.
+  ///
+  /// Args:
+  ///   params (VerifyParams): Contains the necessary details for verification, such as the
+  ///   verification code or token.
+  ///
+  /// Returns:
+  ///   A `Future` resolving to an `ApiResponse` containing an `AuthModel` object if successful.
+  Future<ApiResponse<AuthModel>> verifyRegistration(VerifyParams params) async {
+    return dioClient.request<AuthModel>(
+      method: RequestMethod.post,
+      EndPoints.verifyRegistration,
+      data: params.toJson(),
+      fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  /// Resend the OTP for the given phone number.
+  ///
+  /// Args:
+  ///   phone (String): The phone number for which the OTP should be resent.
+  ///
+  /// Returns:
+  ///   A `Future` resolving to an `ApiResponse` containing an empty value if successful.
+  Future<ApiResponse<void>> resendOtp(String phone) async {
+    return dioClient.request<void>(
+      method: RequestMethod.post,
+      EndPoints.resendOtp,
+      data: {"phone": phone},
+      fromJson: (json) => (),
     );
   }
 }

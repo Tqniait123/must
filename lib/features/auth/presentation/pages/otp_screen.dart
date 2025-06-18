@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
@@ -8,9 +9,14 @@ import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
+import 'package:must_invest/features/auth/data/models/verify_params.dart';
+import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/widgets/custom_pin_field.dart';
+import 'package:must_invest/features/auth/presentation/widgets/resend_otp_widget.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phone;
@@ -24,7 +30,7 @@ class _OtpScreenState extends State<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _otpController = TextEditingController();
   String otp = "";
-  final int pinLength = 4;
+  final int pinLength = 6;
 
   void _onKeyPressed(String value) {
     if (value == 'X') {
@@ -40,6 +46,10 @@ class _OtpScreenState extends State<OtpScreen> {
         _otpController.text = otp;
       });
     }
+  }
+
+  void _handleResendOtp() {
+    AuthCubit.get(context).resendOTP(widget.phone);
   }
 
   @override
@@ -108,20 +118,16 @@ class _OtpScreenState extends State<OtpScreen> {
                                         true, // Make it read-only to prevent system keyboard
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      LocaleKeys.didnt_receive_code.tr(),
-                                      style: context.bodyMedium.s14.regular,
-                                    ),
-                                    Text(LocaleKeys.resend.tr()).clickable(
-                                      onTap: () {},
-                                      padding: 8.0.edgeInsetsAll,
-                                      style: context.titleLarge.s14.bold
-                                          .copyWith(color: AppColors.secondary),
-                                    ),
-                                  ],
+                                BlocListener<AuthCubit, AuthState>(
+                                  listener: (context, state) {
+                                    if (state is ResendOTPError) {
+                                      showErrorToast(context, state.message);
+                                    }
+                                  },
+                                  child: ResendOtpWidget(
+                                    phone: widget.phone,
+                                    onResend: _handleResendOtp,
+                                  ),
                                 ),
                                 48.gap,
                               ],
@@ -142,13 +148,31 @@ class _OtpScreenState extends State<OtpScreen> {
             20.gap,
             Column(
               children: [
-                CustomElevatedButton(
-                  title: LocaleKeys.confirm.tr(),
-                  onPressed: () {
-                    if (otp.length == pinLength) {
+                BlocConsumer<AuthCubit, AuthState>(
+                  listener: (BuildContext context, AuthState state) async {
+                    if (state is AuthSuccess) {
+                      UserCubit.get(context).setCurrentUser(state.user);
+
                       context.push(Routes.resetPassword, extra: widget.phone);
+                    } else {
+                      // context.go(Routes.homeParkingMan);
+                    }
+                    if (state is AuthError) {
+                      showErrorToast(context, state.message);
                     }
                   },
+                  builder:
+                      (BuildContext context, state) => CustomElevatedButton(
+                        loading: state is AuthLoading,
+                        title: LocaleKeys.confirm.tr(),
+                        onPressed: () {
+                          if (otp.length == pinLength) {
+                            AuthCubit.get(context).verifyRegistration(
+                              VerifyParams(phone: widget.phone, loginCode: otp),
+                            );
+                          }
+                        },
+                      ),
                 ),
                 20.gap,
               ],

@@ -8,11 +8,12 @@ class EndPoints {
   static const String loginWithApple = 'login/apple';
   static const String autoLogin = 'profile';
   static const String register = 'register';
+  static const String verifyRegistration = 'register/verify_phone';
+  static const String resendOtp = 'resend_otp';
   static const String forgetPassword = 'forgot-password';
   static const String resetPassword = 'reset-password';
   static const String home = 'home';
   static const String countries = 'countries';
-  static  String governorates(int id) => 'governorates/$id';
-  static  String cities(int id) => 'cities/$id';
-
+  static String governorates(int id) => 'governorates/$id';
+  static String cities(int id) => 'cities/$id';
 }
