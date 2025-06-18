@@ -13,6 +13,7 @@ import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/widgets/loading_widget.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 
@@ -192,16 +193,7 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           if (state is AuthLoading) ...[
                             16.gap,
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.white,
-                                ),
-                              ),
-                            ),
+                            CustomLoadingWidget(),
                           ],
                         ],
                       ),

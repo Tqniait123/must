@@ -86,7 +86,9 @@ class ProfileScreen extends StatelessWidget {
                 CustomIconButton(
                   color: Color(0xff6468AC),
                   iconAsset: AppIcons.logout,
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go(Routes.login);
+                  },
                 ).flippedForLocale(context),
               ],
             ),
