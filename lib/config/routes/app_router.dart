@@ -1,12 +1,17 @@
 // Import necessary packages and files
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/observers/router_observer.dart';
+import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/auth/presentation/cubit/cities_cubit/cities_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/countires_cubit/countries_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/governorates_cubit/governorates_cubit.dart';
 import 'package:must_invest/features/auth/presentation/pages/check_your_email_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/forget_password_screen.dart';
 import 'package:must_invest/features/auth/presentation/pages/login_screen.dart';
@@ -82,7 +87,14 @@ class AppRouter {
         path: Routes.register,
         builder: (context, state) {
           // Return the RegisterScreen widget
-          return const RegisterScreen();
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => CountriesCubit(sl())),
+              BlocProvider(create: (context) => GovernoratesCubit(sl())),
+              BlocProvider(create: (context) => CitiesCubit(sl())),
+            ],
+            child: const RegisterScreen(),
+          );
         },
       ),
       GoRoute(

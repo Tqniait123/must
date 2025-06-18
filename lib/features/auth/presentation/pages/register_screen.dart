@@ -7,11 +7,18 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
+import 'package:must_invest/core/utils/dialogs/selection_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
+import 'package:must_invest/features/auth/data/models/city.dart';
+import 'package:must_invest/features/auth/data/models/country.dart';
+import 'package:must_invest/features/auth/data/models/governorate.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/cities_cubit/cities_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/countires_cubit/countries_cubit.dart';
+import 'package:must_invest/features/auth/presentation/cubit/governorates_cubit/governorates_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/widgets/sign_up_button.dart';
 
@@ -34,6 +41,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CountriesCubit>().getCountries();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,39 +109,138 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       title: LocaleKeys.phone_number.tr(),
                     ),
                     16.gap,
-                    CustomTextFormField(
-                      controller: _countryController,
-                      margin: 0,
-                      hint: LocaleKeys.country.tr(),
-                      title: LocaleKeys.country.tr(),
-                      suffixIC: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: AppColors.primary,
+                    BlocProvider.value(
+                      value: context.read<CountriesCubit>(),
+                      child: BlocBuilder<CountriesCubit, CountriesState>(
+                        builder: (BuildContext context, CountriesState state) {
+                          if (state is CountriesLoaded) {
+                            return Column(
+                              children: [
+                                CustomTextFormField(
+                                  controller: _countryController,
+                                  margin: 0,
+                                  hint: LocaleKeys.country.tr(),
+                                  title: LocaleKeys.country.tr(),
+                                  suffixIC: Icon(
+                                    Icons.arrow_drop_down_rounded,
+                                    color: AppColors.primary,
+                                  ),
+                                  readonly: true,
+                                  onTap: () {
+                                    showSelectionBottomSheet<Country>(
+                                      context,
+                                      items: state.countries,
+                                      itemLabelBuilder:
+                                          (country) => country.name,
+                                      onSelect: (country) {
+                                        setState(() {
+                                          _cityController.clear();
+                                          _governorateController.clear();
+                                          _countryController.text =
+                                              country.name;
+                                          context
+                                              .read<GovernoratesCubit>()
+                                              .getGovernorates(country.id);
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                                16.gap,
+                              ],
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
                       ),
                     ),
-                    16.gap,
-                    CustomTextFormField(
-                      controller: _governorateController,
-                      margin: 0,
-                      hint: LocaleKeys.governorate.tr(),
-                      title: LocaleKeys.governorate.tr(),
-                      suffixIC: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: AppColors.primary,
+                    BlocProvider.value(
+                      value: context.read<GovernoratesCubit>(),
+                      child: BlocBuilder<GovernoratesCubit, GovernoratesState>(
+                        builder: (
+                          BuildContext context,
+                          GovernoratesState state,
+                        ) {
+                          if (state is GovernoratesLoaded) {
+                            return Column(
+                              children: [
+                                CustomTextFormField(
+                                  controller: _governorateController,
+                                  margin: 0,
+                                  hint: LocaleKeys.governorate.tr(),
+                                  title: LocaleKeys.governorate.tr(),
+                                  suffixIC: Icon(
+                                    Icons.arrow_drop_down_rounded,
+                                    color: AppColors.primary,
+                                  ),
+                                  readonly: true,
+                                  onTap: () {
+                                    showSelectionBottomSheet<Governorate>(
+                                      context,
+                                      items: state.governorates,
+                                      itemLabelBuilder:
+                                          (governorate) => governorate.name,
+                                      onSelect: (governorate) {
+                                        setState(() {
+                                          _cityController.clear();
+                                          _governorateController.text =
+                                              governorate.name;
+                                          context.read<CitiesCubit>().getCities(
+                                            governorate.id,
+                                          );
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+
+                                16.gap,
+                              ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
                     ),
-                    16.gap,
-                    CustomTextFormField(
-                      controller: _cityController,
-                      margin: 0,
-                      hint: LocaleKeys.city.tr(),
-                      title: LocaleKeys.city.tr(),
-                      suffixIC: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: AppColors.primary,
+                    BlocProvider.value(
+                      value: context.read<CitiesCubit>(),
+                      child: BlocBuilder<CitiesCubit, CitiesState>(
+                        builder: (BuildContext context, CitiesState state) {
+                          if (state is CitiesLoaded) {
+                            return Column(
+                              children: [
+                                CustomTextFormField(
+                                  controller: _cityController,
+                                  margin: 0,
+                                  hint: LocaleKeys.city.tr(),
+                                  title: LocaleKeys.city.tr(),
+                                  suffixIC: Icon(
+                                    Icons.arrow_drop_down_rounded,
+                                    color: AppColors.primary,
+                                  ),
+                                  readonly: true,
+                                  onTap: () {
+                                    showSelectionBottomSheet<City>(
+                                      context,
+                                      items: state.cities,
+                                      itemLabelBuilder: (city) => city.name,
+                                      onSelect: (city) {
+                                        setState(() {
+                                          _cityController.text = city.name;
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                                16.gap,
+                              ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
                     ),
-                    16.gap,
                     CustomTextFormField(
                       margin: 0,
                       controller: _passwordController,
