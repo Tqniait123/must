@@ -9,9 +9,9 @@ const String kTempToken = 'temp-token';
 const String kLang = 'Lang';
 const String kOnBoarding = 'onBoarding'; // Added for onboarding screen
 
-class MustIvestPreferences {
+class MustInvestPreferences {
   final SharedPreferences _preferences;
-  MustIvestPreferences(this._preferences);
+  MustInvestPreferences(this._preferences);
 
   Future<bool> saveToken(String token) async {
     return await _preferences.setString(kToken, token);

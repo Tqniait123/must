@@ -9,7 +9,7 @@ import 'package:must_invest/core/services/di.dart';
 part 'languages_state.dart';
 
 class LanguagesCubit extends Cubit<LanguagesState> {
-  final MustIvestPreferences preferences;
+  final MustInvestPreferences preferences;
   LanguagesCubit(this.preferences) : super(LanguagesInitial());
 
   void setLanguage(BuildContext context, String langCode) async {
@@ -17,7 +17,7 @@ class LanguagesCubit extends Cubit<LanguagesState> {
     Future.delayed(Duration.zero, () {
       preferences.saveLang(langCode);
       context.setLocale(Locale(langCode));
-      langCode = sl<MustIvestPreferences>().getLang();
+      langCode = sl<MustInvestPreferences>().getLang();
     });
     await forceAppUpdate();
     // Emit a new state with the updated language code

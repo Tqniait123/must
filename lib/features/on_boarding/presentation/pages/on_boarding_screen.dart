@@ -23,7 +23,7 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController();
-  final MustIvestPreferences preferences = sl<MustIvestPreferences>();
+  final MustInvestPreferences preferences = sl<MustInvestPreferences>();
   int _currentPage = 0;
   List<String> images = [
     AppIcons.onBoarding1,

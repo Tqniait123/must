@@ -10,7 +10,7 @@ import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class DioClient {
-  final MustIvestPreferences _preferences;
+  final MustInvestPreferences _preferences;
   final Dio _dio;
 
   DioClient(this._preferences)

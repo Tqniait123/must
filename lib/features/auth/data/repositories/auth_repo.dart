@@ -20,7 +20,7 @@ abstract class AuthRepo {
 
 class AuthRepoImpl implements AuthRepo {
   final AuthRemoteDataSource _remoteDataSource;
-  final MustIvestPreferences _localDataSource;
+  final MustInvestPreferences _localDataSource;
 
   AuthRepoImpl(this._remoteDataSource, this._localDataSource);
 

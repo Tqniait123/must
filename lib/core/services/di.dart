@@ -40,6 +40,6 @@ Future<void> initLocator() async {
   final SharedPreferences sharedPref = await SharedPreferences.getInstance();
 
   // sl.registerLazySingleton<FcmService>(() => FcmService(preferences: sl()));
-  sl.registerLazySingleton(() => MustIvestPreferences(sharedPref));
+  sl.registerLazySingleton(() => MustInvestPreferences(sharedPref));
   sl.registerLazySingleton(() => DioClient(sl()));
 }
