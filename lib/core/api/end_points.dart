@@ -2,7 +2,7 @@ class EndPoints {
   const EndPoints._();
 
   // Authentication Endpoints
-  static const String baseUrl = 'https://must.dev2.tqnia.me/';
+  static const String baseUrl = 'https://must.dev2.tqnia.me/api/';
   static const String login = 'login';
   static const String loginWithGoogle = 'auth/google/callback';
   static const String loginWithApple = 'login/apple';

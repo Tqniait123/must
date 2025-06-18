@@ -9,22 +9,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
-// function that ensure the locator is initialized before the app starts
-Future<void> ensureLocatorInitialized() async {
-  if (!GetIt.I.isRegistered<SharedPreferences>()) {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    sl.registerSingleton<SharedPreferences>(sharedPreferences);
-  }
-  // if (!GetIt.I.isRegistered<FcmService>()) {
-  //   sl.registerSingleton<FcmService>(FcmService(preferences: sl()));
-  // }
-}
+Future<void> initLocator(SharedPreferences sharedPreferences) async {
+  // Register SharedPreferences first
+  sl.registerSingleton<SharedPreferences>(sharedPreferences);
 
-Future<void> initLocator() async {
+  // Register MustInvestPreferences
+  sl.registerLazySingleton(() => MustInvestPreferences(sl()));
+
+  // Register DioClient
+  sl.registerLazySingleton(() => DioClient(sl()));
+
   //? Cubits
   sl.registerFactory<UserCubit>(() => UserCubit());
   sl.registerLazySingleton<AuthCubit>(() => AuthCubit(sl()));
-  // Register OffersCubit
 
   //* Repository
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl(), sl()));
@@ -33,13 +30,4 @@ Future<void> initLocator() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(sl()),
   );
-
-  //! Core
-
-  //! External
-  final SharedPreferences sharedPref = await SharedPreferences.getInstance();
-
-  // sl.registerLazySingleton<FcmService>(() => FcmService(preferences: sl()));
-  sl.registerLazySingleton(() => MustInvestPreferences(sharedPref));
-  sl.registerLazySingleton(() => DioClient(sl()));
 }

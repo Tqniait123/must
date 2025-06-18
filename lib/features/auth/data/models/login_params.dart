@@ -9,9 +9,9 @@ class LoginParams {
     this.isRemembered = false,
   });
 
-  Map<String, dynamic> toJson(String deviceToken) => {
-    'login': phone,
+  Map<String, dynamic> toJson({String? deviceToken}) => {
+    'phone': phone,
     'password': password,
-    'device_token': deviceToken,
+    if (deviceToken != null) 'device_token': deviceToken,
   };
 }

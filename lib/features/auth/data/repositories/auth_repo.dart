@@ -54,7 +54,7 @@ class AuthRepoImpl implements AuthRepo {
 
       if (response.isSuccess) {
         if (params.isRemembered) {
-          _localDataSource.saveToken(response.accessToken ?? '');
+          _localDataSource.saveToken(response.data?.token ?? '');
         }
         return Left(response.data!);
       } else {

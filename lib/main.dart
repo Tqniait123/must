@@ -9,6 +9,7 @@ import 'package:must_invest/core/observers/bloc_observer.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/locales.dart';
 import 'package:must_invest/core/translations/codegen_loader.g.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // @pragma('vm:entry-point')
 // Future<void> fcmBackgroundHandler(RemoteMessage message) async {
@@ -43,8 +44,11 @@ import 'package:must_invest/core/translations/codegen_loader.g.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  // Initialize SharedPreferences and other dependencies
+  final sharedPreferences = await SharedPreferences.getInstance();
+
   // Initialize the dependency injection container
-  await initLocator();
+  await initLocator(sharedPreferences);
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize FCM
