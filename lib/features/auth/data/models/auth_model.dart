@@ -1,16 +1,15 @@
 import 'package:must_invest/features/auth/data/models/user.dart';
 
 class AuthModel {
-  final AppUser user;
+  final User user;
   final String? token;
-  final bool hasSubscription;
 
-  AuthModel({required this.user, this.token, this.hasSubscription = false});
+  AuthModel({required this.user, this.token});
 
   factory AuthModel.fromJson(Map<String, dynamic> json) {
     return AuthModel(
-      user: AppUser.fromJson(json['user']),
-      token: json['token'],
+      user: User.fromJson(json['user']),
+      token: json['access_token'],
       // hasSubscription: json['has_subscription'],
     );
   }

@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
@@ -13,7 +12,6 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
-import 'package:must_invest/core/utils/widgets/inputs/image_picker_avatar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -47,10 +45,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
             40.gap,
-            ImagePickerAvatar(
-              initialImage: context.user.photo,
-              onPick: (image) {},
-            ),
+            // ImagePickerAvatar(
+            //   initialImage: context.user.photo,
+            //   onPick: (image) {},
+            // ),
             28.gap,
             CustomTextFormField(
               controller: TextEditingController(),

@@ -17,7 +17,6 @@ import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
-import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
 
 class UserHomeHeaderWidget extends StatelessWidget {
   const UserHomeHeaderWidget({
@@ -74,32 +73,26 @@ class UserHomeHeaderWidget extends StatelessWidget {
           margin: 0,
           prefixIC: AppIcons.searchIc.icon(),
           hint: LocaleKeys.search.tr(),
-          suffixIC:
-              context.user.type == UserType.parkingMan
-                  ? null
-                  : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomIconButton(
-                        iconAsset: AppIcons.cameraIc,
-                        color: AppColors.primary,
-                        onPressed: () {
-                          context.push(Routes.scanQrcode);
-                        },
-                      ),
-                      6.gap,
-                      CustomIconButton(
-                        iconAsset: AppIcons.qrCodeIc,
-                        color: AppColors.primary,
-                        onPressed: () {
-                          showAllCarsBottomSheet(
-                            context,
-                            onChooseCar: onChooseCar,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+          suffixIC: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomIconButton(
+                iconAsset: AppIcons.cameraIc,
+                color: AppColors.primary,
+                onPressed: () {
+                  context.push(Routes.scanQrcode);
+                },
+              ),
+              6.gap,
+              CustomIconButton(
+                iconAsset: AppIcons.qrCodeIc,
+                color: AppColors.primary,
+                onPressed: () {
+                  showAllCarsBottomSheet(context, onChooseCar: onChooseCar);
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -134,34 +127,34 @@ void showAllCarsBottomSheet(
               children: [
                 Text(LocaleKeys.my_cars.tr(), style: context.titleMedium.bold),
                 16.gap,
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: context.user.cars.length,
-                  separatorBuilder: (context, index) => 12.gap,
-                  itemBuilder: (context, index) {
-                    final car = context.user.cars[index];
-                    final isSelected = selectedId == car.id;
+                // ListView.separated(
+                //   shrinkWrap: true,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   itemCount: context.user.cars.length,
+                //   separatorBuilder: (context, index) => 12.gap,
+                //   itemBuilder: (context, index) {
+                //     final car = context.user.cars[index];
+                //     final isSelected = selectedId == car.id;
 
-                    return CarWidget.selectable(
-                      car: car,
-                      isSelect: isSelected,
-                      onSelectChanged: (value) {
-                        setState(() {
-                          selectedId = value ?? false ? car.id : null;
-                          selectedCar = value ?? false ? car : null;
-                        });
-                      },
-                    ).withPressEffect(
-                      onTap: () {
-                        setState(() {
-                          selectedId = car.id;
-                          selectedCar = car;
-                        });
-                      },
-                    );
-                  },
-                ),
+                //     return CarWidget.selectable(
+                //       car: car,
+                //       isSelect: isSelected,
+                //       onSelectChanged: (value) {
+                //         setState(() {
+                //           selectedId = value ?? false ? car.id : null;
+                //           selectedCar = value ?? false ? car : null;
+                //         });
+                //       },
+                //     ).withPressEffect(
+                //       onTap: () {
+                //         setState(() {
+                //           selectedId = car.id;
+                //           selectedCar = car;
+                //         });
+                //       },
+                //     );
+                //   },
+                // ),
                 20.gap,
                 CustomElevatedButton(
                   height: 50,
@@ -183,7 +176,7 @@ void showAllCarsBottomSheet(
 
   if (selectedCarId != null && selectedCar != null) {
     if (onChooseCar != null) {
-      onChooseCar(selectedCar!);
+      onChooseCar(selectedCar);
     } else {
       // Default behavior if no callback is provided
       context.push(Routes.myQrCode, extra: selectedCar);

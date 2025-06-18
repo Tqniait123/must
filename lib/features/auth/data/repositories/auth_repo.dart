@@ -3,12 +3,9 @@ import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:must_invest/features/auth/data/models/auth_model.dart';
-import 'package:must_invest/features/auth/data/models/brands.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
-import 'package:must_invest/features/auth/data/models/plan.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
-import 'package:must_invest/features/auth/data/models/user.dart';
 
 abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> autoLogin();
@@ -18,17 +15,6 @@ abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> register(RegisterParams params);
   Future<Either<void, AppError>> forgetPassword(String email);
   Future<Either<void, AppError>> resetPassword(ResetPasswordParams params);
-
-  Future<Either<List<SubscriptionPlan>, AppError>> getPlans();
-  Future<Either<SubscriptionPlan, AppError>> subscribePlan(int planId);
-
-  Future<Either<List<Brand>, AppError>> getBrands(int planId);
-
-  Future<Either<AppUser, AppError>> updateLocation(
-    double lat,
-    double long,
-    String address,
-  );
 }
 
 class AuthRepoImpl implements AuthRepo {
@@ -185,104 +171,6 @@ class AuthRepoImpl implements AuthRepo {
 
       if (response.isSuccess) {
         return const Left(null);
-      } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
-      }
-    } catch (e) {
-      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
-    }
-  }
-
-  @override
-  Future<Either<List<SubscriptionPlan>, AppError>> getPlans() async {
-    try {
-      final response = await _remoteDataSource.getPLans();
-
-      if (response.isSuccess) {
-        return Left(response.data!);
-      } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
-      }
-    } catch (e) {
-      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
-    }
-  }
-
-  @override
-  Future<Either<SubscriptionPlan, AppError>> subscribePlan(int planId) async {
-    try {
-      final token = _localDataSource.getToken();
-      final response = await _remoteDataSource.subscribePlan(
-        planId,
-        token ?? '',
-      );
-
-      if (response.isSuccess) {
-        return Left(response.data!);
-      } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
-      }
-    } catch (e) {
-      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
-    }
-  }
-
-  @override
-  Future<Either<List<Brand>, AppError>> getBrands(int planId) async {
-    try {
-      final response = await _remoteDataSource.getBrands(planId);
-
-      if (response.isSuccess) {
-        return Left(response.data!);
-      } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
-      }
-    } catch (e) {
-      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
-    }
-  }
-
-  @override
-  Future<Either<AppUser, AppError>> updateLocation(
-    double lat,
-    double long,
-    String address,
-  ) async {
-    try {
-      final token = _localDataSource.getToken();
-      final response = await _remoteDataSource.updateLocation(
-        token ?? '',
-        lat,
-        long,
-        address,
-      );
-
-      if (response.isSuccess) {
-        return Left(response.data!);
       } else {
         return Right(
           AppError(

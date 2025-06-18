@@ -7,9 +7,9 @@ part 'user_state.dart';
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserUnauthenticated());
   static UserCubit get(context) => BlocProvider.of(context);
-  AppUser? currentUser;
+  User? currentUser;
 
-  void setCurrentUser(AppUser user) {
+  void setCurrentUser(User user) {
     currentUser = user;
     emit(UserAuthenticated(user));
   }

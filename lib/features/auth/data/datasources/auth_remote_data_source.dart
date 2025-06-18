@@ -3,14 +3,11 @@ import 'package:must_invest/core/api/end_points.dart';
 import 'package:must_invest/core/api/response/response.dart';
 import 'package:must_invest/core/extensions/token_to_authorization_options.dart';
 import 'package:must_invest/features/auth/data/models/auth_model.dart';
-import 'package:must_invest/features/auth/data/models/brands.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/login_with_apple.dart';
 import 'package:must_invest/features/auth/data/models/login_with_google_params.dart';
-import 'package:must_invest/features/auth/data/models/plan.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
-import 'package:must_invest/features/auth/data/models/user.dart';
 
 abstract class AuthRemoteDataSource {
   // Future<ApiResponse> login();
@@ -25,15 +22,6 @@ abstract class AuthRemoteDataSource {
   Future<ApiResponse<AuthModel>> register(RegisterParams params);
   Future<ApiResponse<void>> forgetPassword(String email);
   Future<ApiResponse<void>> resetPassword(ResetPasswordParams params);
-  Future<ApiResponse<List<SubscriptionPlan>>> getPLans();
-  Future<ApiResponse<SubscriptionPlan>> subscribePlan(int planId, String token);
-  Future<ApiResponse<List<Brand>>> getBrands(int planId);
-  Future<ApiResponse<AppUser>> updateLocation(
-    String token,
-    double latitude,
-    double longitude,
-    String address,
-  );
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -258,104 +246,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       EndPoints.resetPassword,
       data: params.toJson(),
       fromJson: (json) => (),
-    );
-  }
-
-  /// This function retrieves a list of subscription plans using Dio client in Dart.
-  ///
-  /// Returns:
-  ///   A Future object that will eventually resolve to an ApiResponse containing a list of
-  /// SubscriptionPlan objects.
-  @override
-  Future<ApiResponse<List<SubscriptionPlan>>> getPLans() async {
-    return dioClient.request<List<SubscriptionPlan>>(
-      method: RequestMethod.get,
-      EndPoints.plans,
-      fromJson:
-          (json) => List<SubscriptionPlan>.from(
-            (json as List).map((plan) => SubscriptionPlan.fromJson(plan)),
-          ),
-    );
-  }
-
-  /// This Dart function subscribes a user to a specific subscription plan using a provided token.
-  ///
-  /// Args:
-  ///   planId (int): The `planId` parameter is an integer value representing the ID of the subscription
-  /// plan that the user wants to subscribe to.
-  ///   token (String): The `token` parameter in the `subscribePlan` method is used for authentication and
-  /// authorization purposes. It is typically a string value that represents the user's authentication
-  /// token or access token. This token is usually obtained after a user logs in or authenticates with the
-  /// system and is then passed along with the
-  ///
-  /// Returns:
-  ///   The `subscribePlan` method is returning a `Future` that resolves to an `ApiResponse` containing a
-  /// `SubscriptionPlan` object.
-  @override
-  Future<ApiResponse<SubscriptionPlan>> subscribePlan(
-    int planId,
-    String token,
-  ) async {
-    return dioClient.request<SubscriptionPlan>(
-      method: RequestMethod.post,
-      EndPoints.subscribePlan(planId),
-      options: token.toAuthorizationOptions(),
-      data: {"subscription_id": planId},
-      fromJson:
-          (json) => SubscriptionPlan.fromJson(
-            (json as Map<String, dynamic>)['subscription'],
-          ),
-    );
-  }
-
-  /// The function `getBrands` retrieves a list of brands associated with a specific plan ID using Dio
-  /// client in Dart.
-  ///
-  /// Args:
-  ///   planId (int): The `getBrands` method is a function that returns a Future object with
-  /// ApiResponse<List<Brand>> as the return type. It takes an integer parameter `planId` which is used to
-  /// fetch a list of brands associated with a specific plan.
-  ///
-  /// Returns:
-  ///   The `getBrands` method is returning a `Future` that resolves to an `ApiResponse` containing a list
-  /// of `Brand` objects.
-  @override
-  Future<ApiResponse<List<Brand>>> getBrands(int planId) async {
-    return dioClient.request<List<Brand>>(
-      method: RequestMethod.get,
-      EndPoints.planBrands(planId),
-      fromJson:
-          (json) => List<Brand>.from(
-            ((json as Map<String, dynamic>)['data'] as List).map(
-              (brand) => Brand.fromJson(brand),
-            ),
-          ),
-    );
-  }
-
-  /// Updates the user's location coordinates in the system.
-  ///
-  /// Args:
-  ///   token (String): Authentication token for the user
-  ///   latitude (double): The latitude coordinate of the user's location
-  ///   longitude (double): The longitude coordinate of the user's location
-  ///
-  /// Returns:
-  ///   A Future that resolves to an ApiResponse containing the updated AppUser object
-  ///   with the new location information
-  @override
-  Future<ApiResponse<AppUser>> updateLocation(
-    String token,
-    double latitude,
-    double longitude,
-    String address,
-  ) async {
-    return dioClient.request<AppUser>(
-      method: RequestMethod.post,
-      EndPoints.updateLocation,
-      options: token.toAuthorizationOptions(),
-      data: {"latitude": latitude, "longitude": longitude, "address": address},
-      fromJson: (json) => AppUser.fromJson(json as Map<String, dynamic>),
     );
   }
 }

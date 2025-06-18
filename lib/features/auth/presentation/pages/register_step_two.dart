@@ -11,7 +11,6 @@ import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
-import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/widgets/id_upload_widget.dart'; // Import the custom widget
@@ -107,11 +106,8 @@ class _RegisterStepTwoScreenState extends State<RegisterStepTwoScreen> {
                   listener: (BuildContext context, AuthState state) async {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
-                      if (state.user.type == UserType.user) {
-                        context.go(Routes.homeUser);
-                      } else {
-                        // context.go(Routes.homeParkingMan);
-                      }
+
+                      context.go(Routes.homeUser);
                     }
                     if (state is AuthError) {
                       showErrorToast(context, state.message);

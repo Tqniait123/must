@@ -142,23 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   listener: (BuildContext context, AuthState state) async {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
-                      if (state.user.type == UserType.user) {
-                        if (state.user.isActivated ?? false) {
+                     
                           context.go(Routes.homeUser);
-                        } else {
-                          // Call this anywhere in your app
-                          showAccountActivationBottomSheet(
-                            context: context,
-
-                            onCompleteProfile: () {
-                              context.pop();
-                              context.push(Routes.registerStepTwo);
-                            },
-                          );
-                        }
+                    
                       } else {
                         // context.go(Routes.homeParkingMan);
-                      }
+                      
                     }
                     if (state is AuthError) {
                       showErrorToast(context, state.message);
@@ -188,17 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(
                 child: BlocConsumer<AuthCubit, AuthState>(
                   listener: (BuildContext context, AuthState state) async {
-                    if (state is AuthSuccess) {
-                      UserCubit.get(context).setCurrentUser(state.user);
-                      if (state.user.type == UserType.user) {
-                        // context.go(Routes.homeUser);
-                      } else {
-                        // context.go(Routes.homeParkingMan);
-                      }
-                    }
-                    if (state is AuthError) {
-                      showErrorToast(context, state.message);
-                    }
+                    
                   },
                   builder:
                       (BuildContext context, AuthState state) =>
