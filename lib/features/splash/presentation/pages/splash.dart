@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
@@ -117,6 +118,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (state is AuthSuccess) {
         // Auto login successful, navigate to main/home screen
+        context.setCurrentUser(state.user);
         context.go(Routes.homeUser); // Replace with your main screen route
       } else if (state is AuthError) {
         // Auto login failed, navigate to login screen

@@ -31,7 +31,6 @@ class AuthRepoImpl implements AuthRepo {
       final response = await _remoteDataSource.autoLogin(token ?? '');
 
       if (response.isSuccess) {
-        _localDataSource.saveToken(response.accessToken ?? '');
         return Left(response.data!);
       } else {
         return Right(
