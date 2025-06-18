@@ -134,7 +134,7 @@ class AuthCubit extends Cubit<AuthState> {
       final response = await _repo.forgetPassword(email);
       response.fold(
         (function) => emit(ForgetPasswordSentOTP()),
-        (error) => emit(AuthError(error.message)),
+        (error) => emit(ForgetPasswordError(error.message)),
       );
     } on AppError catch (e) {
       emit(ForgetPasswordError(e.message));
@@ -156,7 +156,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(ResetPasswordLoading());
       final response = await _repo.resetPassword(params);
       response.fold(
-        (function) => emit(ResetPasswordSentOTP()),
+        (function) => emit(ResetPasswordSuccess()),
         (error) => emit(AuthError(error.message)),
       );
     } on AppError catch (e) {

@@ -182,5 +182,6 @@
   "points": "نقاط",
   "country": "الدولة",
   "governorate": "المحافظة", 
-  "city": "المدينة"
+  "city": "المدينة",
+  "passwords_dont_match": "كلمات المرور غير متطابقة"
 }

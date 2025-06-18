@@ -184,5 +184,6 @@ abstract class  LocaleKeys {
   static const country = 'country';
   static const governorate = 'governorate';
   static const city = 'city';
+  static const passwords_dont_match = 'passwords_dont_match';
 
 }

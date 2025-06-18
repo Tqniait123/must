@@ -45,6 +45,7 @@ class ForgetPasswordError extends AuthState {
 class ResetPasswordLoading extends AuthState {}
 
 class ResetPasswordSentOTP extends AuthState {}
+class ResetPasswordSuccess extends AuthState {}
 
 class ResetPasswordError extends AuthState {
   final String message;

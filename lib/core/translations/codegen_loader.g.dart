@@ -198,7 +198,8 @@ class CodegenLoader extends AssetLoader{
   "points": "Points",
   "country": "Country",
   "governorate": "Governorate",
-  "city": "City"
+  "city": "City",
+  "passwords_dont_match": "Passwords don't match"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -384,7 +385,8 @@ static const Map<String,dynamic> _ar = {
   "points": "نقاط",
   "country": "الدولة",
   "governorate": "المحافظة",
-  "city": "المدينة"
+  "city": "المدينة",
+  "passwords_dont_match": "كلمات المرور غير متطابقة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

@@ -182,5 +182,6 @@
   "points": "Points",
   "country": "Country",
   "governorate": "Governorate",
-  "city": "City"
+  "city": "City",
+  "passwords_dont_match": "Passwords don't match"
 }

@@ -118,7 +118,7 @@ class AppRouter {
         path: Routes.resetPassword,
         builder: (context, state) {
           // Return the OtpScreen widget
-          return ResetPasswordScreen(email: state.extra as String);
+          return ResetPasswordScreen(phone: state.extra as String);
         },
       ),
       GoRoute(
