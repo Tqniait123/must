@@ -6,9 +6,10 @@ import 'package:must_invest/features/auth/data/models/auth_model.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
 
 abstract class AuthRepo {
-  Future<Either<AuthModel, AppError>> autoLogin();
+  Future<Either<User, AppError>> autoLogin();
   Future<Either<AuthModel, AppError>> login(LoginParams params);
   Future<Either<AuthModel, AppError>> loginWithGoogle();
   Future<Either<AuthModel, AppError>> loginWithApple();
@@ -24,7 +25,7 @@ class AuthRepoImpl implements AuthRepo {
   AuthRepoImpl(this._remoteDataSource, this._localDataSource);
 
   @override
-  Future<Either<AuthModel, AppError>> autoLogin() async {
+  Future<Either<User, AppError>> autoLogin() async {
     try {
       final token = _localDataSource.getToken();
       final response = await _remoteDataSource.autoLogin(token ?? '');

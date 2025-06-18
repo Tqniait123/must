@@ -8,10 +8,11 @@ import 'package:must_invest/features/auth/data/models/login_with_apple.dart';
 import 'package:must_invest/features/auth/data/models/login_with_google_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
 
 abstract class AuthRemoteDataSource {
   // Future<ApiResponse> login();
-  Future<ApiResponse<AuthModel>> autoLogin(String token);
+  Future<ApiResponse<User>> autoLogin(String token);
   Future<ApiResponse<AuthModel>> login(LoginParams params);
   Future<ApiResponse<AuthModel>> loginWithGoogle(
     LoginWithGoogleParams loginWithGoogleParams,
@@ -41,12 +42,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// Returns:
   ///   A `Future` of type `ApiResponse<AppUser>` is being returned.
   @override
-  Future<ApiResponse<AuthModel>> autoLogin(String token) async {
-    return dioClient.request<AuthModel>(
+  Future<ApiResponse<User>> autoLogin(String token) async {
+    return dioClient.request<User>(
       method: RequestMethod.get,
       EndPoints.autoLogin,
       options: token.toAuthorizationOptions(),
-      fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
+      fromJson: (json) => User.fromJson(json as Map<String, dynamic>),
     );
   }
 
@@ -64,53 +65,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<ApiResponse<AuthModel>> login(LoginParams params) async {
     // final deviceToken = await fcmService.getDeviceToken();
 
-    // Add artificial delay to simulate network request
-    await Future.delayed(const Duration(seconds: 2));
-
-    return ApiResponse.fromJson({
-      'status': true,
-      'message': 'Login successful',
-      'token': 'fake_token_123',
-      'data': {
-        'token': 'fake_token_123',
-        'user': {
-          'id': 1,
-          'name': 'محمود الدنجاوي',
-          'email': 'eldengaawy@gmail.com',
-          'link_id': '#565678',
-          'isActivated': params.email.contains('aaa') ? false : true,
-          'type':
-              (params.email == 'parkingMan@gmail.com') ? 'parkingMan' : 'user',
-          'badges': (params.email == 'parent@gmail.com') ? [] : ['gold'],
-          'phone': '01012345678',
-          'photo':
-              'https://turntable.kagiso.io/images/single_parent_wikimedia.width-800.jpg',
-          // ✅ فقط لو النوع "user" نضيف السيارات
-          if (params.email != 'parkingMan@gmail.com')
-            'cars': [
-              {
-                'id': 'car-1',
-                'model': 'Toyota Corolla',
-                'plate_number': 'س ي د 1234',
-              },
-              {
-                'id': 'car-2',
-                'model': 'Hyundai Elantra',
-                'plate_number': 'م ك و 5678',
-              },
-            ],
-        },
+    return dioClient.request<AuthModel>(
+      method: RequestMethod.post,
+      EndPoints.autoLogin,
+      // data: params.toJson(deviceToken ?? ''),
+      fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
+      onSuccess: () {
+        // fcmService.subscribeToTopic(Constants.allTopic);
       },
-    }, (json) => AuthModel.fromJson(json as Map<String, dynamic>));
-    // return dioClient.request<AuthModel>(
-    //   method: RequestMethod.post,
-    //   EndPoints.login,
-    //   // data: params.toJson(deviceToken ?? ''),
-    //   fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
-    //   onSuccess: () {
-    //     // fcmService.subscribeToTopic(Constants.allTopic);
-    //   },
-    // );
+    );
   }
 
   /// The function `loginWithGoogle` sends a POST request to the login endpoint with Google authentication
@@ -178,36 +141,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// `AuthModel` object.
   @override
   Future<ApiResponse<AuthModel>> register(RegisterParams params) async {
-    // return dioClient.request<AuthModel>(
-    //   method: RequestMethod.post,
-    //   EndPoints.register,
-    //   data: params.toJson(),
-    //   fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
-    //   onSuccess: () {
-    //     // fcmService.subscribeToTopic(Constants.allTopic);
-    //   },
-    // );
-
-    return ApiResponse.fromJson({
-      'status': true,
-      'message': 'Login successful',
-      'token': 'fake_token_123',
-      'data': {
-        'token': 'fake_token_123',
-        'user': {
-          'id': 1,
-          'name': 'محمود الدنجاوي',
-          'email': 'eldengaawy@gmail.com',
-          'link_id': '#565678',
-          'type':
-              (params.email) == 'parent@gmail.com' ? 'parent' : 'parkingMan',
-          'badges': (params.email == 'parent@gmail.com') ? [] : ['gold'],
-          'phone': '01012345678',
-          'photo':
-              'https://turntable.kagiso.io/images/single_parent_wikimedia.width-800.jpg',
-        },
+    return dioClient.request<AuthModel>(
+      method: RequestMethod.post,
+      EndPoints.register,
+      data: params.toJson(),
+      fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
+      onSuccess: () {
+        // fcmService.subscribeToTopic(Constants.allTopic);
       },
-    }, (json) => AuthModel.fromJson(json as Map<String, dynamic>));
+    );
   }
 
   /// The `forgetPassword` function sends a POST request to the `register` endpoint with the provided

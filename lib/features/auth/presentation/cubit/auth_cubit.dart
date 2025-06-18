@@ -22,7 +22,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthLoading());
       final response = await _repo.autoLogin();
       response.fold(
-        (authModel) => emit(AuthSuccess(authModel.user)),
+        (user) => emit(AuthSuccess(user)),
         (error) => emit(AuthError(error.message)),
       );
     } on AppError catch (e) {
