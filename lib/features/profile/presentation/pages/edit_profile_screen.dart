@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
@@ -22,6 +23,39 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   PlatformFile? image;
+
+  // Text editing controllers
+  late final TextEditingController _fullNameController;
+  // late final TextEditingController _typeController;
+  late final TextEditingController _idController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _addressController;
+  late final TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers with initial values
+    _fullNameController = TextEditingController(text: context.user.name);
+    // _typeController = TextEditingController(text: "Individual");
+    _idController = TextEditingController(text: context.user.id.toString());
+    _phoneController = TextEditingController(text: context.user.phone);
+    _addressController = TextEditingController(text: '');
+    _passwordController = TextEditingController(text: "");
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers
+    _fullNameController.dispose();
+    // _typeController.dispose();
+    _idController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,12 +80,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             40.gap,
             // ImagePickerAvatar(
-            //   initialImage: context.user.photo,
+            //   // initialImage: context.user.photo,
             //   onPick: (image) {},
             // ),
             28.gap,
             CustomTextFormField(
-              controller: TextEditingController(),
+              controller: _fullNameController,
               margin: 0,
               hint: LocaleKeys.full_name.tr(),
               title: LocaleKeys.full_name.tr(),
@@ -61,7 +95,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Expanded(
                   child: CustomTextFormField(
-                    controller: TextEditingController(),
+                    controller: _idController,
                     margin: 0,
                     hint: LocaleKeys.type.tr(),
                     title: LocaleKeys.type.tr(),
@@ -70,7 +104,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 16.gap,
                 Expanded(
                   child: CustomTextFormField(
-                    controller: TextEditingController(),
+                    controller: _idController,
                     margin: 0,
                     hint: LocaleKeys.id.tr(),
                     title: LocaleKeys.id.tr(),
@@ -80,21 +114,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             16.gap,
             CustomTextFormField(
-              controller: TextEditingController(),
+              controller: _phoneController,
               margin: 0,
               hint: LocaleKeys.phone_number.tr(),
               title: LocaleKeys.phone_number.tr(),
             ),
             16.gap,
             CustomTextFormField(
-              controller: TextEditingController(),
+              controller: _addressController,
               margin: 0,
               hint: LocaleKeys.address.tr(),
               title: LocaleKeys.address.tr(),
             ),
             16.gap,
             CustomTextFormField(
-              controller: TextEditingController(),
+              controller: _passwordController,
               margin: 0,
               isPassword: true,
               hint: LocaleKeys.password.tr(),

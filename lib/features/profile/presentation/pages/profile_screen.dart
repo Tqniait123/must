@@ -50,38 +50,42 @@ class ProfileScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 43,
-                      backgroundImage: NetworkImage(
-                        Constants.placeholderProfileImage,
+                Expanded(
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 43,
+                        backgroundImage: NetworkImage(
+                          Constants.placeholderProfileImage,
+                        ),
                       ),
-                    ),
-                    24.gap,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          LocaleKeys.welcome.tr(),
-                          style: context.bodyMedium.copyWith(
-                            color: AppColors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      24.gap,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              LocaleKeys.welcome.tr(),
+                              style: context.bodyMedium.copyWith(
+                                color: AppColors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            8.gap,
+                            Text(
+                              context.user.name,
+                              style: context.titleLarge.copyWith(
+                                color: AppColors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        8.gap,
-                        Text(
-                          context.user.name,
-                          style: context.titleLarge.copyWith(
-                            color: AppColors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
                 CustomIconButton(
                   color: Color(0xff6468AC),
