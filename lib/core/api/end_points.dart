@@ -11,4 +11,8 @@ class EndPoints {
   static const String forgetPassword = 'forgot-password';
   static const String resetPassword = 'reset-password';
   static const String home = 'home';
+  static const String countries = 'countries';
+  static  String governorates(int id) => 'governorates/$id';
+  static  String cities(int id) => 'cities/$id';
+
 }

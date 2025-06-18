@@ -181,5 +181,8 @@ abstract class  LocaleKeys {
   static const cannot_be_undone = 'cannot_be_undone';
   static const select_car = 'select_car';
   static const points = 'points';
+  static const country = 'country';
+  static const governorate = 'governorate';
+  static const city = 'city';
 
 }

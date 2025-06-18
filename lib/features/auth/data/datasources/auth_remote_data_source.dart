@@ -3,6 +3,9 @@ import 'package:must_invest/core/api/end_points.dart';
 import 'package:must_invest/core/api/response/response.dart';
 import 'package:must_invest/core/extensions/token_to_authorization_options.dart';
 import 'package:must_invest/features/auth/data/models/auth_model.dart';
+import 'package:must_invest/features/auth/data/models/city.dart';
+import 'package:must_invest/features/auth/data/models/country.dart';
+import 'package:must_invest/features/auth/data/models/governorate.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/login_with_apple.dart';
 import 'package:must_invest/features/auth/data/models/login_with_google_params.dart';
@@ -23,6 +26,9 @@ abstract class AuthRemoteDataSource {
   Future<ApiResponse<AuthModel>> register(RegisterParams params);
   Future<ApiResponse<void>> forgetPassword(String email);
   Future<ApiResponse<void>> resetPassword(ResetPasswordParams params);
+  Future<ApiResponse<List<Country>>> getCountries();
+  Future<ApiResponse<List<Governorate>>> getGovernorates(int countryId);
+  Future<ApiResponse<List<City>>> getCities(int governorateId);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -188,6 +194,74 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       EndPoints.resetPassword,
       data: params.toJson(),
       fromJson: (json) => (),
+    );
+  }
+
+  @override
+  /// This function sends a GET request to retrieve a list of cities that belong to the
+  /// governorate with the provided `governorateId`.
+  ///
+  /// Args:
+  ///   governorateId (int): The `governorateId` parameter is required to specify which
+  /// governorate's cities should be retrieved.
+  ///
+  /// Returns:
+  ///   The `getCities` method is returning a `Future` that resolves to an `ApiResponse`
+  /// containing a `List<City>`.
+  Future<ApiResponse<List<City>>> getCities(int governorateId) async {
+    return dioClient.request<List<City>>(
+      method: RequestMethod.get,
+      EndPoints.cities(governorateId),
+      fromJson:
+          (json) => List<City>.from(
+            (json as List).map(
+              (city) => City.fromJson(city as Map<String, dynamic>),
+            ),
+          ),
+    );
+  }
+
+  @override
+  /// This function sends a GET request to retrieve a list of countries from the server.
+  ///
+  /// Returns:
+  ///   The `getCountries` method is returning a `Future` that resolves to an `ApiResponse`
+  /// containing a `List<Country>`.
+  Future<ApiResponse<List<Country>>> getCountries() async {
+    return dioClient.request<List<Country>>(
+      method: RequestMethod.get,
+      EndPoints.countries,
+      fromJson:
+          (json) => List<Country>.from(
+            (json as List).map(
+              (country) => Country.fromJson(country as Map<String, dynamic>),
+            ),
+          ),
+    );
+  }
+
+  @override
+  /// This function sends a GET request to retrieve a list of governorates that belong to the
+  /// country with the provided `countryId`.
+  ///
+  /// Args:
+  ///   countryId (int): The `countryId` parameter is required to specify which country's
+  /// governorates should be retrieved.
+  ///
+  /// Returns:
+  ///   The `getGovernorates` method is returning a `Future` that resolves to an `ApiResponse`
+  /// containing a `List<Governorate>`.
+  Future<ApiResponse<List<Governorate>>> getGovernorates(int countryId) async {
+    return dioClient.request<List<Governorate>>(
+      method: RequestMethod.get,
+      EndPoints.governorates(countryId),
+      fromJson:
+          (json) => List<Governorate>.from(
+            (json as List).map(
+              (governorate) =>
+                  Governorate.fromJson(governorate as Map<String, dynamic>),
+            ),
+          ),
     );
   }
 }

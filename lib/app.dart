@@ -8,8 +8,6 @@ import 'package:must_invest/config/routes/app_router.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/strings.dart';
 import 'package:must_invest/core/theme/light_theme.dart';
-import 'package:must_invest/core/utils/dialogs/payment_bottom_sheet.dart';
-import 'package:must_invest/features/auth/data/models/payment_request_model.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/languages_cubit/languages_cubit.dart';
@@ -62,7 +60,6 @@ class MustIvest extends StatelessWidget {
                                     ); // Reload translations
                                   },
                                 ),
-                             
                               ],
                             ),
                           ),

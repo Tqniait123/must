@@ -3,6 +3,9 @@ import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:must_invest/features/auth/data/models/auth_model.dart';
+import 'package:must_invest/features/auth/data/models/city.dart';
+import 'package:must_invest/features/auth/data/models/country.dart';
+import 'package:must_invest/features/auth/data/models/governorate.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
@@ -16,6 +19,13 @@ abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> register(RegisterParams params);
   Future<Either<void, AppError>> forgetPassword(String email);
   Future<Either<void, AppError>> resetPassword(ResetPasswordParams params);
+  Future<Either<List<Country>, AppError>> getCountries(); // List<Country>
+  Future<Either<List<Governorate>, AppError>> getGovernorates(
+    int countryId,
+  ); // List<Governorate>
+  Future<Either<List<City>, AppError>> getCities(
+    int governorateId,
+  ); // List<City>
 }
 
 class AuthRepoImpl implements AuthRepo {
@@ -171,6 +181,71 @@ class AuthRepoImpl implements AuthRepo {
 
       if (response.isSuccess) {
         return const Left(null);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage,
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<List<City>, AppError>> getCities(int governorateId) async {
+    try {
+      final response = await _remoteDataSource.getCities(governorateId);
+
+      if (response.isSuccess) {
+        return Left(response.data!);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage,
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<List<Country>, AppError>> getCountries() async {
+    try {
+      final response = await _remoteDataSource.getCountries();
+
+      if (response.isSuccess) {
+        return Left(response.data!);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage,
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<List<Governorate>, AppError>> getGovernorates(
+    int countryId,
+  ) async {
+    try {
+      final response = await _remoteDataSource.getGovernorates(countryId);
+
+      if (response.isSuccess) {
+        return Left(response.data!);
       } else {
         return Right(
           AppError(

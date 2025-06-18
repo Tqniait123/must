@@ -179,5 +179,8 @@
   "delete_confirmation": "هل أنت متأكد أنك تريد حذف \"{carModel}\"؟",
   "cannot_be_undone": "لا يمكن التراجع عن هذا الإجراء.",
   "select_car": "حدد سيارة",
-  "points": "نقاط"
+  "points": "نقاط",
+  "country": "الدولة",
+  "governorate": "المحافظة", 
+  "city": "المدينة"
 }

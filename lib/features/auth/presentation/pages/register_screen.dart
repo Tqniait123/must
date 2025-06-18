@@ -26,9 +26,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _AddressController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _governorateController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -95,10 +97,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     16.gap,
                     CustomTextFormField(
-                      controller: _AddressController,
+                      controller: _countryController,
                       margin: 0,
-                      hint: LocaleKeys.address.tr(),
-                      title: LocaleKeys.address.tr(),
+                      hint: LocaleKeys.country.tr(),
+                      title: LocaleKeys.country.tr(),
+                      suffixIC: Icon(
+                        Icons.arrow_drop_down_rounded,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    16.gap,
+                    CustomTextFormField(
+                      controller: _governorateController,
+                      margin: 0,
+                      hint: LocaleKeys.governorate.tr(),
+                      title: LocaleKeys.governorate.tr(),
+                      suffixIC: Icon(
+                        Icons.arrow_drop_down_rounded,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    16.gap,
+                    CustomTextFormField(
+                      controller: _cityController,
+                      margin: 0,
+                      hint: LocaleKeys.city.tr(),
+                      title: LocaleKeys.city.tr(),
+                      suffixIC: Icon(
+                        Icons.arrow_drop_down_rounded,
+                        color: AppColors.primary,
+                      ),
                     ),
                     16.gap,
                     CustomTextFormField(
@@ -172,30 +200,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           71.gap,
 
-          // // or login with divider
-          // Row(
-          //   children: [
-          //     Expanded(
-          //       child: Divider(
-          //         color: AppColors.grey60.withOpacity(0.3),
-          //         thickness: 1,
-          //       ),
-          //     ),
-          //     16.gap,
-          //     Text(
-          //       LocaleKeys.or_login_with.tr(),
-          //       style: context.bodyMedium.s12.regular,
-          //     ),
-          //     16.gap,
-          //     Expanded(
-          //       child: Divider(
-          //         color: AppColors.grey60.withOpacity(0.3),
-          //         thickness: 1,
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          // 20.gap,
           SignUpButton(
             isLogin: false,
             onTap: () {
@@ -207,8 +211,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
-  // Widget _buildWelcomeSection() {
-  //   return
-  // }
 }

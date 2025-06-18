@@ -195,7 +195,10 @@ class CodegenLoader extends AssetLoader{
   "delete_confirmation": "Are you sure you want to delete \"{carModel}\"?",
   "cannot_be_undone": "This action cannot be undone.",
   "select_car": "Select Car",
-  "points": "Points"
+  "points": "Points",
+  "country": "Country",
+  "governorate": "Governorate",
+  "city": "City"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -378,7 +381,10 @@ static const Map<String,dynamic> _ar = {
   "delete_confirmation": "هل أنت متأكد أنك تريد حذف \"{carModel}\"؟",
   "cannot_be_undone": "لا يمكن التراجع عن هذا الإجراء.",
   "select_car": "حدد سيارة",
-  "points": "نقاط"
+  "points": "نقاط",
+  "country": "الدولة",
+  "governorate": "المحافظة",
+  "city": "المدينة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
