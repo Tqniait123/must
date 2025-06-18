@@ -28,10 +28,7 @@ class UnauthenticatedException extends AppException {
   UnauthenticatedException() : super("User Unauthenticated");
 }
 
-class BadInputException extends AppException {
-  final Map<String, ResponseCode> errors;
-  BadInputException(this.errors) : super('bad input');
-}
+
 
 class ServerException extends AppException {
   ServerException() : super("Something went wrong");
