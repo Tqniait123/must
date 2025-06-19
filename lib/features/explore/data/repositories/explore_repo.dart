@@ -2,10 +2,11 @@ import 'package:dartz/dartz.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/features/explore/data/datasources/explore_remote_data_source.dart';
+import 'package:must_invest/features/explore/data/models/filter_model.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
 
 abstract class ExploreRepo {
-  Future<Either<List<Parking>, AppError>> getAllParkings();
+  Future<Either<List<Parking>, AppError>> getAllParkings({FilterModel? filter});
 }
 
 class ExploreRepoImpl implements ExploreRepo {
@@ -15,10 +16,15 @@ class ExploreRepoImpl implements ExploreRepo {
   ExploreRepoImpl(this._remoteDataSource, this._localDataSource);
 
   @override
-  Future<Either<List<Parking>, AppError>> getAllParkings() async {
+  Future<Either<List<Parking>, AppError>> getAllParkings({
+    FilterModel? filter,
+  }) async {
     try {
       final token = _localDataSource.getToken();
-      final response = await _remoteDataSource.getAllParkings(token ?? '');
+      final response = await _remoteDataSource.getAllParkings(
+        token ?? '',
+        filter: filter,
+      );
 
       if (response.isSuccess) {
         return Left(response.data!);

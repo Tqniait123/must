@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/errors/app_error.dart';
+import 'package:must_invest/features/explore/data/models/filter_model.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/data/repositories/explore_repo.dart';
 
@@ -12,10 +13,10 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   static ExploreCubit get(context) => BlocProvider.of<ExploreCubit>(context);
 
-  Future<void> getAllParkings() async {
+  Future<void> getAllParkings({FilterModel? filter}) async {
     try {
       emit(ParkingsLoading());
-      final response = await exploreRepo.getAllParkings();
+      final response = await exploreRepo.getAllParkings(filter: filter);
       response.fold(
         (parkings) => emit(ParkingsSuccess(parkings)),
         (error) => emit(ParkingsError(error.message)),
