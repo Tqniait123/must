@@ -9,13 +9,13 @@ import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/widgets/parking_details_card.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/current_location_marker.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/loading_indicator.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/navigation_info_card.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/parking_location_marker.dart';
 import 'package:must_invest/features/explore/presentation/widgets/routing/route_service_widget.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
 
 class RoutingParkingScreen extends StatefulWidget {
   final Parking parking;
@@ -180,7 +180,8 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
 
     List<LatLng> straightLinePoints = [
       LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-      LatLng(widget.parking.lat, widget.parking.lng),
+      // LatLng(widget.parking.lat, widget.parking.lng),
+      LatLng(0, 0),
     ];
 
     setState(() {
@@ -331,7 +332,8 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
       // Parking location marker
       _markers.add(
         Marker(
-          point: LatLng(widget.parking.lat, widget.parking.lng),
+          point: LatLng(0, 0),
+          // point: LatLng(widget.parking.lat, widget.parking.lng),
           width: 80,
           height: 80,
           child: ParkingLocationMarker(parking: widget.parking),
@@ -346,8 +348,10 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     double distance = _calculateDistance(
       _currentLocation!.latitude!,
       _currentLocation!.longitude!,
-      widget.parking.lat,
-      widget.parking.lng,
+      // widget.parking.lat,
+      // widget.parking.lng,
+      0,
+      0,
     );
 
     setState(() {
@@ -458,7 +462,8 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
       _currentLocation!.latitude!,
       _currentLocation!.longitude!,
     );
-    LatLng parkingPos = LatLng(widget.parking.lat, widget.parking.lng);
+    // LatLng parkingPos = LatLng(widget.parking.lat, widget.parking.lng);
+    LatLng parkingPos = LatLng(0, 0);
 
     LatLngBounds bounds = LatLngBounds(
       LatLng(
@@ -489,8 +494,10 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
     double distance = _calculateDistance(
       _currentLocation!.latitude!,
       _currentLocation!.longitude!,
-      widget.parking.lat,
-      widget.parking.lng,
+      // widget.parking.lat,
+      // widget.parking.lng,
+      0,
+      0,
     );
 
     setState(() {
@@ -516,7 +523,8 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
                         _currentLocation!.latitude!,
                         _currentLocation!.longitude!,
                       )
-                      : LatLng(widget.parking.lat, widget.parking.lng),
+                      // : LatLng(widget.parking.lat, widget.parking.lng),
+                      : LatLng(0, 0),
               initialZoom: 15.0,
               maxZoom: 18.0,
               minZoom: 5.0,

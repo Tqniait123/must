@@ -17,4 +17,5 @@ class EndPoints {
   static const String countries = 'countries';
   static String governorates(int id) => 'governorates/$id';
   static String cities(int id) => 'cities/$id';
+  static const String parking = 'parking';
 }

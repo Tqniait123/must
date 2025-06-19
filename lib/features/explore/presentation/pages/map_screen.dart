@@ -12,7 +12,7 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MapScreen extends StatefulWidget {
@@ -191,7 +191,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _simulateLoadingAndFetch() async {
     await Future.delayed(const Duration(seconds: 2));
     setState(() {
-      _parkings = Parking.getFakeArabicParkingList();
+      _parkings = Parking.getFakeHistoryParkings();
       _isLoading = false;
     });
   }
@@ -258,7 +258,8 @@ class _MapScreenState extends State<MapScreen> {
                               rotate: false,
                               width: 100.0,
                               height: 100.0,
-                              point: LatLng(parking.lat, parking.lng),
+                              // point: LatLng(parking.lat, parking.lng),
+                              point: LatLng(0, 0),
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -268,35 +269,35 @@ class _MapScreenState extends State<MapScreen> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 14,
-                                        vertical: 9,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            parking.isBusy
-                                                ? const Color(0xffE60A0E)
-                                                : const Color(0xff1DD76E),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        '${parking.pricePerHour} EGP',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    CustomPaint(
-                                      size: const Size(14, 8),
-                                      painter: _TrianglePainter(
-                                        color:
-                                            parking.isBusy
-                                                ? const Color(0xffE60A0E)
-                                                : const Color(0xff1DD76E),
-                                      ),
-                                    ),
+                                    // Container(
+                                    //   padding: const EdgeInsets.symmetric(
+                                    //     horizontal: 14,
+                                    //     vertical: 9,
+                                    //   ),
+                                    //   decoration: BoxDecoration(
+                                    //     color:
+                                    //         parking.isBusy
+                                    //             ? const Color(0xffE60A0E)
+                                    //             : const Color(0xff1DD76E),
+                                    //     borderRadius: BorderRadius.circular(10),
+                                    //   ),
+                                    //   child: Text(
+                                    //     '${parking.pricePerHour} EGP',
+                                    //     style: const TextStyle(
+                                    //       fontSize: 14,
+                                    //       color: Colors.white,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // CustomPaint(
+                                    //   size: const Size(14, 8),
+                                    //   painter: _TrianglePainter(
+                                    //     color:
+                                    //         parking.isBusy
+                                    //             ? const Color(0xffE60A0E)
+                                    //             : const Color(0xff1DD76E),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -357,7 +358,7 @@ class _MapScreenState extends State<MapScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(parking.title, style: context.titleLarge),
+                      Text(parking.nameEn, style: context.titleLarge),
                       const SizedBox(height: 4),
                       Text(
                         parking.address,
@@ -378,7 +379,7 @@ class _MapScreenState extends State<MapScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      "${parking.distanceInMinutes} ${LocaleKeys.min.tr()}",
+                      "${parking.location} ${LocaleKeys.min.tr()}",
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -393,13 +394,13 @@ class _MapScreenState extends State<MapScreen> {
                 height: 80,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: parking.gallery.length,
+                  itemCount: parking.gallery.gallery.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        parking.gallery[index],
+                        parking.gallery.gallery[index].image,
                         width: 129,
                         height: 80,
                         fit: BoxFit.cover,
@@ -410,7 +411,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               const SizedBox(height: 16),
               CustomElevatedButton(
-                isDisabled: _selectedParking?.isBusy ?? false,
+                // isDisabled: _selectedParking?.isBusy ?? false,
                 title: LocaleKeys.start_now.tr(),
                 onPressed: () {},
               ),

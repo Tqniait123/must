@@ -11,7 +11,7 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
 
 class HistoryScreen extends StatelessWidget {

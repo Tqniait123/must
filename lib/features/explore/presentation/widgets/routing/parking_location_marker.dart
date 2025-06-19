@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:must_invest/core/theme/colors.dart'; // Make sure to import your colors
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/home/data/models/parking_model.dart';
 
 class ParkingLocationMarker extends StatelessWidget {
@@ -63,24 +64,24 @@ class ParkingLocationMarker extends StatelessWidget {
           ],
         ),
         // Status indicator
-        Positioned(
-          top: 2,
-          right: 2,
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              color: parking.isBusy ? Colors.red : Colors.green,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-            child: Icon(
-              parking.isBusy ? Icons.close : Icons.check,
-              color: Colors.white,
-              size: 8,
-            ),
-          ),
-        ),
+        // Positioned(
+        //   top: 2,
+        //   right: 2,
+        //   child: Container(
+        //     width: 16,
+        //     height: 16,
+        //     decoration: BoxDecoration(
+        //       color: parking.isBusy ? Colors.red : Colors.green,
+        //       shape: BoxShape.circle,
+        //       border: Border.all(color: Colors.white, width: 2),
+        //     ),
+        //     child: Icon(
+        //       parking.isBusy ? Icons.close : Icons.check,
+        //       color: Colors.white,
+        //       size: 8,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

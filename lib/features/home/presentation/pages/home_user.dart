@@ -10,7 +10,7 @@ import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 import 'package:must_invest/features/home/presentation/widgets/my_points_card.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
@@ -30,7 +30,7 @@ class _HomeUserState extends State<HomeUser> {
 
   @override
   Widget build(BuildContext context) {
-    final parkingList = Parking.getFakeArabicParkingList();
+    final parkingList = Parking.getFakeHistoryParkings();
 
     return Scaffold(
       body: CustomLayout(

@@ -20,12 +20,12 @@ import 'package:must_invest/features/auth/presentation/pages/register_screen.dar
 import 'package:must_invest/features/auth/presentation/pages/register_step_three.dart';
 import 'package:must_invest/features/auth/presentation/pages/register_step_two.dart';
 import 'package:must_invest/features/auth/presentation/pages/reset_password.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/pages/explore_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/parking_details_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/routing_parking_screen.dart';
 import 'package:must_invest/features/history/presentation/pages/history_screen.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
 import 'package:must_invest/features/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen.dart';
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';

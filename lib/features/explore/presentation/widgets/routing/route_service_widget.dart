@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 
 class RouteServiceWidget {
   final Parking parking;
@@ -44,7 +44,8 @@ class RouteServiceWidget {
       final Map<String, dynamic> requestBody = {
         'coordinates': [
           [currentLocation!.longitude, currentLocation!.latitude],
-          [parking.lng, parking.lat],
+          // [parking.lng, parking.lat],
+          [0, 0],
         ],
         'format': 'geojson',
         'instructions': true,
@@ -98,7 +99,8 @@ class RouteServiceWidget {
       final String url =
           'https://router.project-osrm.org/route/v1/driving/'
           '${currentLocation!.longitude},${currentLocation!.latitude};'
-          '${parking.lng},${parking.lat}'
+          // '${parking.lng},${parking.lat}'
+          '0,0'
           '?overview=full&geometries=geojson&steps=true';
 
       final response = await http

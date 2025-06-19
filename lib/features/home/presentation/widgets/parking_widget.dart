@@ -5,8 +5,8 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/pages/parking_details_screen.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
 
 class ParkingCard extends StatelessWidget {
   final Parking parking;
@@ -29,11 +29,11 @@ class ParkingCard extends StatelessWidget {
           children: [
             // Parking Image
             Hero(
-              tag: '${parking.id}-${parking.imageUrl}',
+              tag: '${parking.id}-${parking.gallery.gallery[0].image}',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  parking.imageUrl,
+                  parking.gallery.gallery[0].image,
                   width: 90,
                   height: 90,
                   fit: BoxFit.cover,
@@ -60,7 +60,7 @@ class ParkingCard extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    parking.title,
+                    parking.nameEn,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -80,109 +80,109 @@ class ParkingCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  if (parking.durationTime != null) ...[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  // if (parking.durationTime != null) ...[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          // Flexible(
+                          //   child: CustomDetailsInfo(
+                          //     title: parking.startPoint ?? '',
+                          //   ),
+                          // ),
+                          // 5.gap,
+                          // Flexible(
+                          //   child: CustomDetailsInfo(
+                          //     title: parking.endPoint ?? '',
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                      5.gap,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // CustomDetailsInfo(
+                          //   title: parking.durationTime ?? '',
+                          // ),
+                          5.gap,
+                          CustomDetailsInfo(
+                            icon: AppIcons.outlinedPriceIc,
+                            title:
+                                "${parking.pricePerHour} ${LocaleKeys.EGP.tr()} = ${parking.points} ${LocaleKeys.points.tr()}",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  // ] else ...[
+                  // Price per hour
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                        TextSpan(
                           children: [
-                            Flexible(
-                              child: CustomDetailsInfo(
-                                title: parking.startPoint ?? '',
+                            TextSpan(
+                              text:
+                                  "${LocaleKeys.EGP.tr()} ${parking.pricePerHour}",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2B3085),
                               ),
                             ),
-                            5.gap,
-                            Flexible(
-                              child: CustomDetailsInfo(
-                                title: parking.endPoint ?? '',
+                            TextSpan(
+                              text: "/${LocaleKeys.hour.tr()}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF2B3085),
                               ),
                             ),
                           ],
                         ),
-                        5.gap,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomDetailsInfo(
-                              title: parking.durationTime ?? '',
-                            ),
-                            5.gap,
-                            CustomDetailsInfo(
-                              icon: AppIcons.outlinedPriceIc,
-                              title:
-                                  "${parking.price?.toStringAsFixed(0)} ${LocaleKeys.EGP.tr()} = ${parking.points?.toStringAsFixed(0)} ${LocaleKeys.points.tr()}",
-                            ),
-                          ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "${parking.pricePerHour} ${LocaleKeys.EGP.tr()} = ${(parking.pricePerHour)} ${LocaleKeys.points.tr()}",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF2B3085).withOpacity(0.7),
                         ),
-                      ],
-                    ),
-                  ] else ...[
-                    // Price per hour
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text:
-                                    "${LocaleKeys.EGP.tr()} ${parking.pricePerHour.toStringAsFixed(0)}",
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2B3085),
-                                ),
-                              ),
-                              TextSpan(
-                                text: "/${LocaleKeys.hour.tr()}",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF2B3085),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "${parking.pricePerHour.toStringAsFixed(0)} ${LocaleKeys.EGP.tr()} = ${(parking.pricePerHour * 10).toStringAsFixed(0)} ${LocaleKeys.points.tr()}",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF2B3085).withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
+                  // ],
                 ],
               ),
             ),
 
-            if (parking.durationTime == null)
-              // Distance from me
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE2E4FF),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      "${parking.distanceInMinutes} ${LocaleKeys.min.tr()}",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2B3085),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            // if (parking.durationTime == null)
+            //   // Distance from me
+            //   Column(
+            //     crossAxisAlignment: CrossAxisAlignment.end,
+            //     children: [
+            //       Container(
+            //         padding: const EdgeInsets.symmetric(
+            //           horizontal: 8,
+            //           vertical: 4,
+            //         ),
+            //         decoration: BoxDecoration(
+            //           color: const Color(0xFFE2E4FF),
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //         child: Text(
+            //           "${parking.distanceInMinutes} ${LocaleKeys.min.tr()}",
+            //           style: const TextStyle(
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.bold,
+            //             color: Color(0xFF2B3085),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
           ],
         ),
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
 
 class ParkingDetailsCard extends StatelessWidget {
   final Animation<Offset> slideAnimation;
@@ -68,7 +68,7 @@ class ParkingDetailsCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                parking.title,
+                                parking.nameAr,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -88,13 +88,13 @@ class ParkingDetailsCard extends StatelessWidget {
                               const SizedBox(height: 12),
                               Row(
                                 children: [
-                                  _infoChip(
-                                    icon: Icons.access_time,
-                                    text: '${parking.distanceInMinutes} دقيقة',
-                                    background: Colors.blue.shade50,
-                                    iconColor: Colors.blue.shade600,
-                                    textColor: Colors.blue.shade700,
-                                  ),
+                                  // _infoChip(
+                                  //   icon: Icons.access_time,
+                                  //   text: '${parking.distanceInMinutes} دقيقة',
+                                  //   background: Colors.blue.shade50,
+                                  //   iconColor: Colors.blue.shade600,
+                                  //   textColor: Colors.blue.shade700,
+                                  // ),
                                   const SizedBox(width: 8),
                                   _infoChip(
                                     icon: Icons.attach_money,
@@ -108,34 +108,34 @@ class ParkingDetailsCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: parking.isBusy ? Colors.red : Colors.green,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (parking.isBusy
-                                        ? Colors.red
-                                        : Colors.green)
-                                    .withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            parking.isBusy ? 'مشغول' : 'متاح',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.symmetric(
+                        //     horizontal: 16,
+                        //     vertical: 8,
+                        //   ),
+                        //   decoration: BoxDecoration(
+                        //     color: parking.isBusy ? Colors.red : Colors.green,
+                        //     borderRadius: BorderRadius.circular(25),
+                        //     boxShadow: [
+                        //       BoxShadow(
+                        //         color: (parking.isBusy
+                        //                 ? Colors.red
+                        //                 : Colors.green)
+                        //             .withOpacity(0.3),
+                        //         blurRadius: 8,
+                        //         offset: const Offset(0, 4),
+                        //       ),
+                        //     ],
+                        //   ),
+                        //   child: Text(
+                        //     parking.isBusy ? 'مشغول' : 'متاح',
+                        //     style: const TextStyle(
+                        //       color: Colors.white,
+                        //       fontSize: 12,
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     20.gap,

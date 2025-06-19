@@ -13,8 +13,8 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
+import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
-import 'package:must_invest/features/home/data/models/parking_model.dart';
 
 class ParkingDetailsScreen extends StatefulWidget {
   final Parking parking;
@@ -31,7 +31,12 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
   void initState() {
     super.initState();
     _currentMainImage =
-        widget.parking.imageUrl; // Initialize with the parking image
+        widget
+            .parking
+            .gallery
+            .gallery
+            .first
+            .image; // Initialize with the parking image
   }
 
   Future<void> _selectImageFromParkingGallery(String image) async {
@@ -136,10 +141,11 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                       height: 80,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: widget.parking.gallery.length,
+                        itemCount: widget.parking.gallery.gallery.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 8),
                         itemBuilder: (context, index) {
-                          final image = widget.parking.gallery[index];
+                          final image =
+                              widget.parking.gallery.gallery[index].image;
 
                           return AnimatedOpacity(
                             opacity: _currentMainImage == image ? 1 : 0.7,
@@ -163,7 +169,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                     30.gap,
                     // Parking Name
                     Text(
-                      widget.parking.title,
+                      widget.parking.nameEn,
                       style: context.titleLarge.copyWith(),
                     ),
                     // Parking Address
@@ -178,46 +184,46 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                     // Parking Details
                     Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (widget.parking.durationTime == null)
-                              CustomDetailsInfo(
-                                title: '500 m away',
-                                icon: AppIcons.outlinedLocationIc,
-                              ),
-                            32.gap,
-                            if (widget.parking.durationTime != null)
-                              CustomDetailsInfo(
-                                title: '7 mins',
-                                icon: AppIcons.outlinedClockIc,
-                              ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     if (widget.parking.durationTime == null)
+                        //       CustomDetailsInfo(
+                        //         title: '500 m away',
+                        //         icon: AppIcons.outlinedLocationIc,
+                        //       ),
+                        //     32.gap,
+                        //     if (widget.parking.durationTime != null)
+                        //       CustomDetailsInfo(
+                        //         title: '7 mins',
+                        //         icon: AppIcons.outlinedClockIc,
+                        //       ),
+                        //   ],
+                        // ),
                         15.gap,
-                        if (widget.parking.durationTime != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomDetailsInfo(
-                                title: '200 \$',
-                                icon: AppIcons.outlinedPriceIc,
-                              ),
-                              32.gap,
-                              
-                              CustomDetailsInfo(
-                                title:
-                                    '${widget.parking.points} ${LocaleKeys.points.tr()}',
-                                icon: AppIcons.outlinedPriceIc,
-                              ),
-                            ],
-                          ),
+                        // if (widget.parking.durationTime != null)
+                        //   Row(
+                        //     mainAxisAlignment: MainAxisAlignment.center,
+                        //     children: [
+                        //       CustomDetailsInfo(
+                        //         title: '200 \$',
+                        //         icon: AppIcons.outlinedPriceIc,
+                        //       ),
+                        //       32.gap,
+
+                        //       CustomDetailsInfo(
+                        //         title:
+                        //             '${widget.parking.points} ${LocaleKeys.points.tr()}',
+                        //         icon: AppIcons.outlinedPriceIc,
+                        //       ),
+                        //     ],
+                        //   ),
                       ],
                     ),
                     // Parking Description
                     30.gap,
                     Text(
-                      widget.parking.information,
+                      widget.parking.nameAr,
                       style: context.bodyMedium.s12.regular.copyWith(
                         color: AppColors.black,
                       ),
