@@ -92,8 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (loginResult.isSuccess) {
       // Auto-fill form and login
       setState(() {
-        // _phoneController.text = loginResult.phone!;
-        // _passwordController.text = loginResult.password!;
+        _phoneController.text = loginResult.phone!;
+        _passwordController.text = loginResult.password!;
       });
 
       if (mounted) {
@@ -147,8 +147,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  bool _isNullOrEmpty(String? value) => value == null || value.isEmpty;
+
   Future<void> _confirmBiometricSetup() async {
-    if (_pendingPhone == null || _pendingPassword == null) return;
+    if (_isNullOrEmpty(_pendingPhone) || _isNullOrEmpty(_pendingPassword)) return;
 
     final result = await BiometricService.confirmEnableBiometric(phone: _pendingPhone!, password: _pendingPassword!);
 
@@ -211,14 +213,14 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showError(String message) {
     if (mounted && message.isNotEmpty) {
       showErrorToast(context, message);
-      log('Biometric Error: $message');
+      log('${LocaleKeys.biometric_error.tr()}: $message');
     }
   }
 
   void _showSuccess(String message) {
     if (mounted) {
       showErrorToast(context, message); // Assuming you have a success toast method
-      log('Biometric Success: $message');
+      log('${LocaleKeys.biometric_success.tr()}: $message');
     }
   }
 
@@ -228,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_isBiometricAvailable) {
       _performBiometricLogin();
     } else {
-      _showError('$_biometricType is not available on this device');
+      _showError(LocaleKeys.biometric_not_available_on_device.tr().replaceAll('{biometricType}', _biometricType));
     }
   }
 
@@ -294,7 +296,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 title: LocaleKeys.phone_number.tr(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
+                    return LocaleKeys.please_enter_phone_number.tr();
                   }
                   return null;
                 },
@@ -309,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 isPassword: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
+                    return LocaleKeys.please_enter_password.tr();
                   }
                   return null;
                 },
@@ -458,11 +460,11 @@ class _QuickLoginBottomSheet extends StatelessWidget {
               ),
               24.gap,
               // Title
-              Text('Quick Login', style: context.headlineSmall.bold.copyWith(color: AppColors.black)),
+              Text(LocaleKeys.quick_login.tr(), style: context.headlineSmall.bold.copyWith(color: AppColors.black)),
               12.gap,
               // Description
               Text(
-                'Welcome back! Use your $biometricType to login quickly and securely.',
+                LocaleKeys.quick_login_description.tr().replaceAll('{biometricType}', biometricType),
                 style: context.bodyMedium.regular.copyWith(color: AppColors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -473,7 +475,7 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                   Expanded(
                     child: CustomElevatedButton(
                       heroTag: 'use_password',
-                      title: 'Use Password',
+                      title: LocaleKeys.use_password.tr(),
                       isBordered: true,
                       backgroundColor: Colors.transparent,
                       textColor: AppColors.primary,
@@ -484,7 +486,7 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                   Expanded(
                     child: CustomElevatedButton(
                       heroTag: 'use_biometric',
-                      title: 'Use $biometricType',
+                      title: LocaleKeys.use_biometric.tr().replaceAll('{biometricType}', biometricType),
                       icon: AppIcons.faceIdIc,
                       backgroundColor: AppColors.primary,
                       textColor: Colors.white,
@@ -542,14 +544,14 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
               24.gap,
               // Title
               Text(
-                'Enable $biometricType Authentication',
+                LocaleKeys.enable_biometric_authentication.tr().replaceAll('{biometricType}', biometricType),
                 style: context.headlineSmall.bold.copyWith(color: AppColors.black),
                 textAlign: TextAlign.center,
               ),
               12.gap,
               // Description
               Text(
-                'Secure your account and login faster with $biometricType authentication.',
+                LocaleKeys.enable_biometric_description.tr().replaceAll('{biometricType}', biometricType),
                 style: context.bodyMedium.regular.copyWith(color: AppColors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -557,20 +559,23 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
               // Features list
               _FeatureItem(
                 icon: Icons.speed,
-                title: 'Quick Access',
-                description: 'Login in seconds with just ${biometricType == 'Face ID' ? 'a look' : 'a touch'}',
+                title: LocaleKeys.quick_access.tr(),
+                description: LocaleKeys.quick_access_description.tr().replaceAll(
+                  '{action}',
+                  biometricType == 'Face ID' ? LocaleKeys.face_action.tr() : LocaleKeys.touch_action.tr(),
+                ),
               ),
               12.gap,
               _FeatureItem(
                 icon: Icons.shield,
-                title: 'Enhanced Security',
-                description: 'Your biometric data stays on your device',
+                title: LocaleKeys.enhanced_security.tr(),
+                description: LocaleKeys.enhanced_security_description.tr(),
               ),
               12.gap,
               _FeatureItem(
                 icon: Icons.lock,
-                title: 'Privacy Protected',
-                description: 'No passwords to remember or type',
+                title: LocaleKeys.privacy_protected.tr(),
+                description: LocaleKeys.privacy_protected_description.tr(),
               ),
               32.gap,
               // Buttons
@@ -579,7 +584,7 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
                   Expanded(
                     child: CustomElevatedButton(
                       heroTag: 'skip_biometric',
-                      title: 'Skip for Now',
+                      title: LocaleKeys.skip_for_now.tr(),
                       isBordered: true,
                       backgroundColor: Colors.transparent,
                       textColor: AppColors.grey,
@@ -590,7 +595,7 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
                   Expanded(
                     child: CustomElevatedButton(
                       heroTag: 'enable_biometric',
-                      title: 'Enable',
+                      title: LocaleKeys.enable.tr(),
                       icon: AppIcons.faceIdIc,
                       backgroundColor: AppColors.secondary,
                       textColor: Colors.white,

@@ -1,11 +1,14 @@
-// lib/core/services/biometric_service.dart
+// Simplified BiometricService following official documentation
+
 import 'dart:developer';
 import 'dart:io' show Platform;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_ios/local_auth_ios.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 class BiometricService {
   static final LocalAuthentication _localAuth = LocalAuthentication();
@@ -21,62 +24,37 @@ class BiometricService {
 
   // ==================== SETUP & AVAILABILITY ====================
 
-  /// Complete setup process for biometric authentication
-  /// Returns BiometricSetupResult with all necessary states
-  static Future<BiometricSetupResult> setupBiometric() async {
-    try {
-      final isAvailable = await isAvailableBiometric();
-      final isEnabled = await isBiometricEnabled();
-
-      return BiometricSetupResult(
-        isAvailable: isAvailable,
-        isEnabled: isEnabled,
-        shouldShowQuickLogin: isEnabled && isAvailable,
-        primaryBiometricType: await getPrimaryBiometricType(),
-        availableBiometrics: await getAvailableBiometrics(),
-      );
-    } catch (e) {
-      return BiometricSetupResult(
-        isAvailable: false,
-        isEnabled: false,
-        shouldShowQuickLogin: false,
-        primaryBiometricType: 'Biometric',
-        availableBiometrics: [],
-        error: 'Setup failed: ${e.toString()}',
-      );
-    }
-  }
-
-  /// Improved biometric availability check with better error handling
+  /// Check if biometric authentication is available
   static Future<bool> isAvailableBiometric() async {
     try {
-      // First check if the device supports biometric authentication
+      // Check if device supports biometric authentication
       final bool isDeviceSupported = await _localAuth.isDeviceSupported();
       if (!isDeviceSupported) {
-        log('Device does not support biometric authentication');
+        log(LocaleKeys.device_not_support_biometric.tr());
         return false;
       }
 
-      // Then check if we can check biometrics
+      // Check if biometrics can be checked
       final bool canCheckBiometrics = await _localAuth.canCheckBiometrics;
       if (!canCheckBiometrics) {
-        log('Cannot check biometrics on this device');
+        log(LocaleKeys.cannot_check_biometrics.tr());
         return false;
       }
 
       // Get available biometric methods
       final List<BiometricType> availableBiometrics = await _localAuth.getAvailableBiometrics();
 
-      log('Available biometrics: $availableBiometrics');
+      log('${LocaleKeys.available_biometrics.tr()}: $availableBiometrics');
 
-      if (availableBiometrics.isEmpty) {
-        log('No biometric methods are enrolled on this device');
-        return false;
+      // As per documentation: don't rely on specific types, just check if ANY biometric is enrolled
+      if (availableBiometrics.isNotEmpty) {
+        return true;
       }
 
-      return true;
+      log(LocaleKeys.no_biometric_methods_enrolled.tr());
+      return false;
     } catch (e) {
-      log('Error checking biometric availability: $e');
+      log('${LocaleKeys.error_checking_biometric_availability.tr()}: $e');
       return false;
     }
   }
@@ -90,93 +68,87 @@ class BiometricService {
     }
   }
 
-  /// Check if Face ID is available (iOS) or Face Recognition (Android)
-  static Future<bool> isFaceIdAvailable() async {
+  /// Check if strong biometrics (face/fingerprint) are available
+  static Future<bool> isStrongBiometricAvailable() async {
     final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-    return availableBiometrics.contains(BiometricType.face);
+
+    // Check for strong biometrics as recommended by documentation
+    return availableBiometrics.contains(BiometricType.strong) ||
+        availableBiometrics.contains(BiometricType.face) ||
+        availableBiometrics.contains(BiometricType.fingerprint);
   }
 
-  /// Check if Touch ID/Fingerprint is available
-  static Future<bool> isFingerprintAvailable() async {
-    final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-    return availableBiometrics.contains(BiometricType.fingerprint);
-  }
-
-  /// Check if Iris recognition is available (some Android devices)
-  static Future<bool> isIrisAvailable() async {
-    final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-    return availableBiometrics.contains(BiometricType.iris);
-  }
-
-  /// Get the primary biometric type (Face ID preferred, then Touch ID/Fingerprint, then others)
-  static Future<String> getPrimaryBiometricType() async {
+  /// Get user-friendly biometric type name
+  static Future<String> getBiometricDisplayName() async {
     final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
 
     if (availableBiometrics.isEmpty) {
-      return 'Biometric';
+      return LocaleKeys.biometric_authentication.tr();
     }
 
-    // Priority order: Face ID > Touch ID/Fingerprint > Iris > Generic
+    // Check for specific types first
     if (availableBiometrics.contains(BiometricType.face)) {
-      return Platform.isIOS ? 'Face ID' : 'Face Recognition';
+      return Platform.isIOS ? LocaleKeys.face_id.tr() : LocaleKeys.face_recognition.tr();
     }
 
     if (availableBiometrics.contains(BiometricType.fingerprint)) {
-      return Platform.isIOS ? 'Touch ID' : 'Fingerprint';
+      return Platform.isIOS ? LocaleKeys.touch_id.tr() : LocaleKeys.fingerprint.tr();
     }
 
-    if (availableBiometrics.contains(BiometricType.iris)) {
-      return 'Iris Recognition';
+    // For Android with strong/weak types, use generic names
+    if (availableBiometrics.contains(BiometricType.strong)) {
+      return Platform.isIOS ? LocaleKeys.biometric_authentication.tr() : LocaleKeys.face_recognition.tr();
     }
 
-    return 'Biometric Authentication';
+    if (availableBiometrics.contains(BiometricType.weak)) {
+      return LocaleKeys.biometric_authentication.tr();
+    }
+
+    return LocaleKeys.biometric_authentication.tr();
   }
 
-  /// Get user-friendly display name for biometric type
-  static String getBiometricDisplayName(List<BiometricType> availableBiometrics) {
-    if (availableBiometrics.isEmpty) {
-      return 'Biometric Authentication';
+  /// Complete setup process for biometric authentication
+  static Future<BiometricSetupResult> setupBiometric() async {
+    try {
+      final isAvailable = await isAvailableBiometric();
+      final isEnabled = await isBiometricEnabled();
+
+      return BiometricSetupResult(
+        isAvailable: isAvailable,
+        isEnabled: isEnabled,
+        shouldShowQuickLogin: isEnabled && isAvailable,
+        primaryBiometricType: await getBiometricDisplayName(),
+        availableBiometrics: await getAvailableBiometrics(),
+      );
+    } catch (e) {
+      return BiometricSetupResult(
+        isAvailable: false,
+        isEnabled: false,
+        shouldShowQuickLogin: false,
+        primaryBiometricType: LocaleKeys.biometric.tr(),
+        availableBiometrics: [],
+        error: '${LocaleKeys.setup_failed.tr()}: ${e.toString()}',
+      );
     }
-
-    List<String> names = [];
-
-    if (availableBiometrics.contains(BiometricType.face)) {
-      names.add(Platform.isIOS ? 'Face ID' : 'Face Recognition');
-    }
-
-    if (availableBiometrics.contains(BiometricType.fingerprint)) {
-      names.add(Platform.isIOS ? 'Touch ID' : 'Fingerprint');
-    }
-
-    if (availableBiometrics.contains(BiometricType.iris)) {
-      names.add('Iris Recognition');
-    }
-
-    if (names.isEmpty) {
-      return 'Biometric Authentication';
-    }
-
-    return names.length == 1 ? names.first : names.join(' or ');
   }
 
   // ==================== AUTHENTICATION ====================
 
-  /// Complete biometric login flow with credential retrieval
-  /// This is the main method the UI should call for login
+  /// Perform biometric authentication
   static Future<BiometricLoginResult> performBiometricLogin() async {
     try {
-      // Check if any biometric method is available
+      // Check if biometric authentication is available
       final bool isAvailable = await isAvailableBiometric();
 
       if (!isAvailable) {
         return BiometricLoginResult(
           isSuccess: false,
-          errorMessage: 'Biometric authentication is not available on this device',
+          errorMessage: LocaleKeys.biometric_not_available_on_device_generic.tr(),
           errorType: BiometricErrorType.notAvailable,
         );
       }
 
-      // Authenticate with available biometric method
+      // Authenticate with biometric
       final authResult = await _authenticateWithBiometric();
 
       if (!authResult.isSuccess) {
@@ -191,7 +163,7 @@ class BiometricService {
       if (phone == null || password == null) {
         return BiometricLoginResult(
           isSuccess: false,
-          errorMessage: 'No saved credentials found. Please login manually first.',
+          errorMessage: LocaleKeys.no_saved_credentials.tr(),
           errorType: BiometricErrorType.noCredentials,
         );
       }
@@ -200,7 +172,7 @@ class BiometricService {
     } catch (e) {
       return BiometricLoginResult(
         isSuccess: false,
-        errorMessage: 'Biometric authentication failed: ${e.toString()}',
+        errorMessage: '${LocaleKeys.biometric_authentication_failed.tr()}: ${e.toString()}',
         errorType: BiometricErrorType.unknown,
       );
     }
@@ -209,59 +181,46 @@ class BiometricService {
   /// Internal method for biometric authentication
   static Future<BiometricAuthResult> _authenticateWithBiometric() async {
     try {
-      final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-      final String biometricType = await getPrimaryBiometricType();
+      final String biometricType = await getBiometricDisplayName();
 
-      // Create platform-specific reason text
-      String localizedReason;
-      if (availableBiometrics.contains(BiometricType.face)) {
-        localizedReason =
-            Platform.isIOS
-                ? 'Please authenticate with Face ID to login to your account'
-                : 'Please authenticate with Face Recognition to login to your account';
-      } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-        localizedReason =
-            Platform.isIOS
-                ? 'Please authenticate with Touch ID to login to your account'
-                : 'Please authenticate with Fingerprint to login to your account';
-      } else {
-        localizedReason = 'Please authenticate with $biometricType to login to your account';
-      }
+      // Use generic localized reason as recommended
+      final String localizedReason = LocaleKeys.authenticate_to_login.tr();
 
-      log(
-        'Biometric authentication started: $biometricType, availableBiometrics: $availableBiometrics, localizedReason: $localizedReason ',
-        name: 'BiometricService',
-      );
+      log('${LocaleKeys.biometric_auth_started.tr()}: $biometricType');
 
+      // Follow documentation recommendation: use authenticate with biometricOnly: true
       final bool didAuthenticate = await _localAuth.authenticate(
         localizedReason: localizedReason,
         authMessages: [
           AndroidAuthMessages(
-            signInTitle: _getAndroidSignInTitle(availableBiometrics),
-            cancelButton: 'Cancel',
-            deviceCredentialsRequiredTitle: 'Please authenticate with $biometricType',
-            deviceCredentialsSetupDescription: 'Please set up $biometricType authentication',
-            goToSettingsButton: 'Go to Settings',
-            goToSettingsDescription: '$biometricType is not set up on your device',
-            biometricHint: 'Verify your identity',
-            // biometricNotRecognizedHint: 'Not recognized, please try again',
-            biometricRequiredTitle: 'Biometric authentication required',
-            biometricSuccess: 'Authentication successful',
+            signInTitle: LocaleKeys.biometric_authentication.tr(),
+            cancelButton: LocaleKeys.cancel.tr(),
+            deviceCredentialsRequiredTitle: LocaleKeys.authentication_required.tr(),
+            deviceCredentialsSetupDescription: LocaleKeys.setup_biometric_auth.tr(),
+            goToSettingsButton: LocaleKeys.go_to_settings.tr(),
+            goToSettingsDescription: LocaleKeys.biometric_not_setup_device.tr(),
+            biometricHint: LocaleKeys.verify_identity.tr(),
+            biometricRequiredTitle: LocaleKeys.biometric_authentication_required.tr(),
+            biometricSuccess: LocaleKeys.authentication_successful.tr(),
           ),
           IOSAuthMessages(
-            cancelButton: 'Cancel',
-            goToSettingsButton: 'Go to Settings',
-            goToSettingsDescription: '$biometricType is not set up on your device',
-            lockOut: '$biometricType is disabled. Please lock and unlock your screen to enable it',
-            localizedFallbackTitle: 'Use Passcode',
+            cancelButton: LocaleKeys.cancel.tr(),
+            goToSettingsButton: LocaleKeys.go_to_settings.tr(),
+            goToSettingsDescription: LocaleKeys.biometric_not_setup_device.tr(),
+            lockOut: LocaleKeys.biometric_disabled_lock_unlock.tr(),
+            localizedFallbackTitle: LocaleKeys.use_passcode.tr(),
           ),
         ],
-        options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true, useErrorDialogs: true),
+        options: const AuthenticationOptions(
+          biometricOnly: true, // This is key - forces biometric authentication
+          stickyAuth: true,
+          useErrorDialogs: true,
+        ),
       );
 
       return BiometricAuthResult(
         isSuccess: didAuthenticate,
-        errorMessage: didAuthenticate ? null : 'Biometric authentication failed',
+        errorMessage: didAuthenticate ? null : LocaleKeys.biometric_authentication_failed.tr(),
         errorType: didAuthenticate ? null : BiometricErrorType.authenticationFailed,
       );
     } catch (e) {
@@ -269,19 +228,7 @@ class BiometricService {
     }
   }
 
-  /// Get Android sign-in title based on available biometrics
-  static String _getAndroidSignInTitle(List<BiometricType> availableBiometrics) {
-    if (availableBiometrics.contains(BiometricType.face)) {
-      return 'Face Authentication';
-    } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-      return 'Fingerprint Authentication';
-    } else if (availableBiometrics.contains(BiometricType.iris)) {
-      return 'Iris Authentication';
-    }
-    return 'Biometric Authentication';
-  }
-
-  /// Handle authentication errors and return appropriate result
+  /// Handle authentication errors
   static BiometricAuthResult _handleAuthenticationError(dynamic error) {
     BiometricErrorType errorType;
     String errorMessage;
@@ -290,102 +237,28 @@ class BiometricService {
 
     if (errorString.contains('UserCancel')) {
       errorType = BiometricErrorType.userCancel;
-      errorMessage = 'Biometric authentication was cancelled by user';
+      errorMessage = LocaleKeys.authentication_cancelled_by_user.tr();
     } else if (errorString.contains('NotAvailable')) {
       errorType = BiometricErrorType.notAvailable;
-      errorMessage = 'Biometric authentication is not available';
+      errorMessage = LocaleKeys.biometric_not_available.tr();
     } else if (errorString.contains('NotEnrolled')) {
       errorType = BiometricErrorType.notEnrolled;
-      errorMessage = 'Biometric authentication is not set up on this device';
+      errorMessage = LocaleKeys.biometric_not_setup_device.tr();
     } else if (errorString.contains('LockedOut')) {
       errorType = BiometricErrorType.lockedOut;
-      errorMessage = 'Biometric authentication is temporarily locked';
-    } else if (errorString.contains('Timeout')) {
-      errorType = BiometricErrorType.timeout;
-      errorMessage = 'Biometric authentication timed out';
+      errorMessage = LocaleKeys.biometric_temporarily_locked.tr();
     } else if (errorString.contains('PermanentlyLockedOut')) {
       errorType = BiometricErrorType.permanentlyLockedOut;
-      errorMessage = 'Biometric authentication is permanently locked';
+      errorMessage = LocaleKeys.biometric_permanently_locked.tr();
     } else {
       errorType = BiometricErrorType.unknown;
-      errorMessage = 'Biometric authentication failed: $errorString';
+      errorMessage = '${LocaleKeys.authentication_failed.tr()}: $errorString';
     }
 
     return BiometricAuthResult(isSuccess: false, errorMessage: errorMessage, errorType: errorType);
   }
 
   // ==================== CREDENTIAL MANAGEMENT ====================
-
-  /// Complete flow for enabling biometric authentication after successful login
-  static Future<BiometricEnableResult> enableBiometricAfterLogin({
-    required String phone,
-    required String password,
-    required bool shouldAskUser,
-  }) async {
-    try {
-      final isAvailable = await isAvailableBiometric();
-
-      if (!isAvailable) {
-        return BiometricEnableResult(
-          isSuccess: false,
-          shouldShowSetupDialog: false,
-          errorMessage: 'Biometric authentication is not available on this device',
-        );
-      }
-
-      final isAlreadyEnabled = await isBiometricEnabled();
-
-      if (isAlreadyEnabled) {
-        // Just update existing credentials
-        final success = await saveCredentials(phone: phone, password: password);
-        return BiometricEnableResult(
-          isSuccess: success,
-          shouldShowSetupDialog: false,
-          successMessage: success ? 'Credentials updated successfully' : null,
-          errorMessage: success ? null : 'Failed to update credentials',
-        );
-      }
-
-      if (shouldAskUser) {
-        // Return that we should show setup dialog
-        return BiometricEnableResult(
-          isSuccess: false,
-          shouldShowSetupDialog: true,
-          pendingPhone: phone,
-          pendingPassword: password,
-        );
-      }
-
-      return BiometricEnableResult(isSuccess: false, shouldShowSetupDialog: false);
-    } catch (e) {
-      return BiometricEnableResult(
-        isSuccess: false,
-        shouldShowSetupDialog: false,
-        errorMessage: 'Failed to setup biometric authentication: ${e.toString()}',
-      );
-    }
-  }
-
-  /// Enable biometric authentication with user confirmation
-  static Future<BiometricEnableResult> confirmEnableBiometric({required String phone, required String password}) async {
-    try {
-      final success = await saveCredentials(phone: phone, password: password);
-      final biometricType = await getPrimaryBiometricType();
-
-      return BiometricEnableResult(
-        isSuccess: success,
-        shouldShowSetupDialog: false,
-        successMessage: success ? '$biometricType authentication enabled successfully!' : null,
-        errorMessage: success ? null : 'Failed to enable $biometricType authentication',
-      );
-    } catch (e) {
-      return BiometricEnableResult(
-        isSuccess: false,
-        shouldShowSetupDialog: false,
-        errorMessage: 'Failed to enable biometric authentication: ${e.toString()}',
-      );
-    }
-  }
 
   /// Save credentials to secure storage
   static Future<bool> saveCredentials({required String phone, required String password}) async {
@@ -436,9 +309,77 @@ class BiometricService {
     }
   }
 
-  /// Enable/disable biometric authentication
-  static Future<void> setBiometricEnabled(bool enabled) async {
-    await _storage.write(key: _biometricEnabledKey, value: enabled.toString());
+  /// Enable biometric authentication after login
+  static Future<BiometricEnableResult> enableBiometricAfterLogin({
+    required String phone,
+    required String password,
+    required bool shouldAskUser,
+  }) async {
+    try {
+      final isAvailable = await isAvailableBiometric();
+
+      if (!isAvailable) {
+        return BiometricEnableResult(
+          isSuccess: false,
+          shouldShowSetupDialog: false,
+          errorMessage: LocaleKeys.biometric_not_available_on_device_generic.tr(),
+        );
+      }
+
+      final isAlreadyEnabled = await isBiometricEnabled();
+
+      if (isAlreadyEnabled) {
+        final success = await saveCredentials(phone: phone, password: password);
+        return BiometricEnableResult(
+          isSuccess: success,
+          shouldShowSetupDialog: false,
+          successMessage: success ? LocaleKeys.credentials_updated_successfully.tr() : null,
+          errorMessage: success ? null : LocaleKeys.failed_to_update_credentials.tr(),
+        );
+      }
+
+      if (shouldAskUser) {
+        return BiometricEnableResult(
+          isSuccess: false,
+          shouldShowSetupDialog: true,
+          pendingPhone: phone,
+          pendingPassword: password,
+        );
+      }
+
+      return BiometricEnableResult(isSuccess: false, shouldShowSetupDialog: false);
+    } catch (e) {
+      return BiometricEnableResult(
+        isSuccess: false,
+        shouldShowSetupDialog: false,
+        errorMessage: '${LocaleKeys.failed_to_setup_biometric.tr()}: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Confirm enable biometric authentication
+  static Future<BiometricEnableResult> confirmEnableBiometric({required String phone, required String password}) async {
+    try {
+      final success = await saveCredentials(phone: phone, password: password);
+      final biometricType = await getBiometricDisplayName();
+
+      return BiometricEnableResult(
+        isSuccess: success,
+        shouldShowSetupDialog: false,
+        successMessage:
+            success
+                ? LocaleKeys.biometric_auth_enabled_successfully.tr().replaceAll('{biometricType}', biometricType)
+                : null,
+        errorMessage:
+            success ? null : LocaleKeys.failed_to_enable_biometric.tr().replaceAll('{biometricType}', biometricType),
+      );
+    } catch (e) {
+      return BiometricEnableResult(
+        isSuccess: false,
+        shouldShowSetupDialog: false,
+        errorMessage: '${LocaleKeys.failed_to_enable_biometric_generic.tr()}: ${e.toString()}',
+      );
+    }
   }
 
   // ==================== UTILITY METHODS ====================
@@ -447,72 +388,32 @@ class BiometricService {
   static String getErrorMessageForUI(BiometricErrorType? errorType) {
     switch (errorType) {
       case BiometricErrorType.userCancel:
-        return ''; // Don't show error for user cancellation
+        return '';
       case BiometricErrorType.notAvailable:
-        return 'Biometric authentication is not available on this device';
+        return LocaleKeys.biometric_not_available_on_device_generic.tr();
       case BiometricErrorType.notEnrolled:
-        return 'Please set up biometric authentication in your device settings';
+        return LocaleKeys.setup_biometric_in_settings.tr();
       case BiometricErrorType.lockedOut:
-        return 'Biometric authentication is temporarily locked. Please try again later.';
+        return LocaleKeys.biometric_temporarily_locked_try_again.tr();
       case BiometricErrorType.permanentlyLockedOut:
-        return 'Biometric authentication is permanently locked. Please use your passcode.';
-      case BiometricErrorType.timeout:
-        return 'Biometric authentication timed out. Please try again.';
+        return LocaleKeys.biometric_permanently_locked_use_passcode.tr();
       case BiometricErrorType.noCredentials:
-        return 'No saved credentials found. Please login manually first.';
+        return LocaleKeys.no_saved_credentials_login_manually.tr();
       case BiometricErrorType.authenticationFailed:
-        return 'Biometric authentication failed';
+        return LocaleKeys.biometric_authentication_failed.tr();
       default:
-        return 'Biometric authentication failed';
+        return LocaleKeys.biometric_authentication_failed.tr();
     }
   }
 
-  /// Check if error should be shown to user (some errors like user cancel shouldn't show)
+  /// Check if error should be shown to user
   static bool shouldShowError(BiometricErrorType? errorType) {
     return errorType != BiometricErrorType.userCancel;
-  }
-
-  /// Get platform-specific instruction text for biometric setup
-  static Future<String> getBiometricSetupInstructions() async {
-    final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-
-    if (availableBiometrics.isEmpty) {
-      return 'Biometric authentication is not available on this device.';
-    }
-
-    List<String> instructions = [];
-
-    if (availableBiometrics.contains(BiometricType.face)) {
-      if (Platform.isIOS) {
-        instructions.add('Face ID: Go to Settings > Face ID & Passcode');
-      } else {
-        instructions.add('Face Recognition: Go to Settings > Biometrics and security > Face recognition');
-      }
-    }
-
-    if (availableBiometrics.contains(BiometricType.fingerprint)) {
-      if (Platform.isIOS) {
-        instructions.add('Touch ID: Go to Settings > Touch ID & Passcode');
-      } else {
-        instructions.add('Fingerprint: Go to Settings > Biometrics and security > Fingerprints');
-      }
-    }
-
-    if (availableBiometrics.contains(BiometricType.iris)) {
-      instructions.add('Iris Recognition: Go to Settings > Biometrics and security > Iris Scanner');
-    }
-
-    if (instructions.isEmpty) {
-      return 'Please set up biometric authentication in your device settings.';
-    }
-
-    return instructions.join('\n');
   }
 }
 
 // ==================== RESULT CLASSES ====================
 
-/// Result for initial biometric setup
 class BiometricSetupResult {
   final bool isAvailable;
   final bool isEnabled;
@@ -529,12 +430,8 @@ class BiometricSetupResult {
     required this.availableBiometrics,
     this.error,
   });
-
-  /// Get user-friendly display name for available biometrics
-  String get biometricDisplayName => BiometricService.getBiometricDisplayName(availableBiometrics);
 }
 
-/// Result for biometric login attempt
 class BiometricLoginResult {
   final bool isSuccess;
   final String? phone;
@@ -553,7 +450,6 @@ class BiometricLoginResult {
   }
 }
 
-/// Result for enabling biometric authentication
 class BiometricEnableResult {
   final bool isSuccess;
   final bool shouldShowSetupDialog;
@@ -572,7 +468,6 @@ class BiometricEnableResult {
   });
 }
 
-/// Basic authentication result
 class BiometricAuthResult {
   final bool isSuccess;
   final String? errorMessage;
@@ -581,7 +476,6 @@ class BiometricAuthResult {
   BiometricAuthResult({required this.isSuccess, this.errorMessage, this.errorType});
 }
 
-/// Error types for biometric authentication
 enum BiometricErrorType {
   notAvailable,
   notEnrolled,
@@ -589,7 +483,6 @@ enum BiometricErrorType {
   lockedOut,
   permanentlyLockedOut,
   authenticationFailed,
-  timeout,
   noCredentials,
   unknown,
 }
