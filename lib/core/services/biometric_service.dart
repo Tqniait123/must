@@ -2,6 +2,7 @@
 import 'dart:developer';
 import 'dart:io' show Platform;
 
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
@@ -13,6 +14,9 @@ class BiometricService {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock_this_device),
   );
+
+  // Platform channel for Android biometric detection
+  static const MethodChannel _channel = MethodChannel('biometric_capabilities');
 
   // Keys for secure storage
   static const String _phoneKey = 'saved_phone';
@@ -47,6 +51,27 @@ class BiometricService {
     }
   }
 
+  /// Get detailed biometric capabilities (Android only)
+  static Future<Map<String, dynamic>> getAndroidBiometricCapabilities() async {
+    if (!Platform.isAndroid) {
+      return {};
+    }
+
+    try {
+      final result = await _channel.invokeMethod('getBiometricCapabilities');
+
+      // Convert the result to Map<String, dynamic>
+      if (result is Map) {
+        return Map<String, dynamic>.from(result);
+      }
+
+      return {};
+    } catch (e) {
+      log('Error getting Android biometric capabilities: $e');
+      return {};
+    }
+  }
+
   /// Improved biometric availability check with better error handling
   static Future<bool> isAvailableBiometric() async {
     try {
@@ -74,6 +99,16 @@ class BiometricService {
         return false;
       }
 
+      // For Android, also check platform channel capabilities
+      if (Platform.isAndroid) {
+        final capabilities = await getAndroidBiometricCapabilities();
+        final canAuthenticate = capabilities['canAuthenticate'] ?? false;
+        if (!canAuthenticate) {
+          log('Android biometric authentication not available per platform channel');
+          return false;
+        }
+      }
+
       return true;
     } catch (e) {
       log('Error checking biometric availability: $e');
@@ -93,19 +128,81 @@ class BiometricService {
   /// Check if Face ID is available (iOS) or Face Recognition (Android)
   static Future<bool> isFaceIdAvailable() async {
     final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-    return availableBiometrics.contains(BiometricType.face);
+
+    // Check for explicit face type first
+    if (availableBiometrics.contains(BiometricType.face)) {
+      return true;
+    }
+
+    // For Android, use platform channel for accurate detection
+    if (Platform.isAndroid) {
+      try {
+        final capabilities = await getAndroidBiometricCapabilities();
+        final hasFaceAuth = capabilities['hasFaceAuth'] ?? false;
+        final canAuthenticate = capabilities['canAuthenticate'] ?? false;
+
+        log('Android Face Auth - hasFaceAuth: $hasFaceAuth, canAuthenticate: $canAuthenticate');
+
+        return hasFaceAuth && canAuthenticate;
+      } catch (e) {
+        log('Error checking face auth via platform channel: $e');
+        // Fallback: check if we have strong/weak biometrics (might include face)
+        return availableBiometrics.contains(BiometricType.strong) || availableBiometrics.contains(BiometricType.weak);
+      }
+    }
+
+    return false;
   }
 
   /// Check if Touch ID/Fingerprint is available
   static Future<bool> isFingerprintAvailable() async {
     final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-    return availableBiometrics.contains(BiometricType.fingerprint);
+
+    // Check for explicit fingerprint type first
+    if (availableBiometrics.contains(BiometricType.fingerprint)) {
+      return true;
+    }
+
+    // For Android, use platform channel for accurate detection
+    if (Platform.isAndroid) {
+      try {
+        final capabilities = await getAndroidBiometricCapabilities();
+        final hasFingerprint = capabilities['hasFingerprint'] ?? false;
+        final canAuthenticate = capabilities['canAuthenticate'] ?? false;
+
+        return hasFingerprint && canAuthenticate;
+      } catch (e) {
+        log('Error checking fingerprint via platform channel: $e');
+        // Fallback: check if we have strong/weak biometrics (might include fingerprint)
+        return availableBiometrics.contains(BiometricType.strong) || availableBiometrics.contains(BiometricType.weak);
+      }
+    }
+
+    return false;
   }
 
   /// Check if Iris recognition is available (some Android devices)
   static Future<bool> isIrisAvailable() async {
     final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
-    return availableBiometrics.contains(BiometricType.iris);
+
+    if (availableBiometrics.contains(BiometricType.iris)) {
+      return true;
+    }
+
+    // For Android, check platform channel
+    if (Platform.isAndroid) {
+      try {
+        final capabilities = await getAndroidBiometricCapabilities();
+        final hasIris = capabilities['hasIris'] ?? false;
+        final canAuthenticate = capabilities['canAuthenticate'] ?? false;
+
+        return hasIris && canAuthenticate;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    return false;
   }
 
   /// Get the primary biometric type (Face ID preferred, then Touch ID/Fingerprint, then others)
@@ -116,7 +213,7 @@ class BiometricService {
       return 'Biometric';
     }
 
-    // Priority order: Face ID > Touch ID/Fingerprint > Iris > Generic
+    // Check for specific biometric types first
     if (availableBiometrics.contains(BiometricType.face)) {
       return Platform.isIOS ? 'Face ID' : 'Face Recognition';
     }
@@ -127,6 +224,31 @@ class BiometricService {
 
     if (availableBiometrics.contains(BiometricType.iris)) {
       return 'Iris Recognition';
+    }
+
+    // For Android with generic types, use platform channel
+    if (Platform.isAndroid) {
+      try {
+        final capabilities = await getAndroidBiometricCapabilities();
+
+        final hasFaceAuth = capabilities['hasFaceAuth'] ?? false;
+        final hasFingerprint = capabilities['hasFingerprint'] ?? false;
+        final hasIris = capabilities['hasIris'] ?? false;
+
+        if (hasFaceAuth) {
+          return 'Face Recognition';
+        }
+
+        if (hasFingerprint) {
+          return 'Fingerprint';
+        }
+
+        if (hasIris) {
+          return 'Iris Recognition';
+        }
+      } catch (e) {
+        log('Error getting biometric type via platform channel: $e');
+      }
     }
 
     return 'Biometric Authentication';
@@ -140,6 +262,7 @@ class BiometricService {
 
     List<String> names = [];
 
+    // Check for specific types first
     if (availableBiometrics.contains(BiometricType.face)) {
       names.add(Platform.isIOS ? 'Face ID' : 'Face Recognition');
     }
@@ -150,6 +273,13 @@ class BiometricService {
 
     if (availableBiometrics.contains(BiometricType.iris)) {
       names.add('Iris Recognition');
+    }
+
+    // Handle Android generic types
+    if (Platform.isAndroid && names.isEmpty) {
+      if (availableBiometrics.contains(BiometricType.strong) || availableBiometrics.contains(BiometricType.weak)) {
+        return 'Biometric Authentication';
+      }
     }
 
     if (names.isEmpty) {
@@ -214,18 +344,43 @@ class BiometricService {
 
       // Create platform-specific reason text
       String localizedReason;
-      if (availableBiometrics.contains(BiometricType.face)) {
-        localizedReason =
-            Platform.isIOS
-                ? 'Please authenticate with Face ID to login to your account'
-                : 'Please authenticate with Face Recognition to login to your account';
-      } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
-        localizedReason =
-            Platform.isIOS
-                ? 'Please authenticate with Touch ID to login to your account'
-                : 'Please authenticate with Fingerprint to login to your account';
+
+      // Handle Android generic biometric types
+      if (Platform.isAndroid &&
+          (availableBiometrics.contains(BiometricType.strong) || availableBiometrics.contains(BiometricType.weak))) {
+        try {
+          // Check what type of biometric is actually available via platform channel
+          final capabilities = await getAndroidBiometricCapabilities();
+          final hasFaceAuth = capabilities['hasFaceAuth'] ?? false;
+          final hasFingerprint = capabilities['hasFingerprint'] ?? false;
+
+          if (hasFaceAuth && hasFingerprint) {
+            localizedReason = 'Please authenticate with Face Recognition or Fingerprint to login to your account';
+          } else if (hasFaceAuth) {
+            localizedReason = 'Please authenticate with Face Recognition to login to your account';
+          } else if (hasFingerprint) {
+            localizedReason = 'Please authenticate with Fingerprint to login to your account';
+          } else {
+            localizedReason = 'Please authenticate with Biometric Authentication to login to your account';
+          }
+        } catch (e) {
+          localizedReason = 'Please authenticate with Biometric Authentication to login to your account';
+        }
       } else {
-        localizedReason = 'Please authenticate with $biometricType to login to your account';
+        // Original logic for specific biometric types
+        if (availableBiometrics.contains(BiometricType.face)) {
+          localizedReason =
+              Platform.isIOS
+                  ? 'Please authenticate with Face ID to login to your account'
+                  : 'Please authenticate with Face Recognition to login to your account';
+        } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+          localizedReason =
+              Platform.isIOS
+                  ? 'Please authenticate with Touch ID to login to your account'
+                  : 'Please authenticate with Fingerprint to login to your account';
+        } else {
+          localizedReason = 'Please authenticate with $biometricType to login to your account';
+        }
       }
 
       log(
@@ -244,7 +399,6 @@ class BiometricService {
             goToSettingsButton: 'Go to Settings',
             goToSettingsDescription: '$biometricType is not set up on your device',
             biometricHint: 'Verify your identity',
-            // biometricNotRecognizedHint: 'Not recognized, please try again',
             biometricRequiredTitle: 'Biometric authentication required',
             biometricSuccess: 'Authentication successful',
           ),
@@ -271,6 +425,7 @@ class BiometricService {
 
   /// Get Android sign-in title based on available biometrics
   static String _getAndroidSignInTitle(List<BiometricType> availableBiometrics) {
+    // Check for specific types first
     if (availableBiometrics.contains(BiometricType.face)) {
       return 'Face Authentication';
     } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
@@ -278,6 +433,12 @@ class BiometricService {
     } else if (availableBiometrics.contains(BiometricType.iris)) {
       return 'Iris Authentication';
     }
+
+    // Handle generic Android types
+    if (availableBiometrics.contains(BiometricType.strong) || availableBiometrics.contains(BiometricType.weak)) {
+      return 'Biometric Authentication';
+    }
+
     return 'Biometric Authentication';
   }
 
@@ -474,6 +635,33 @@ class BiometricService {
 
   /// Get platform-specific instruction text for biometric setup
   static Future<String> getBiometricSetupInstructions() async {
+    if (Platform.isAndroid) {
+      try {
+        final capabilities = await getAndroidBiometricCapabilities();
+        final hasFaceAuth = capabilities['hasFaceAuth'] ?? false;
+        final hasFingerprint = capabilities['hasFingerprint'] ?? false;
+
+        List<String> instructions = [];
+
+        if (hasFaceAuth) {
+          instructions.add('Face Recognition: Go to Settings > Biometrics and security > Face recognition');
+        }
+
+        if (hasFingerprint) {
+          instructions.add('Fingerprint: Go to Settings > Biometrics and security > Fingerprints');
+        }
+
+        if (instructions.isEmpty) {
+          return 'Please set up biometric authentication in your device settings.';
+        }
+
+        return instructions.join('\n');
+      } catch (e) {
+        return 'Please set up biometric authentication in your device settings.';
+      }
+    }
+
+    // iOS
     final List<BiometricType> availableBiometrics = await getAvailableBiometrics();
 
     if (availableBiometrics.isEmpty) {
@@ -483,23 +671,11 @@ class BiometricService {
     List<String> instructions = [];
 
     if (availableBiometrics.contains(BiometricType.face)) {
-      if (Platform.isIOS) {
-        instructions.add('Face ID: Go to Settings > Face ID & Passcode');
-      } else {
-        instructions.add('Face Recognition: Go to Settings > Biometrics and security > Face recognition');
-      }
+      instructions.add('Face ID: Go to Settings > Face ID & Passcode');
     }
 
     if (availableBiometrics.contains(BiometricType.fingerprint)) {
-      if (Platform.isIOS) {
-        instructions.add('Touch ID: Go to Settings > Touch ID & Passcode');
-      } else {
-        instructions.add('Fingerprint: Go to Settings > Biometrics and security > Fingerprints');
-      }
-    }
-
-    if (availableBiometrics.contains(BiometricType.iris)) {
-      instructions.add('Iris Recognition: Go to Settings > Biometrics and security > Iris Scanner');
+      instructions.add('Touch ID: Go to Settings > Touch ID & Passcode');
     }
 
     if (instructions.isEmpty) {
@@ -507,6 +683,55 @@ class BiometricService {
     }
 
     return instructions.join('\n');
+  }
+  // Add this method to your BiometricService class for debugging
+
+  /// Debug method to check all biometric capabilities
+  static Future<void> debugBiometricCapabilities() async {
+    log('=== BIOMETRIC DEBUG INFO ===');
+
+    try {
+      // Basic checks
+      final bool isDeviceSupported = await _localAuth.isDeviceSupported();
+      final bool canCheckBiometrics = await _localAuth.canCheckBiometrics;
+      final List<BiometricType> availableBiometrics = await _localAuth.getAvailableBiometrics();
+
+      log('Device supported: $isDeviceSupported');
+      log('Can check biometrics: $canCheckBiometrics');
+      log('Available biometrics: $availableBiometrics');
+
+      // Platform-specific checks
+      if (Platform.isAndroid) {
+        try {
+          final capabilities = await getAndroidBiometricCapabilities();
+          log('Android capabilities: $capabilities');
+
+          // Individual method checks
+          final hasFace = await _channel.invokeMethod('hasFaceUnlock');
+          final hasFingerprint = await _channel.invokeMethod('hasFingerprint');
+
+          log('Individual checks - Face: $hasFace, Fingerprint: $hasFingerprint');
+        } catch (e) {
+          log('Platform channel error: $e');
+        }
+      }
+
+      // Service method results
+      final isAvailable = await isAvailableBiometric();
+      final isFaceAvailable = await isFaceIdAvailable();
+      // final isFingerprintAvailable = await isFingerprintAvailable();
+      final primaryType = await getPrimaryBiometricType();
+
+      log('Service results:');
+      log('  - Is available: $isAvailable');
+      log('  - Face available: $isFaceAvailable');
+      log('  - Fingerprint available: $isFingerprintAvailable');
+      log('  - Primary type: $primaryType');
+
+      log('=== END DEBUG INFO ===');
+    } catch (e) {
+      log('Debug error: $e');
+    }
   }
 }
 

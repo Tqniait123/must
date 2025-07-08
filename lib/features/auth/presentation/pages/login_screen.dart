@@ -65,6 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _isCheckingBiometrics = true;
     });
 
+    await BiometricService.debugBiometricCapabilities();
+
     final setupResult = await BiometricService.setupBiometric();
 
     setState(() {
