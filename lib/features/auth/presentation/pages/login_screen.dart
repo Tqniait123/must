@@ -35,15 +35,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool isRemembered = true;
 
-  // Biometric authentication variables
+  // UI State variables
   bool _isBiometricAvailable = false;
   bool _isBiometricEnabled = false;
   bool _isCheckingBiometrics = false;
+  String _biometricType = 'Face ID';
+
+  // Pending biometric setup data
+  String? _pendingPhone;
+  String? _pendingPassword;
 
   @override
   void initState() {
     super.initState();
-    _setupBiometricAuth();
+    _initializeBiometric();
   }
 
   @override
@@ -53,132 +58,136 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // Check and setup biometric authentication
-  Future<void> _setupBiometricAuth() async {
+  // ==================== BIOMETRIC INITIALIZATION ====================
+
+  Future<void> _initializeBiometric() async {
     setState(() {
       _isCheckingBiometrics = true;
     });
 
-    try {
-      final isAvailable = await BiometricService.isAvailable();
-      final isEnabled = await BiometricService.isBiometricEnabled();
+    final setupResult = await BiometricService.setupBiometric();
 
-      setState(() {
-        _isBiometricAvailable = isAvailable;
-        _isBiometricEnabled = isEnabled;
-        _isCheckingBiometrics = false;
-      });
+    setState(() {
+      _isBiometricAvailable = setupResult.isAvailable;
+      _isBiometricEnabled = setupResult.isEnabled;
+      _biometricType = setupResult.primaryBiometricType;
+      _isCheckingBiometrics = false;
+    });
 
-      // Show biometric prompt if enabled and available
-      if (isEnabled && isAvailable) {
-        await _showBiometricLoginBottomSheet();
-      }
-    } catch (e) {
-      setState(() {
-        _isCheckingBiometrics = false;
-      });
+    if (setupResult.error != null) {
+      _showError(setupResult.error!);
+    }
+
+    // Show quick login if should
+    if (setupResult.shouldShowQuickLogin) {
+      await _showQuickLoginBottomSheet();
     }
   }
 
-  // Show biometric login prompt bottom sheet
-  Future<void> _showBiometricLoginBottomSheet() async {
+  // ==================== BIOMETRIC LOGIN ====================
+
+  Future<void> _performBiometricLogin() async {
+    final loginResult = await BiometricService.performBiometricLogin();
+
+    if (loginResult.isSuccess) {
+      // Auto-fill form and login
+      setState(() {
+        // _phoneController.text = loginResult.phone!;
+        // _passwordController.text = loginResult.password!;
+      });
+
+      if (mounted) {
+        AuthCubit.get(
+          context,
+        ).login(LoginParams(phone: loginResult.phone!, password: loginResult.password!, isRemembered: true));
+      }
+    } else {
+      // Handle error
+      if (BiometricService.shouldShowError(loginResult.errorType)) {
+        _showError(BiometricService.getErrorMessageForUI(loginResult.errorType));
+      }
+    }
+  }
+
+  // ==================== REGULAR LOGIN ====================
+
+  void _performRegularLogin() {
+    if (_formKey.currentState!.validate()) {
+      AuthCubit.get(context).login(
+        LoginParams(phone: _phoneController.text, password: _passwordController.text, isRemembered: isRemembered),
+      );
+    }
+  }
+
+  // ==================== POST-LOGIN BIOMETRIC SETUP ====================
+
+  Future<void> _handlePostLoginBiometricSetup() async {
+    if (!isRemembered || !_isBiometricAvailable) return;
+
+    final enableResult = await BiometricService.enableBiometricAfterLogin(
+      phone: _phoneController.text,
+      password: _passwordController.text,
+      shouldAskUser: !_isBiometricEnabled,
+    );
+
+    if (enableResult.isSuccess) {
+      if (enableResult.successMessage != null) {
+        _showSuccess(enableResult.successMessage!);
+      }
+      setState(() {
+        _isBiometricEnabled = true;
+      });
+    } else if (enableResult.shouldShowSetupDialog) {
+      // Store pending credentials and show setup dialog
+      _pendingPhone = enableResult.pendingPhone;
+      _pendingPassword = enableResult.pendingPassword;
+      await _showBiometricSetupBottomSheet();
+    } else if (enableResult.errorMessage != null) {
+      _showError(enableResult.errorMessage!);
+    }
+  }
+
+  Future<void> _confirmBiometricSetup() async {
+    if (_pendingPhone == null || _pendingPassword == null) return;
+
+    final result = await BiometricService.confirmEnableBiometric(phone: _pendingPhone!, password: _pendingPassword!);
+
+    if (result.isSuccess) {
+      setState(() {
+        _isBiometricEnabled = true;
+      });
+      if (result.successMessage != null) {
+        _showSuccess(result.successMessage!);
+      }
+    } else if (result.errorMessage != null) {
+      _showError(result.errorMessage!);
+    }
+
+    // Clear pending data
+    _pendingPhone = null;
+    _pendingPassword = null;
+  }
+
+  // ==================== BOTTOM SHEETS ====================
+
+  Future<void> _showQuickLoginBottomSheet() async {
     final shouldUseBiometric = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder:
           (context) => _QuickLoginBottomSheet(
+            biometricType: _biometricType,
             onUseBiometric: () => Navigator.of(context).pop(true),
             onUsePassword: () => Navigator.of(context).pop(false),
           ),
     );
 
     if (shouldUseBiometric == true) {
-      await _authenticateWithBiometrics();
+      await _performBiometricLogin();
     }
   }
 
-  // Authenticate with biometrics
-  Future<void> _authenticateWithBiometrics() async {
-    try {
-      final result = await BiometricService.authenticate(
-        reason: 'Please authenticate to login to your account',
-        biometricOnly: true,
-      );
-
-      if (result.isSuccess) {
-        // Get saved credentials
-        final credentials = await BiometricService.getSavedCredentials();
-        final phone = credentials['phone'];
-        final password = credentials['password'];
-
-        if (phone != null && password != null) {
-          // Auto-fill form
-          setState(() {
-            _phoneController.text = phone;
-            _passwordController.text = password;
-          });
-
-          // Perform login
-          if (mounted) {
-            AuthCubit.get(context).login(LoginParams(phone: phone, password: password, isRemembered: true));
-          }
-        } else {
-          _showBiometricError('No saved credentials found. Please login manually first.');
-        }
-      } else {
-        _handleBiometricError(result);
-      }
-    } catch (e) {
-      _showBiometricError('Biometric authentication failed: ${e.toString()}');
-    }
-  }
-
-  // Handle biometric authentication errors
-  void _handleBiometricError(BiometricAuthResult result) {
-    switch (result.errorType) {
-      case BiometricErrorType.userCancel:
-        // User cancelled, don't show error
-        break;
-      case BiometricErrorType.notAvailable:
-        _showBiometricError('Biometric authentication is not available on this device');
-        break;
-      case BiometricErrorType.notEnrolled:
-        _showBiometricError('Please set up biometric authentication in your device settings');
-        break;
-      case BiometricErrorType.lockedOut:
-        _showBiometricError('Biometric authentication is temporarily locked. Please try again later.');
-        break;
-      case BiometricErrorType.timeout:
-        _showBiometricError('Authentication timed out. Please try again.');
-        break;
-      default:
-        _showBiometricError(result.errorMessage ?? 'Authentication failed');
-    }
-  }
-
-  // Show biometric error
-  void _showBiometricError(String message) {
-    if (mounted) {
-      showErrorToast(context, message);
-      log(message);
-    }
-  }
-
-  // Save credentials after successful login
-  Future<void> _saveCredentialsAfterLogin() async {
-    if (isRemembered && _isBiometricAvailable) {
-      // Ask user if they want to enable biometric authentication
-      if (!_isBiometricEnabled) {
-        await _showBiometricSetupBottomSheet();
-      } else {
-        // Update existing credentials
-        await BiometricService.saveCredentials(phone: _phoneController.text, password: _passwordController.text);
-      }
-    }
-  }
-
-  // Show biometric setup bottom sheet
   Future<void> _showBiometricSetupBottomSheet() async {
     final shouldEnable = await showModalBottomSheet<bool>(
       context: context,
@@ -186,40 +195,44 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.transparent,
       builder:
           (context) => _BiometricSetupBottomSheet(
+            biometricType: _biometricType,
             onEnable: () => Navigator.of(context).pop(true),
             onSkip: () => Navigator.of(context).pop(false),
           ),
     );
 
     if (shouldEnable == true) {
-      final success = await BiometricService.saveCredentials(
-        phone: _phoneController.text,
-        password: _passwordController.text,
-      );
-
-      if (success) {
-        setState(() {
-          _isBiometricEnabled = true;
-        });
-        if (mounted) {
-          showErrorToast(context, 'Biometric authentication enabled successfully!');
-        }
-      } else {
-        if (mounted) {
-          showErrorToast(context, 'Failed to enable biometric authentication');
-        }
-      }
+      await _confirmBiometricSetup();
     }
   }
 
-  // Regular login method
-  void _performLogin() {
-    if (_formKey.currentState!.validate()) {
-      AuthCubit.get(context).login(
-        LoginParams(phone: _phoneController.text, password: _passwordController.text, isRemembered: isRemembered),
-      );
+  // ==================== UI HELPERS ====================
+
+  void _showError(String message) {
+    if (mounted && message.isNotEmpty) {
+      showErrorToast(context, message);
+      log('Biometric Error: $message');
     }
   }
+
+  void _showSuccess(String message) {
+    if (mounted) {
+      showErrorToast(context, message); // Assuming you have a success toast method
+      log('Biometric Success: $message');
+    }
+  }
+
+  void _handleBiometricButtonPress() {
+    if (_isCheckingBiometrics) return;
+
+    if (_isBiometricAvailable) {
+      _performBiometricLogin();
+    } else {
+      _showError('$_biometricType is not available on this device');
+    }
+  }
+
+  // ==================== BUILD METHOD ====================
 
   @override
   Widget build(BuildContext context) {
@@ -250,169 +263,164 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         children: [
           30.gap,
-          Form(
-            key: _formKey,
-            child: Hero(
-              tag: "form",
-              child: Material(
-                color: Colors.transparent,
-                child: Column(
-                  children: [
-                    CustomTextFormField(
-                      controller: _phoneController,
-                      margin: 0,
-                      hint: LocaleKeys.phone_number.tr(),
-                      title: LocaleKeys.phone_number.tr(),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                    16.gap,
-                    CustomTextFormField(
-                      margin: 0,
-                      controller: _passwordController,
-                      hint: LocaleKeys.password.tr(),
-                      title: LocaleKeys.password.tr(),
-                      obscureText: true,
-                      isPassword: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    19.gap,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: Checkbox(
-                                activeColor: AppColors.secondary,
-                                checkColor: AppColors.white,
-                                value: isRemembered,
-                                onChanged: (value) {
-                                  setState(() {
-                                    isRemembered = value ?? false;
-                                  });
-                                },
-                              ),
-                            ),
-                            8.gap,
-                            Text(LocaleKeys.remember_me.tr(), style: context.bodyMedium.s12.regular),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            context.push(Routes.forgetPassword);
-                          },
-                          child: Text(
-                            LocaleKeys.forgot_password.tr(),
-                            style: context.bodyMedium.s12.bold.copyWith(color: AppColors.primary),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          _buildLoginForm(),
           40.gap,
-          Row(
-            children: [
-              Expanded(
-                child: BlocConsumer<AuthCubit, AuthState>(
-                  listener: (BuildContext context, AuthState state) async {
-                    if (state is AuthSuccess) {
-                      // Save credentials if login is successful
-                      await _saveCredentialsAfterLogin();
-
-                      UserCubit.get(context).setCurrentUser(state.user);
-                      context.go(Routes.homeUser);
-                    } else {
-                      // context.go(Routes.homeParkingMan);
-                    }
-                    if (state is AuthError) {
-                      showErrorToast(context, state.message);
-                    }
-                  },
-                  builder:
-                      (BuildContext context, AuthState state) => CustomElevatedButton(
-                        heroTag: 'button',
-                        loading: state is AuthLoading,
-                        title: LocaleKeys.login.tr(),
-                        onPressed: _performLogin,
-                      ),
-                ),
-              ),
-              20.gap,
-              Expanded(
-                child: CustomElevatedButton(
-                  heroTag: 'faceId',
-                  icon: AppIcons.faceIdIc,
-                  title: LocaleKeys.face_id.tr(),
-                  loading: _isCheckingBiometrics,
-                  onPressed:
-                      (_isBiometricAvailable && !_isCheckingBiometrics)
-                          ? _authenticateWithBiometrics
-                          : () {
-                            if (_isCheckingBiometrics) {
-                              return; // Don't show error while checking
-                            }
-                            _showBiometricError('Biometric authentication is not available on this device');
-                          },
-                  // Change button appearance based on biometric availability
-                  backgroundColor:
-                      _isBiometricAvailable
-                          ? (_isBiometricEnabled
-                              ? AppColors.primary.withOpacity(0.8) // Highlight if enabled
-                              : null) // Use default color if available but not enabled
-                          : AppColors.grey60.withOpacity(0.3), // Disabled if not available
-                ),
-              ),
-            ],
-          ),
+          _buildActionButtons(),
           71.gap,
-          // or login with divider
-          Row(
-            children: [
-              Expanded(child: Divider(color: AppColors.grey60.withOpacity(0.3), thickness: 1)),
-              16.gap,
-              Text(LocaleKeys.or_login_with.tr(), style: context.bodyMedium.s12.regular),
-              16.gap,
-              Expanded(child: Divider(color: AppColors.grey60.withOpacity(0.3), thickness: 1)),
-            ],
-          ),
+          _buildDivider(),
           20.gap,
           const SocialMediaButtons(),
           20.gap,
-          SignUpButton(
-            isLogin: true,
-            onTap: () {
-              context.push(Routes.register);
-            },
-          ),
-          30.gap, // Add extra bottom padding
+          SignUpButton(isLogin: true, onTap: () => context.push(Routes.register)),
+          30.gap,
         ],
       ),
     );
   }
+
+  Widget _buildLoginForm() {
+    return Form(
+      key: _formKey,
+      child: Hero(
+        tag: "form",
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            children: [
+              CustomTextFormField(
+                controller: _phoneController,
+                margin: 0,
+                hint: LocaleKeys.phone_number.tr(),
+                title: LocaleKeys.phone_number.tr(),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number';
+                  }
+                  return null;
+                },
+              ),
+              16.gap,
+              CustomTextFormField(
+                margin: 0,
+                controller: _passwordController,
+                hint: LocaleKeys.password.tr(),
+                title: LocaleKeys.password.tr(),
+                obscureText: true,
+                isPassword: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
+              19.gap,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Checkbox(
+                          activeColor: AppColors.secondary,
+                          checkColor: AppColors.white,
+                          value: isRemembered,
+                          onChanged: (value) {
+                            setState(() {
+                              isRemembered = value ?? false;
+                            });
+                          },
+                        ),
+                      ),
+                      8.gap,
+                      Text(LocaleKeys.remember_me.tr(), style: context.bodyMedium.s12.regular),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () => context.push(Routes.forgetPassword),
+                    child: Text(
+                      LocaleKeys.forgot_password.tr(),
+                      style: context.bodyMedium.s12.bold.copyWith(color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: BlocConsumer<AuthCubit, AuthState>(
+            listener: (context, state) async {
+              if (state is AuthSuccess) {
+                // Handle post-login biometric setup
+                await _handlePostLoginBiometricSetup();
+                UserCubit.get(context).setCurrentUser(state.user);
+                context.go(Routes.homeUser);
+              } else if (state is AuthError) {
+                showErrorToast(context, state.message);
+              }
+            },
+            builder:
+                (context, state) => CustomElevatedButton(
+                  heroTag: 'button',
+                  loading: state is AuthLoading,
+                  title: LocaleKeys.login.tr(),
+                  onPressed: _performRegularLogin,
+                ),
+          ),
+        ),
+        20.gap,
+        Expanded(
+          child: CustomElevatedButton(
+            heroTag: 'faceId',
+            icon: AppIcons.faceIdIc,
+            title: _biometricType,
+            loading: _isCheckingBiometrics,
+            onPressed: _handleBiometricButtonPress,
+            backgroundColor:
+                _isBiometricAvailable
+                    ? (_isBiometricEnabled ? AppColors.primary.withOpacity(0.8) : null)
+                    : AppColors.grey60.withOpacity(0.3),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDivider() {
+    return Row(
+      children: [
+        Expanded(child: Divider(color: AppColors.grey60.withOpacity(0.3), thickness: 1)),
+        16.gap,
+        Text(LocaleKeys.or_login_with.tr(), style: context.bodyMedium.s12.regular),
+        16.gap,
+        Expanded(child: Divider(color: AppColors.grey60.withOpacity(0.3), thickness: 1)),
+      ],
+    );
+  }
 }
 
-// Quick Login Bottom Sheet Widget
+// ==================== BOTTOM SHEET WIDGETS ====================
+
 class _QuickLoginBottomSheet extends StatelessWidget {
+  final String biometricType;
   final VoidCallback onUseBiometric;
   final VoidCallback onUsePassword;
 
-  const _QuickLoginBottomSheet({required this.onUseBiometric, required this.onUsePassword});
+  const _QuickLoginBottomSheet({
+    required this.biometricType,
+    required this.onUseBiometric,
+    required this.onUsePassword,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -442,7 +450,11 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
-                child: Icon(Icons.fingerprint, size: 40, color: AppColors.primary),
+                child: Icon(
+                  biometricType == 'Face ID' ? Icons.face : Icons.fingerprint,
+                  size: 40,
+                  color: AppColors.primary,
+                ),
               ),
               24.gap,
               // Title
@@ -450,7 +462,7 @@ class _QuickLoginBottomSheet extends StatelessWidget {
               12.gap,
               // Description
               Text(
-                'Welcome back! Use your biometric authentication to login quickly and securely.',
+                'Welcome back! Use your $biometricType to login quickly and securely.',
                 style: context.bodyMedium.regular.copyWith(color: AppColors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -471,8 +483,8 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                   16.gap,
                   Expanded(
                     child: CustomElevatedButton(
-                      heroTag: 'use_face_id',
-                      title: 'Use Face ID',
+                      heroTag: 'use_biometric',
+                      title: 'Use $biometricType',
                       icon: AppIcons.faceIdIc,
                       backgroundColor: AppColors.primary,
                       textColor: Colors.white,
@@ -490,12 +502,12 @@ class _QuickLoginBottomSheet extends StatelessWidget {
   }
 }
 
-// Biometric Setup Bottom Sheet Widget
 class _BiometricSetupBottomSheet extends StatelessWidget {
+  final String biometricType;
   final VoidCallback onEnable;
   final VoidCallback onSkip;
 
-  const _BiometricSetupBottomSheet({required this.onEnable, required this.onSkip});
+  const _BiometricSetupBottomSheet({required this.biometricType, required this.onEnable, required this.onSkip});
 
   @override
   Widget build(BuildContext context) {
@@ -530,14 +542,14 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
               24.gap,
               // Title
               Text(
-                'Enable Biometric Authentication',
+                'Enable $biometricType Authentication',
                 style: context.headlineSmall.bold.copyWith(color: AppColors.black),
                 textAlign: TextAlign.center,
               ),
               12.gap,
               // Description
               Text(
-                'Secure your account and login faster with Face ID or fingerprint authentication.',
+                'Secure your account and login faster with $biometricType authentication.',
                 style: context.bodyMedium.regular.copyWith(color: AppColors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -546,7 +558,7 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
               _FeatureItem(
                 icon: Icons.speed,
                 title: 'Quick Access',
-                description: 'Login in seconds with just a look or touch',
+                description: 'Login in seconds with just ${biometricType == 'Face ID' ? 'a look' : 'a touch'}',
               ),
               12.gap,
               _FeatureItem(
@@ -596,7 +608,6 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
   }
 }
 
-// Feature Item Widget
 class _FeatureItem extends StatelessWidget {
   final IconData icon;
   final String title;
