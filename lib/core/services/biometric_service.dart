@@ -212,7 +212,7 @@ class BiometricService {
           ),
         ],
         options: const AuthenticationOptions(
-          biometricOnly: true, // This is key - forces biometric authentication
+          biometricOnly: false, // This is key - forces biometric authentication
           stickyAuth: true,
           useErrorDialogs: true,
         ),

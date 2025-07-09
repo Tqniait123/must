@@ -260,7 +260,15 @@ class CodegenLoader extends AssetLoader{
   "setup_biometric_in_settings": "Please set up biometric authentication in your device settings",
   "biometric_temporarily_locked_try_again": "Biometric authentication is temporarily locked. Please try again later.",
   "biometric_permanently_locked_use_passcode": "Biometric authentication is permanently locked. Please use your passcode.",
-  "no_saved_credentials_login_manually": "No saved credentials found. Please login manually first."
+  "no_saved_credentials_login_manually": "No saved credentials found. Please login manually first.",
+  "biometric_enrollment_description": "Your device supports biometric authentication but you haven't enrolled any biometrics. Would you like to set it up now?",
+  "later": "Later",
+  "open_settings": "Open Settings",
+  "use_device_password": "Use Device Password",
+  "authenticate_with_device_credentials": "Please authenticate with your device PIN, password, or pattern",
+  "device_authentication_success": "Device authentication successful! Biometric login enabled.",
+  "device_authentication_failed": "Device authentication failed. Please try again.",
+  "device_password_description": "Use your device PIN, password, or pattern to enable biometric authentication"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -508,7 +516,15 @@ static const Map<String,dynamic> _ar = {
   "setup_biometric_in_settings": "يرجى إعداد المصادقة البيومترية في إعدادات جهازك",
   "biometric_temporarily_locked_try_again": "المصادقة البيومترية مقفلة مؤقتاً. يرجى المحاولة مرة أخرى لاحقاً.",
   "biometric_permanently_locked_use_passcode": "المصادقة البيومترية مقفلة نهائياً. يرجى استخدام رمز المرور الخاص بك.",
-  "no_saved_credentials_login_manually": "لم يتم العثور على بيانات اعتماد محفوظة. يرجى تسجيل الدخول يدوياً أولاً."
+  "no_saved_credentials_login_manually": "لم يتم العثور على بيانات اعتماد محفوظة. يرجى تسجيل الدخول يدوياً أولاً.",
+  "biometric_enrollment_description": "يدعم جهازك المصادقة البيومترية ولكنك لم تقم بتسجيل أي بيانات بيومترية. هل تريد إعدادها الآن؟",
+  "later": "لاحقاً",
+  "open_settings": "فتح الإعدادات",
+  "use_device_password": "استخدم كلمة مرور الجهاز",
+  "authenticate_with_device_credentials": "يرجى التحقق باستخدام رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك",
+  "device_authentication_success": "تم التحقق من الجهاز بنجاح! تم تفعيل تسجيل الدخول البيومتري.",
+  "device_authentication_failed": "فشل التحقق من الجهاز. يرجى المحاولة مرة أخرى.",
+  "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

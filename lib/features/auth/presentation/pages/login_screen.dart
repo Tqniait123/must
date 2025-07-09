@@ -4,11 +4,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/services/biometric_service.dart';
+import 'package:must_invest/core/services/biometric_service_2.dart'; // Updated import
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -33,17 +34,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final BiometricService2 _biometricService = BiometricService2(); // Updated service
   bool isRemembered = true;
 
   // UI State variables
-  bool _isBiometricAvailable = false;
+  BiometricStatus _biometricStatus = BiometricStatus.error;
   bool _isBiometricEnabled = false;
   bool _isCheckingBiometrics = false;
   String _biometricType = 'Face ID';
-
-  // Pending biometric setup data
-  String? _pendingPhone;
-  String? _pendingPassword;
+  List<BiometricType> _availableBiometrics = [];
 
   @override
   void initState() {
@@ -61,54 +60,145 @@ class _LoginScreenState extends State<LoginScreen> {
   // ==================== BIOMETRIC INITIALIZATION ====================
 
   Future<void> _initializeBiometric() async {
+    log('Starting biometric initialization...');
     setState(() {
       _isCheckingBiometrics = true;
     });
 
-    final setupResult = await BiometricService.setupBiometric();
+    try {
+      // Load saved credentials if available
+      // await _loadSavedCredentials();
+      log('Checking biometric status...');
 
-    setState(() {
-      _isBiometricAvailable = setupResult.isAvailable;
-      _isBiometricEnabled = setupResult.isEnabled;
-      _biometricType = setupResult.primaryBiometricType;
-      _isCheckingBiometrics = false;
-    });
+      // Check biometric status
+      _biometricStatus = await _biometricService.checkBiometricStatus();
+      log('Biometric status: $_biometricStatus');
 
-    if (setupResult.error != null) {
-      _showError(setupResult.error!);
+      _isBiometricEnabled = await BiometricService2.isBiometricEnabled();
+      log('Biometric enabled: $_isBiometricEnabled');
+
+      _availableBiometrics = await _biometricService.availableBiometrics;
+      log('Available biometrics: $_availableBiometrics');
+
+      // Determine biometric type
+      _biometricType = _getBiometricTypeName(_availableBiometrics);
+      log('Determined biometric type: $_biometricType');
+
+      // Show quick login if biometric is enabled and available
+      if (_isBiometricEnabled && _biometricStatus == BiometricStatus.available) {
+        log('Showing quick login bottom sheet...');
+        await _showQuickLoginBottomSheet();
+      }
+
+      // Show enrollment prompt if biometric is available but not enrolled
+      if (_biometricStatus == BiometricStatus.availableButNotEnrolled) {
+        log('Showing biometric enrollment dialog...');
+        await _showBiometricEnrollmentDialog();
+      }
+
+      log('Biometric initialization completed successfully');
+    } catch (e) {
+      log('Biometric initialization error: $e');
+      _showError('Failed to initialize biometric authentication');
+    } finally {
+      log('Finishing biometric initialization...');
+      setState(() {
+        _isCheckingBiometrics = false;
+      });
     }
+  }
 
-    // Show quick login if should
-    if (setupResult.shouldShowQuickLogin) {
-      await _showQuickLoginBottomSheet();
+  String _getBiometricTypeName(List<BiometricType> biometrics) {
+    if (biometrics.contains(BiometricType.face)) {
+      return 'Face ID';
+    } else if (biometrics.contains(BiometricType.fingerprint)) {
+      return 'Fingerprint';
+    } else if (biometrics.contains(BiometricType.iris)) {
+      return 'Iris';
+    } else if (biometrics.isNotEmpty) {
+      return 'Biometric';
     }
+    return 'Face ID'; // Default
   }
 
   // ==================== BIOMETRIC LOGIN ====================
 
+  // Update the _performBiometricLogin method in your LoginScreen
+
   Future<void> _performBiometricLogin() async {
-    final loginResult = await BiometricService.performBiometricLogin();
+    try {
+      final result = await _biometricService.authenticateWithResult(
+        phone: _phoneController.text,
+        password: _passwordController.text,
+      );
 
-    if (loginResult.isSuccess) {
-      // Auto-fill form and login
-      setState(() {
-        _phoneController.text = loginResult.phone!;
-        _passwordController.text = loginResult.password!;
-      });
+      if (result.success) {
+        // Use the saved credentials for login instead of form inputs
+        final loginPhone = result.phone ?? _phoneController.text;
+        final loginPassword = result.password ?? _passwordController.text;
 
-      if (mounted) {
-        AuthCubit.get(
-          context,
-        ).login(LoginParams(phone: loginResult.phone!, password: loginResult.password!, isRemembered: true));
+        // Login successful with biometric - use saved credentials
+        AuthCubit.get(context).login(LoginParams(phone: loginPhone, password: loginPassword, isRemembered: true));
+      } else {
+        // Handle authentication failure
+        switch (result.action) {
+          case AuthenticationAction.openSettings:
+            await _showBiometricEnrollmentDialog();
+
+            // });
+            break;
+          case AuthenticationAction.usePassword:
+            // Clear biometric settings and prompt for password login
+            await BiometricService2.clearCredentials();
+            setState(() {
+              _isBiometricEnabled = false;
+            });
+            _showError('Please login with your password to re-enable biometric authentication.');
+            break;
+          case AuthenticationAction.retry:
+            // Allow user to retry biometric authentication
+            break;
+          case AuthenticationAction.none:
+          default:
+            _showError(result.message);
+            break;
+        }
       }
-    } else {
-      // Handle error
-      if (BiometricService.shouldShowError(loginResult.errorType)) {
-        _showError(BiometricService.getErrorMessageForUI(loginResult.errorType));
-      }
+    } catch (e) {
+      log('Biometric login error: $e');
+      _showError('Biometric authentication failed');
     }
   }
 
+  // Also update the _loadSavedCredentials method
+  Future<void> _loadSavedCredentials() async {
+    try {
+      log('Loading saved credentials...');
+      final savedPhone = await BiometricService2.getSavedPhone();
+      final savedPassword = await BiometricService2.getSavedPassword();
+
+      log('Saved phone: ${savedPhone != null ? 'Found' : 'Not found'}');
+      log('Saved password: ${savedPassword != null ? 'Found' : 'Not found'}');
+
+      if (savedPhone != null) {
+        setState(() {
+          _phoneController.text = savedPhone;
+        });
+        log('Phone loaded successfully');
+      }
+
+      if (savedPassword != null) {
+        setState(() {
+          _passwordController.text = savedPassword;
+        });
+        log('Password loaded successfully');
+      }
+
+      log('Finished loading saved credentials');
+    } catch (e) {
+      log('Error loading saved credentials: $e');
+    }
+  }
   // ==================== REGULAR LOGIN ====================
 
   void _performRegularLogin() {
@@ -122,55 +212,209 @@ class _LoginScreenState extends State<LoginScreen> {
   // ==================== POST-LOGIN BIOMETRIC SETUP ====================
 
   Future<void> _handlePostLoginBiometricSetup() async {
-    if (!isRemembered || !_isBiometricAvailable) return;
+    if (!isRemembered) return;
 
-    final enableResult = await BiometricService.enableBiometricAfterLogin(
-      phone: _phoneController.text,
-      password: _passwordController.text,
-      shouldAskUser: !_isBiometricEnabled,
-    );
+    final status = await _biometricService.checkBiometricStatus();
 
-    if (enableResult.isSuccess) {
-      if (enableResult.successMessage != null) {
-        _showSuccess(enableResult.successMessage!);
-      }
-      setState(() {
-        _isBiometricEnabled = true;
-      });
-    } else if (enableResult.shouldShowSetupDialog) {
-      // Store pending credentials and show setup dialog
-      _pendingPhone = enableResult.pendingPhone;
-      _pendingPassword = enableResult.pendingPassword;
+    if (status == BiometricStatus.available && !_isBiometricEnabled) {
+      // Show setup dialog for enrolled biometrics
       await _showBiometricSetupBottomSheet();
-    } else if (enableResult.errorMessage != null) {
-      _showError(enableResult.errorMessage!);
+    } else if (status == BiometricStatus.availableButNotEnrolled) {
+      // Show enrollment dialog
+      await _showBiometricEnrollmentDialog();
     }
   }
 
-  bool _isNullOrEmpty(String? value) => value == null || value.isEmpty;
+  Future<void> _enableBiometricAuthentication() async {
+    try {
+      final success = await BiometricService2.saveCredentials(
+        phone: _phoneController.text,
+        password: _passwordController.text,
+      );
 
-  Future<void> _confirmBiometricSetup() async {
-    if (_isNullOrEmpty(_pendingPhone) || _isNullOrEmpty(_pendingPassword)) return;
-
-    final result = await BiometricService.confirmEnableBiometric(phone: _pendingPhone!, password: _pendingPassword!);
-
-    if (result.isSuccess) {
-      setState(() {
-        _isBiometricEnabled = true;
-      });
-      if (result.successMessage != null) {
-        _showSuccess(result.successMessage!);
+      if (success) {
+        setState(() {
+          _isBiometricEnabled = true;
+        });
+        _showSuccess('Biometric authentication enabled successfully!');
+      } else {
+        _showError('Failed to enable biometric authentication');
       }
-    } else if (result.errorMessage != null) {
-      _showError(result.errorMessage!);
+    } catch (e) {
+      log('Error enabling biometric: $e');
+      _showError('Failed to enable biometric authentication');
     }
-
-    // Clear pending data
-    _pendingPhone = null;
-    _pendingPassword = null;
   }
 
-  // ==================== BOTTOM SHEETS ====================
+  // ==================== DIALOGS & BOTTOM SHEETS ====================
+
+  // Updated _showBiometricEnrollmentDialog method for your LoginScreen
+
+  Future<void> _showBiometricEnrollmentDialog() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            ),
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                ),
+                const SizedBox(height: 24),
+
+                // Icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(Icons.fingerprint, size: 40, color: Theme.of(context).primaryColor),
+                ),
+                const SizedBox(height: 24),
+
+                // Title
+                Text(
+                  LocaleKeys.biometric_authentication.tr(),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+
+                // Description
+                Text(
+                  LocaleKeys.biometric_enrollment_description.tr(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600, height: 1.5),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+
+                // Buttons
+                Column(
+                  children: [
+                    // Use Device Password Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await _authenticateWithDeviceCredentials();
+                        },
+                        icon: Icon(Icons.lock_outline, size: 20),
+                        label: Text(LocaleKeys.use_device_password.tr()),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Action buttons row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: Text(LocaleKeys.later.tr()),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _biometricService.openBiometricSettings();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                              foregroundColor: Theme.of(context).primaryColor,
+                            ),
+                            child: Text(LocaleKeys.open_settings.tr()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  // New method to handle device credentials authentication
+  Future<void> _authenticateWithDeviceCredentials() async {
+    try {
+      setState(() {
+        _isCheckingBiometrics = true;
+      });
+
+      final AuthenticationResult result = await _biometricService.authenticateWithDeviceCredentialsResult(
+        localizedReason: LocaleKeys.authenticate_with_device_credentials.tr(),
+      );
+      await _loadSavedCredentials();
+
+      log('Biometric authentication result: ${result.toString()}');
+
+      if (result.success) {
+        setState(() {
+          _isBiometricEnabled = true;
+        });
+
+        // Perform login with the authenticated credentials
+        if (result.phone != null && result.password != null) {
+          AuthCubit.get(
+            context,
+          ).login(LoginParams(phone: result.phone!, password: result.password!, isRemembered: true));
+        }
+
+        _showSuccess(LocaleKeys.device_authentication_success.tr());
+      } else {
+        switch (result.action) {
+          case AuthenticationAction.retry:
+            // Show option to retry
+            _showError(result.message);
+            break;
+          default:
+            _showError(result.message);
+            break;
+        }
+      }
+    } catch (e) {
+      log('Device credentials authentication error: $e');
+      _showError(LocaleKeys.device_authentication_failed.tr());
+    } finally {
+      setState(() {
+        _isCheckingBiometrics = false;
+      });
+    }
+  }
 
   Future<void> _showQuickLoginBottomSheet() async {
     final shouldUseBiometric = await showModalBottomSheet<bool>(
@@ -204,7 +448,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (shouldEnable == true) {
-      await _confirmBiometricSetup();
+      await _enableBiometricAuthentication();
     }
   }
 
@@ -213,25 +457,49 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showError(String message) {
     if (mounted && message.isNotEmpty) {
       showErrorToast(context, message);
-      log('${LocaleKeys.biometric_error.tr()}: $message');
+      log('Biometric error: $message');
     }
   }
 
   void _showSuccess(String message) {
     if (mounted) {
-      showErrorToast(context, message); // Assuming you have a success toast method
-      log('${LocaleKeys.biometric_success.tr()}: $message');
+      showSuccessToast(context, message); // You might want to create a success toast method
+      log('Biometric success: $message');
     }
   }
 
-  void _handleBiometricButtonPress() {
+  void _handleBiometricButtonPress() async {
     if (_isCheckingBiometrics) return;
 
-    if (_isBiometricAvailable) {
-      _performBiometricLogin();
-    } else {
-      _showError(LocaleKeys.biometric_not_available_on_device.tr().replaceAll('{biometricType}', _biometricType));
+    switch (_biometricStatus) {
+      case BiometricStatus.available:
+        if (_isBiometricEnabled) {
+          _performBiometricLogin();
+        } else {
+          _showBiometricSetupBottomSheet();
+        }
+        break;
+      case BiometricStatus.availableButNotEnrolled:
+        await _showBiometricEnrollmentDialog();
+
+        break;
+      case BiometricStatus.notSupported:
+        _showError('Biometric authentication is not supported on this device');
+        break;
+      case BiometricStatus.error:
+        _showError('Error checking biometric availability');
+        break;
     }
+  }
+
+  bool get _shouldShowBiometricButton =>
+      _biometricStatus == BiometricStatus.available || _biometricStatus == BiometricStatus.availableButNotEnrolled;
+
+  Color get _biometricButtonColor {
+    if (!_shouldShowBiometricButton) {
+      return AppColors.grey60.withOpacity(0.3);
+    }
+    return _isBiometricEnabled ? AppColors.primary.withOpacity(0.8) : AppColors.secondary.withOpacity(0.6);
   }
 
   // ==================== BUILD METHOD ====================
@@ -387,11 +655,8 @@ class _LoginScreenState extends State<LoginScreen> {
             icon: AppIcons.faceIdIc,
             title: _biometricType,
             loading: _isCheckingBiometrics,
-            onPressed: _handleBiometricButtonPress,
-            backgroundColor:
-                _isBiometricAvailable
-                    ? (_isBiometricEnabled ? AppColors.primary.withOpacity(0.8) : null)
-                    : AppColors.grey60.withOpacity(0.3),
+            onPressed: _shouldShowBiometricButton ? _handleBiometricButtonPress : null,
+            backgroundColor: _biometricButtonColor,
           ),
         ),
       ],

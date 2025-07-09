@@ -11,6 +11,8 @@ import 'package:must_invest/core/static/locales.dart';
 import 'package:must_invest/core/translations/codegen_loader.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 // @pragma('vm:entry-point')
 // Future<void> fcmBackgroundHandler(RemoteMessage message) async {
 //   // Initialize Firebase in the background isolate

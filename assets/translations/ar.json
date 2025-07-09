@@ -246,5 +246,13 @@
   "setup_biometric_in_settings": "يرجى إعداد المصادقة البيومترية في إعدادات جهازك",
   "biometric_temporarily_locked_try_again": "المصادقة البيومترية مقفلة مؤقتاً. يرجى المحاولة مرة أخرى لاحقاً.",
   "biometric_permanently_locked_use_passcode": "المصادقة البيومترية مقفلة نهائياً. يرجى استخدام رمز المرور الخاص بك.",
-  "no_saved_credentials_login_manually": "لم يتم العثور على بيانات اعتماد محفوظة. يرجى تسجيل الدخول يدوياً أولاً."
+  "no_saved_credentials_login_manually": "لم يتم العثور على بيانات اعتماد محفوظة. يرجى تسجيل الدخول يدوياً أولاً.",
+  "biometric_enrollment_description": "يدعم جهازك المصادقة البيومترية ولكنك لم تقم بتسجيل أي بيانات بيومترية. هل تريد إعدادها الآن؟",
+    "later": "لاحقاً",
+    "open_settings": "فتح الإعدادات",
+    "use_device_password": "استخدم كلمة مرور الجهاز",
+    "authenticate_with_device_credentials": "يرجى التحقق باستخدام رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك",
+    "device_authentication_success": "تم التحقق من الجهاز بنجاح! تم تفعيل تسجيل الدخول البيومتري.",
+    "device_authentication_failed": "فشل التحقق من الجهاز. يرجى المحاولة مرة أخرى.",
+    "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية"
 }

@@ -244,5 +244,13 @@
   "setup_biometric_in_settings": "Please set up biometric authentication in your device settings",
   "biometric_temporarily_locked_try_again": "Biometric authentication is temporarily locked. Please try again later.",
   "biometric_permanently_locked_use_passcode": "Biometric authentication is permanently locked. Please use your passcode.",
-  "no_saved_credentials_login_manually": "No saved credentials found. Please login manually first."
+  "no_saved_credentials_login_manually": "No saved credentials found. Please login manually first.",
+    "biometric_enrollment_description": "Your device supports biometric authentication but you haven't enrolled any biometrics. Would you like to set it up now?",
+    "later": "Later",
+    "open_settings": "Open Settings",
+    "use_device_password": "Use Device Password",
+    "authenticate_with_device_credentials": "Please authenticate with your device PIN, password, or pattern",
+    "device_authentication_success": "Device authentication successful! Biometric login enabled.",
+    "device_authentication_failed": "Device authentication failed. Please try again.",
+    "device_password_description": "Use your device PIN, password, or pattern to enable biometric authentication"
 }

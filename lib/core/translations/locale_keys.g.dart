@@ -246,5 +246,13 @@ abstract class  LocaleKeys {
   static const biometric_temporarily_locked_try_again = 'biometric_temporarily_locked_try_again';
   static const biometric_permanently_locked_use_passcode = 'biometric_permanently_locked_use_passcode';
   static const no_saved_credentials_login_manually = 'no_saved_credentials_login_manually';
+  static const biometric_enrollment_description = 'biometric_enrollment_description';
+  static const later = 'later';
+  static const open_settings = 'open_settings';
+  static const use_device_password = 'use_device_password';
+  static const authenticate_with_device_credentials = 'authenticate_with_device_credentials';
+  static const device_authentication_success = 'device_authentication_success';
+  static const device_authentication_failed = 'device_authentication_failed';
+  static const device_password_description = 'device_password_description';
 
 }
