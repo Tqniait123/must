@@ -12,6 +12,8 @@ import 'package:must_invest/core/services/biometric_service.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/auth_bottom_sheet.dart';
+import 'package:must_invest/core/utils/dialogs/bitometci_bottom_sheet.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
@@ -40,6 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isBiometricEnabled = false;
   bool _isCheckingBiometrics = false;
   String _biometricType = 'Face ID';
+  BiometricRecommendationType _recommendedType = BiometricRecommendationType.none;
+  bool _hasCapability = false;
 
   // Pending biometric setup data
   String? _pendingPhone;
@@ -71,6 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _isBiometricAvailable = setupResult.isAvailable;
       _isBiometricEnabled = setupResult.isEnabled;
       _biometricType = setupResult.primaryBiometricType;
+      _recommendedType = setupResult.recommendedType;
+      _hasCapability = setupResult.hasCapability;
       _isCheckingBiometrics = false;
     });
 
@@ -82,6 +88,95 @@ class _LoginScreenState extends State<LoginScreen> {
     if (setupResult.shouldShowQuickLogin) {
       await _showQuickLoginBottomSheet();
     }
+  }
+
+  // ==================== AUTHENTICATION SELECTION ====================
+
+  Future<void> _showAuthenticationSelectionSheet() async {
+    final selectedMethod = await context.showImprovedAuthenticationSelectionSheet();
+
+    if (selectedMethod != null) {
+      await _handleSelectedAuthMethod(selectedMethod);
+    }
+  }
+
+  Future<void> _handleSelectedAuthMethod(BiometricRecommendationType method) async {
+    try {
+      log('Handling selected auth method: $method');
+
+      // Show loading
+      setState(() {
+        _isCheckingBiometrics = true;
+      });
+      log('Started biometric check');
+
+      // Perform authentication with the selected method
+      final result = await _authenticateWithMethod(method);
+      log('Authentication result: ${result.isSuccess}');
+
+      setState(() {
+        _isCheckingBiometrics = false;
+      });
+
+      if (result.isSuccess) {
+        log('Authentication successful with method: $method');
+        // Authentication successful
+        _showSuccessMessage(method);
+
+        log(
+          'Auto-filling credentials - Phone: ${result.phone}, Password: ${result.password?.replaceAll(RegExp(r'.'), '*')}',
+        );
+        // Auto-fill form and login
+        setState(() {
+          _phoneController.text = result.phone!;
+          _passwordController.text = result.password!;
+        });
+
+        if (mounted) {
+          log('Initiating login with biometric credentials');
+          AuthCubit.get(
+            context,
+          ).login(LoginParams(phone: result.phone!, password: result.password!, isRemembered: true));
+        }
+      } else {
+        log('Authentication failed - Error type: ${result.errorType}');
+        // Authentication failed
+        if (BiometricService.shouldShowError(result.errorType)) {
+          _showError(result.errorMessage ?? 'Authentication failed');
+        }
+      }
+    } catch (e) {
+      log('Error during authentication: ${e.toString()}');
+      setState(() {
+        _isCheckingBiometrics = false;
+      });
+      _showError('Error: ${e.toString()}');
+    }
+  }
+
+  Future<BiometricLoginResult> _authenticateWithMethod(BiometricRecommendationType method) async {
+    // For PIN/Passcode, you might want to show a different flow
+    if (method == BiometricRecommendationType.pin) {
+      return await _authenticateWithPinPasscode();
+    }
+
+    // For biometric methods, use the existing biometric authentication
+    return await BiometricService.performBiometricLogin();
+  }
+
+  Future<BiometricLoginResult> _authenticateWithPinPasscode() async {
+    // You can implement a custom PIN input screen or use the system authentication
+    try {
+      // For now, we'll use the system authentication which includes PIN as fallback
+      return await BiometricService.performBiometricLogin();
+    } catch (e) {
+      return BiometricLoginResult(isSuccess: false, errorMessage: e.toString(), errorType: BiometricErrorType.unknown);
+    }
+  }
+
+  void _showSuccessMessage(BiometricRecommendationType method) {
+    final methodName = BiometricService.getRecommendedBiometricDisplayName(method);
+    _showSuccess(LocaleKeys.authentication_successful_with_method.tr().replaceAll('{method}', methodName));
   }
 
   // ==================== BIOMETRIC LOGIN ====================
@@ -102,8 +197,10 @@ class _LoginScreenState extends State<LoginScreen> {
         ).login(LoginParams(phone: loginResult.phone!, password: loginResult.password!, isRemembered: true));
       }
     } else {
-      // Handle error
-      if (BiometricService.shouldShowError(loginResult.errorType)) {
+      // Handle different error scenarios
+      if (loginResult.shouldShowEnrollmentSheet && loginResult.recommendedType != null) {
+        await _showBiometricEnrollmentBottomSheet(loginResult.recommendedType!);
+      } else if (BiometricService.shouldShowError(loginResult.errorType)) {
         _showError(BiometricService.getErrorMessageForUI(loginResult.errorType));
       }
     }
@@ -122,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // ==================== POST-LOGIN BIOMETRIC SETUP ====================
 
   Future<void> _handlePostLoginBiometricSetup() async {
-    if (!isRemembered || !_isBiometricAvailable) return;
+    if (!isRemembered) return;
 
     final enableResult = await BiometricService.enableBiometricAfterLogin(
       phone: _phoneController.text,
@@ -142,6 +239,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _pendingPhone = enableResult.pendingPhone;
       _pendingPassword = enableResult.pendingPassword;
       await _showBiometricSetupBottomSheet();
+    } else if (enableResult.shouldShowEnrollmentSheet && enableResult.recommendedType != null) {
+      await _showBiometricEnrollmentBottomSheet(enableResult.recommendedType!);
     } else if (enableResult.errorMessage != null) {
       _showError(enableResult.errorMessage!);
     }
@@ -208,6 +307,24 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _showBiometricEnrollmentBottomSheet(BiometricRecommendationType recommendedType) async {
+    if (!mounted) return;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => BiometricEnrollmentBottomSheet(
+            recommendedType: recommendedType,
+            onCancel: () {},
+            onSetupCompleted: () async {
+              // Re-initialize biometric after setup is completed
+              await _initializeBiometric();
+            },
+          ),
+    );
+  }
+
   // ==================== UI HELPERS ====================
 
   void _showError(String message) {
@@ -225,13 +342,63 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleBiometricButtonPress() {
-    if (_isCheckingBiometrics) return;
-
-    if (_isBiometricAvailable) {
-      _performBiometricLogin();
-    } else {
-      _showError(LocaleKeys.biometric_not_available_on_device.tr().replaceAll('{biometricType}', _biometricType));
+    if (_isCheckingBiometrics) {
+      log('Biometric check in progress, ignoring button press');
+      return;
     }
+
+    // Show the authentication selection sheet
+    _showAuthenticationSelectionSheet();
+  }
+
+  // Get the appropriate icon for the biometric button
+  String _getBiometricIcon() {
+    switch (_recommendedType) {
+      case BiometricRecommendationType.faceId:
+      case BiometricRecommendationType.faceRecognition:
+        return AppIcons.faceIdIc;
+      case BiometricRecommendationType.touchId:
+      case BiometricRecommendationType.fingerprint:
+        return AppIcons.faceIdIc;
+      case BiometricRecommendationType.pin:
+        return AppIcons.faceIdIc;
+      default:
+        return AppIcons.faceIdIc;
+    }
+  }
+
+  // Get the appropriate button color based on state
+  Color? _getBiometricButtonColor() {
+    if (!_hasCapability) {
+      return AppColors.grey60.withOpacity(0.3); // Disabled state
+    }
+
+    if (_isBiometricAvailable && _isBiometricEnabled) {
+      return AppColors.primary.withOpacity(0.8); // Enabled and ready
+    }
+
+    if (_hasCapability && !_isBiometricAvailable) {
+      return AppColors.secondary.withOpacity(0.6); // Has capability but needs setup
+    }
+
+    return null; // Default color
+  }
+
+  // Get the button title based on state
+  String _getBiometricButtonTitle() {
+    if (!_hasCapability) {
+      return LocaleKeys.authentication_options.tr();
+    }
+
+    if (_isBiometricAvailable && _isBiometricEnabled) {
+      return _biometricType;
+    }
+
+    if (_hasCapability && !_isBiometricAvailable) {
+      return LocaleKeys.setup_authentication.tr();
+    }
+
+    return LocaleKeys.authentication_options.tr();
   }
 
   // ==================== BUILD METHOD ====================
@@ -383,15 +550,12 @@ class _LoginScreenState extends State<LoginScreen> {
         20.gap,
         Expanded(
           child: CustomElevatedButton(
-            heroTag: 'faceId',
-            icon: AppIcons.faceIdIc,
-            title: _biometricType,
+            heroTag: 'biometric',
+            icon: _getBiometricIcon(),
+            title: _getBiometricButtonTitle(),
             loading: _isCheckingBiometrics,
             onPressed: _handleBiometricButtonPress,
-            backgroundColor:
-                _isBiometricAvailable
-                    ? (_isBiometricEnabled ? AppColors.primary.withOpacity(0.8) : null)
-                    : AppColors.grey60.withOpacity(0.3),
+            backgroundColor: _getBiometricButtonColor(),
           ),
         ),
       ],
@@ -453,7 +617,11 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                 height: 80,
                 decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
                 child: Icon(
-                  biometricType == 'Face ID' ? Icons.face : Icons.fingerprint,
+                  biometricType == 'Face ID' || biometricType == 'Face Recognition'
+                      ? Icons.face
+                      : biometricType == 'PIN'
+                      ? Icons.pin
+                      : Icons.fingerprint,
                   size: 40,
                   color: AppColors.primary,
                 ),
@@ -487,7 +655,12 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                     child: CustomElevatedButton(
                       heroTag: 'use_biometric',
                       title: LocaleKeys.use_biometric.tr().replaceAll('{biometricType}', biometricType),
-                      icon: AppIcons.faceIdIc,
+                      icon:
+                          biometricType == 'Face ID' || biometricType == 'Face Recognition'
+                              ? AppIcons.faceIdIc
+                              : biometricType == 'PIN'
+                              ? AppIcons.faceIdIc
+                              : AppIcons.faceIdIc,
                       backgroundColor: AppColors.primary,
                       textColor: Colors.white,
                       onPressed: onUseBiometric,
@@ -562,7 +735,11 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
                 title: LocaleKeys.quick_access.tr(),
                 description: LocaleKeys.quick_access_description.tr().replaceAll(
                   '{action}',
-                  biometricType == 'Face ID' ? LocaleKeys.face_action.tr() : LocaleKeys.touch_action.tr(),
+                  biometricType == 'Face ID' || biometricType == 'Face Recognition'
+                      ? LocaleKeys.face_action.tr()
+                      : biometricType == 'PIN'
+                      ? LocaleKeys.pin.tr()
+                      : LocaleKeys.touch_action.tr(),
                 ),
               ),
               12.gap,
@@ -596,7 +773,12 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
                     child: CustomElevatedButton(
                       heroTag: 'enable_biometric',
                       title: LocaleKeys.enable.tr(),
-                      icon: AppIcons.faceIdIc,
+                      icon:
+                          biometricType == 'Face ID' || biometricType == 'Face Recognition'
+                              ? AppIcons.faceIdIc
+                              : biometricType == 'PIN'
+                              ? AppIcons.faceIdIc
+                              : AppIcons.faceIdIc,
                       backgroundColor: AppColors.secondary,
                       textColor: Colors.white,
                       onPressed: onEnable,
