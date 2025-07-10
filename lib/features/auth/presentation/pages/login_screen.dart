@@ -98,10 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       log('Biometric initialization completed successfully');
 
-      /// TODO
+      /// TODO: REMOVE THIS LINE BEFORE PRODUCTION
+      ///  TO AVOID AUTO LOGIN ON APP START
       if (mounted) {
         await AuthCubit.get(context).autoLogin();
-        
       }
     } catch (e) {
       log('Biometric initialization error: $e');
