@@ -9,12 +9,27 @@ import 'package:must_invest/core/errors/handle_error_response.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+enum RequestMethod { get, post, put, delete, patch }
+
+enum ContentType {
+  json,
+  formData;
+
+  String get value {
+    switch (this) {
+      case ContentType.json:
+        return 'application/json';
+      case ContentType.formData:
+        return 'application/x-www-form-urlencoded';
+    }
+  }
+}
+
 class DioClient {
   final MustInvestPreferences _preferences;
   final Dio _dio;
 
-  DioClient(this._preferences)
-    : _dio = Dio(BaseOptions(baseUrl: EndPoints.baseUrl)) {
+  DioClient(this._preferences) : _dio = Dio(BaseOptions(baseUrl: EndPoints.baseUrl)) {
     _dio.interceptors.add(
       PrettyDioLogger(
         error: true,
@@ -65,13 +80,44 @@ class DioClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
+    ContentType contentType = ContentType.json,
   }) async {
+    // Create options with proper content type for data
+    Options requestOptions = Options(contentType: contentType.value);
+
+    // Merge with provided options if any
+    if (options != null) {
+      requestOptions = requestOptions.copyWith(
+        method: options.method,
+        sendTimeout: options.sendTimeout,
+        receiveTimeout: options.receiveTimeout,
+        extra: options.extra,
+        headers: options.headers,
+        responseType: options.responseType,
+        validateStatus: options.validateStatus,
+        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+        followRedirects: options.followRedirects,
+        maxRedirects: options.maxRedirects,
+        requestEncoder: options.requestEncoder,
+        responseDecoder: options.responseDecoder,
+        listFormat: options.listFormat,
+      );
+    }
+
+    // Convert data to FormData if contentType is formData
+    Object? requestData = data;
+    if (contentType == ContentType.formData && data != null) {
+      if (data is Map<String, dynamic>) {
+        requestData = FormData.fromMap(data);
+      }
+    }
+
     return _sendRequest(
       () => _dio.get(
         path,
-        data: data,
+        data: requestData,
         queryParameters: queryParameters,
-        options: options,
+        options: requestOptions,
         cancelToken: cancelToken,
       ),
     );
@@ -82,14 +128,40 @@ class DioClient {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ContentType contentType = ContentType.json,
   }) async {
+    // Create options with proper content type
+    Options requestOptions = Options(contentType: contentType.value);
+
+    // Merge with provided options if any
+    if (options != null) {
+      requestOptions = requestOptions.copyWith(
+        method: options.method,
+        sendTimeout: options.sendTimeout,
+        receiveTimeout: options.receiveTimeout,
+        extra: options.extra,
+        headers: options.headers,
+        responseType: options.responseType,
+        validateStatus: options.validateStatus,
+        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+        followRedirects: options.followRedirects,
+        maxRedirects: options.maxRedirects,
+        requestEncoder: options.requestEncoder,
+        responseDecoder: options.responseDecoder,
+        listFormat: options.listFormat,
+      );
+    }
+
+    // Convert data to FormData if contentType is formData
+    Object? requestData = data;
+    if (contentType == ContentType.formData && data != null) {
+      if (data is Map<String, dynamic>) {
+        requestData = FormData.fromMap(data);
+      }
+    }
+
     return _sendRequest(
-      () => _dio.post(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      ),
+      () => _dio.post(path, data: requestData, queryParameters: queryParameters, options: requestOptions),
     );
   }
 
@@ -98,14 +170,40 @@ class DioClient {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ContentType contentType = ContentType.json,
   }) async {
+    // Create options with proper content type
+    Options requestOptions = Options(contentType: contentType.value);
+
+    // Merge with provided options if any
+    if (options != null) {
+      requestOptions = requestOptions.copyWith(
+        method: options.method,
+        sendTimeout: options.sendTimeout,
+        receiveTimeout: options.receiveTimeout,
+        extra: options.extra,
+        headers: options.headers,
+        responseType: options.responseType,
+        validateStatus: options.validateStatus,
+        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+        followRedirects: options.followRedirects,
+        maxRedirects: options.maxRedirects,
+        requestEncoder: options.requestEncoder,
+        responseDecoder: options.responseDecoder,
+        listFormat: options.listFormat,
+      );
+    }
+
+    // Convert data to FormData if contentType is formData
+    Object? requestData = data;
+    if (contentType == ContentType.formData && data != null) {
+      if (data is Map<String, dynamic>) {
+        requestData = FormData.fromMap(data);
+      }
+    }
+
     return _sendRequest(
-      () => _dio.patch(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      ),
+      () => _dio.patch(path, data: requestData, queryParameters: queryParameters, options: requestOptions),
     );
   }
 
@@ -114,14 +212,40 @@ class DioClient {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ContentType contentType = ContentType.json,
   }) async {
+    // Create options with proper content type
+    Options requestOptions = Options(contentType: contentType.value);
+
+    // Merge with provided options if any
+    if (options != null) {
+      requestOptions = requestOptions.copyWith(
+        method: options.method,
+        sendTimeout: options.sendTimeout,
+        receiveTimeout: options.receiveTimeout,
+        extra: options.extra,
+        headers: options.headers,
+        responseType: options.responseType,
+        validateStatus: options.validateStatus,
+        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+        followRedirects: options.followRedirects,
+        maxRedirects: options.maxRedirects,
+        requestEncoder: options.requestEncoder,
+        responseDecoder: options.responseDecoder,
+        listFormat: options.listFormat,
+      );
+    }
+
+    // Convert data to FormData if contentType is formData
+    Object? requestData = data;
+    if (contentType == ContentType.formData && data != null) {
+      if (data is Map<String, dynamic>) {
+        requestData = FormData.fromMap(data);
+      }
+    }
+
     return _sendRequest(
-      () => _dio.put(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      ),
+      () => _dio.put(path, data: requestData, queryParameters: queryParameters, options: requestOptions),
     );
   }
 
@@ -130,14 +254,40 @@ class DioClient {
     Object? data,
     Map<String, dynamic>? queryParameters,
     Options? options,
+    ContentType contentType = ContentType.json,
   }) async {
+    // Create options with proper content type
+    Options requestOptions = Options(contentType: contentType.value);
+
+    // Merge with provided options if any
+    if (options != null) {
+      requestOptions = requestOptions.copyWith(
+        method: options.method,
+        sendTimeout: options.sendTimeout,
+        receiveTimeout: options.receiveTimeout,
+        extra: options.extra,
+        headers: options.headers,
+        responseType: options.responseType,
+        validateStatus: options.validateStatus,
+        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+        followRedirects: options.followRedirects,
+        maxRedirects: options.maxRedirects,
+        requestEncoder: options.requestEncoder,
+        responseDecoder: options.responseDecoder,
+        listFormat: options.listFormat,
+      );
+    }
+
+    // Convert data to FormData if contentType is formData
+    Object? requestData = data;
+    if (contentType == ContentType.formData && data != null) {
+      if (data is Map<String, dynamic>) {
+        requestData = FormData.fromMap(data);
+      }
+    }
+
     return _sendRequest(
-      () => _dio.delete(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-      ),
+      () => _dio.delete(path, data: requestData, queryParameters: queryParameters, options: requestOptions),
     );
   }
 
@@ -149,6 +299,7 @@ class DioClient {
     required RequestMethod method,
     Options? options,
     void Function()? onSuccess,
+    ContentType contentType = ContentType.json,
   }) async {
     Map<String, dynamic> response;
 
@@ -156,30 +307,29 @@ class DioClient {
       case RequestMethod.get:
         response = await get(
           endpoint,
+          data: data,
           queryParameters: queryParams,
           options: options,
+          contentType: contentType,
         );
         break;
       case RequestMethod.post:
-        response = await post(endpoint, data: data, options: options);
+        response = await post(endpoint, data: data, options: options, contentType: contentType);
         break;
       case RequestMethod.put:
-        response = await put(endpoint, data: data, options: options);
+        response = await put(endpoint, data: data, options: options, contentType: contentType);
         break;
       case RequestMethod.delete:
-        response = await delete(endpoint, data: data, options: options);
+        response = await delete(endpoint, data: data, options: options, contentType: contentType);
         break;
       case RequestMethod.patch:
-        response = await patch(endpoint, data: data, options: options);
+        response = await patch(endpoint, data: data, options: options, contentType: contentType);
         break;
     }
 
     // Check if the response contains an error message
     if (response['status'] == false) {
-      throw AppError(
-        message: handleResponseErrors(response),
-        type: ErrorType.api,
-      );
+      throw AppError(message: handleResponseErrors(response), type: ErrorType.api);
     }
 
     // Call onSuccess callback if provided
@@ -189,9 +339,7 @@ class DioClient {
     return ApiResponse.fromJson(response, (json) => fromJson(json));
   }
 
-  Future<Map<String, dynamic>> _sendRequest(
-    Future<Response> Function() request,
-  ) async {
+  Future<Map<String, dynamic>> _sendRequest(Future<Response> Function() request) async {
     late final Response response;
 
     // Update the localization header before every request
@@ -211,5 +359,3 @@ class DioClient {
     return response.data ?? {};
   }
 }
-
-enum RequestMethod { get, post, put, delete, patch }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -115,6 +117,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       _exploreCubit.getAllParkings(filter: filter);
     } catch (e) {
       setState(() {
+        log(e.toString());
         _isGettingLocation = false;
         // Fallback to most popular if location fails
         _selectedSortBy = SortBy.mostPopular;
@@ -222,25 +225,25 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             id: filter['sortBy'].index,
                             isSelected: isSelected,
                           ),
-                          if (isNearest && isSelected && _isGettingLocation)
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black26,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                          // if (isNearest && isSelected && _isGettingLocation)
+                          //   Positioned.fill(
+                          //     child: Container(
+                          //       decoration: BoxDecoration(
+                          //         color: Colors.black26,
+                          //         borderRadius: BorderRadius.circular(8),
+                          //       ),
+                          //       child: Center(
+                          //         child: SizedBox(
+                          //           width: 20,
+                          //           height: 20,
+                          //           child: CircularProgressIndicator(
+                          //             strokeWidth: 2,
+                          //             valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
                         ],
                       ),
                     );

@@ -20,6 +20,8 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
       filter?.byUserCity == true ? EndPoints.parkingInUserCity : EndPoints.parking,
       options: token.toAuthorizationOptions(),
       data: filter?.toJson(),
+      queryParams: filter?.toJson(),
+      contentType: ContentType.formData,
       fromJson:
           (json) =>
               List<Parking>.from((json as List).map((parking) => Parking.fromJson(parking as Map<String, dynamic>))),

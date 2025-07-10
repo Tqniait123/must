@@ -33,15 +33,11 @@ class FilterModel {
   final double? lng;
   final bool byUserCity;
 
-  FilterModel({
-    this.sortBy,
-    this.lat,
-    this.lng,
-    this.byUserCity = false,
-  }) : assert(
-          sortBy != SortBy.nearest || (lat != null && lng != null),
-          'lat and lng must be provided when sortBy is nearest',
-        );
+  FilterModel({this.sortBy, this.lat, this.lng, this.byUserCity = false})
+    : assert(
+        sortBy != SortBy.nearest || (lat != null && lng != null),
+        'lat and lng must be provided when sortBy is nearest',
+      );
 
   // Convert from JSON
   factory FilterModel.fromJson(Map<String, dynamic> json) {
@@ -49,18 +45,13 @@ class FilterModel {
     final lat = json['lat'] != null ? double.tryParse(json['lat'].toString()) : null;
     final lng = json['lng'] != null ? double.tryParse(json['lng'].toString()) : null;
 
-    return FilterModel(
-      sortBy: sortBy,
-      lat: lat,
-      lng: lng,
-      byUserCity: json['by_user_city'] ?? false,
-    );
+    return FilterModel(sortBy: sortBy, lat: lat, lng: lng, byUserCity: json['by_user_city'] ?? false);
   }
 
   // Convert to JSON
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> result = {
-      'by_user_city': byUserCity,
+      // 'by_user_city': byUserCity,
     };
 
     if (sortBy != null) {
@@ -74,12 +65,7 @@ class FilterModel {
   }
 
   // Create a copy with updated values
-  FilterModel copyWith({
-    SortBy? sortBy,
-    double? lat,
-    double? lng,
-    bool? byUserCity,
-  }) {
+  FilterModel copyWith({SortBy? sortBy, double? lat, double? lng, bool? byUserCity}) {
     return FilterModel(
       sortBy: sortBy ?? this.sortBy,
       lat: lat ?? this.lat,
@@ -89,32 +75,17 @@ class FilterModel {
   }
 
   // Helper method to create nearest filter with required coordinates
-  factory FilterModel.nearest({
-    required double lat,
-    required double lng,
-    bool byUserCity = false,
-  }) {
-    return FilterModel(
-      sortBy: SortBy.nearest,
-      lat: lat,
-      lng: lng,
-      byUserCity: byUserCity,
-    );
+  factory FilterModel.nearest({required double lat, required double lng, bool byUserCity = false}) {
+    return FilterModel(sortBy: SortBy.nearest, lat: lat, lng: lng, byUserCity: byUserCity);
   }
 
   // Helper methods to create other filters without coordinates
   factory FilterModel.mostPopular({bool byUserCity = false}) {
-    return FilterModel(
-      sortBy: SortBy.mostPopular,
-      byUserCity: byUserCity,
-    );
+    return FilterModel(sortBy: SortBy.mostPopular, byUserCity: byUserCity);
   }
 
   factory FilterModel.mostWanted({bool byUserCity = false}) {
-    return FilterModel(
-      sortBy: SortBy.mostWanted,
-      byUserCity: byUserCity,
-    );
+    return FilterModel(sortBy: SortBy.mostWanted, byUserCity: byUserCity);
   }
 
   // Helper method to create filter with just byUserCity
