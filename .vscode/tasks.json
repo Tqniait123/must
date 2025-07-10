@@ -1,24 +1,102 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "Change App Name",
-            "type": "shell",
-            "command": "dart",
-            "args": [
-                "${workspaceFolder}/scripts/change_app_name.dart",
-                "${input:newAppName}"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [],
-            "presentation": {
-                "reveal": "always"
-            },
-            "detail": "Changes the app name in both iOS and Android configurations"
-        },
+      {
+    "label": "Change Flutter Launcher Icon (Complete)",
+    "type": "shell",
+    "command": "flutter pub add --dev flutter_launcher_icons && echo 'flutter_launcher_icons:\n  android: true\n  ios: true\n  image_path: \"${input:iconPath}\"' >> pubspec.yaml && flutter pub get && flutter pub run flutter_launcher_icons && flutter clean",
+    "group": {
+        "kind": "build",
+        "isDefault": false
+    },
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+    },
+    "problemMatcher": [],
+    "detail": "Complete process: Add package, configure, generate icon, and clean"
+},
+      {
+    "label": "Rename Flutter App",
+    "type": "shell",
+    "command": "dart",
+    "args": [
+        "pub",
+        "global",
+        "run",
+        "rename",
+        "setAppName",
+        "--targets",
+        "android,ios",
+        "--value",
+        "${input:newAppName}"
+    ],
+    "group": {
+        "kind": "build",
+        "isDefault": false
+    },
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+    },
+    "problemMatcher": [],
+    "detail": "Rename the Flutter app display name for Android and iOS"
+},
+{
+    "label": "Set Bundle ID / Package Name",
+    "type": "shell",
+    "command": "dart",
+    "args": [
+        "pub",
+        "global",
+        "run",
+        "rename",
+        "setBundleId",
+        "--targets",
+        "android,ios",
+        "--value",
+        "${input:newBundleId}"
+    ],
+    "group": {
+        "kind": "build",
+        "isDefault": false
+    },
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+    },
+    "problemMatcher": [],
+    "detail": "Set the bundle ID for iOS and package name for Android"
+},
+{
+    "label": "Install Rename Package",
+    "type": "shell",
+    "command": "dart",
+    "args": [
+        "pub",
+        "global",
+        "activate",
+        "rename"
+    ],
+    "group": {
+        "kind": "build",
+        "isDefault": false
+    },
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+    },
+    "problemMatcher": [],
+    "detail": "Install the rename package globally"
+},
         {
             "label": "Add New Translation",
             "type": "shell",
@@ -85,8 +163,8 @@
             },
             "problemMatcher": []
         },
-    
-    
+
+
 
     {
       "label": "Handle iOS Files",
@@ -99,7 +177,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter Pub Upgrade ⬆️", 
+      "label": "Flutter Pub Upgrade ⬆️",
       "type": "shell",
       "command": "flutter pub upgrade && flutter pub upgrade --major-versions && flutter pub outdated",
       "group": "build",
@@ -126,9 +204,9 @@
           "detail": "Generates the native splash screen for Android and iOS"
         },
       {
-          "label": "Generate App Icons with Icons Launcher",
+          "label": "Generate App Launcher Icon",
           "type": "shell",
-          "command": "flutter pub run icons_launcher:create",
+          "command": "flutter pub run flutter_launcher_icons",
           "problemMatcher": [],
           "group": {
             "kind": "build",
@@ -140,7 +218,7 @@
             "focus": false,
             "panel": "shared"
           },
-          "detail": "Generates app icons for Android and iOS using icons_launcher package"
+          "detail": "Generates the app launcher icon for Android and iOS"
         },
       {
           "label": "Reset Lib Folder",
@@ -178,7 +256,7 @@
        {
           "label": "Add General Packages",
           "type": "shell",
-          "command": "flutter pub add intl logger file_picker equatable flutter_bloc flutter_svg flutter_screenutil flutter_spinkit easy_localization dio connectivity_plus json_annotation url_launcher permission_handler cached_network_image go_router pretty_dio_logger get_it smooth_page_indicator pin_code_fields dartz auto_size_text dropdown_button2 shimmer percent_indicator fluttertoast bot_toast",
+          "command": "flutter pub add intl logger file_picker equatable flutter_bloc flutter_svg flutter_screenutil flutter_spinkit easy_localization dio connectivity_plus json_annotation url_launcher permission_handler cached_network_image go_router pretty_dio_logger get_it",
           "group": {
               "kind": "build",
               "isDefault": true
@@ -195,7 +273,46 @@
           },
           "problemMatcher": []
       },
-      
+       {
+          "label": "Generate Easy Localization with Keys",
+          "type": "shell",
+          "command": "dart",
+          "args": [
+              "run",
+              "easy_localization:generate",
+              "-S",
+              "assets/translations",
+              "-O",
+              "lib/core/translations",
+              "-f",
+              "keys",
+              "-o",
+              "locale_keys.g.dart"
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": []
+      },
+      {
+          "label": "Generate Easy Localization",
+          "type": "shell",
+          "command": "dart",
+          "args": [
+              "run",
+              "easy_localization:generate",
+              "-S",
+              "assets/translations",
+              "-O",
+              "lib/core/translations"
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": []
+      },
 
       {
     "label": "Create Dart File",
@@ -221,7 +338,7 @@
       "kind": "build",
       "isDefault": true
   },
-  
+
   },
   {
       "label": "Run Flutter App (Release)",
@@ -291,7 +408,7 @@
     "problemMatcher": [],
     "detail": "Generates the en.json file for localization"
   },
-{
+  {
     "label": "Add Auto Translation",
     "type": "shell",
     "command": "dart",
@@ -306,25 +423,9 @@
     },
     "problemMatcher": []
 },
-{
-    "label": "Auto Translate & Generate",
-    "dependsOn": [
-        "Add Auto Translation",
-        "Generate Easy Localization with Keys",
-        "Generate Easy Localization"
-    ],
-    "dependsOrder": "sequence",
-    "problemMatcher": []
-},
 ],
 
   "inputs": [
-    {
-        "id": "newAppName",
-        "type": "promptString",
-        "description": "Enter the new app name:",
-        "default": ""
-    },
     {
       "id": "dartFileName",
       "type": "promptString",
@@ -359,7 +460,25 @@
           "description": "Enter custom field key (leave empty to auto-generate)",
           "default": "",
           "type": "promptString"
-      }
-      ]
+      },
+      {
+    "id": "newAppName",
+    "description": "Enter the new app display name",
+    "default": "",
+    "type": "promptString"
+},
+{
+    "id": "newBundleId",
+    "description": "Enter the new bundle ID (e.g., com.example.myapp)",
+    "default": "",
+    "type": "promptString"
+},
+{
+    "id": "iconPath",
+    "description": "Enter the path to your icon file (e.g., assets/photos/images/logo.png)",
+    "default": "assets/icon/icon.png",
+    "type": "promptString"
+}
+      ],
 
 }
