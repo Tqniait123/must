@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/app.dart';
 import 'package:must_invest/core/observers/bloc_observer.dart';
+import 'package:must_invest/core/services/debug_logger.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/locales.dart';
 import 'package:must_invest/core/translations/codegen_loader.g.dart';
@@ -51,6 +52,9 @@ Future<void> main() async {
 
   // Initialize the dependency injection container
   await initLocator(sharedPreferences);
+  // Initialize debug logger early
+  await DebugLogger.instance.initialize();
+  await DebugLogger.instance.log('App', 'Application starting...');
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize FCM
@@ -63,8 +67,7 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Change to your primary color
-      statusBarIconBrightness:
-          Brightness.light, // Light icons for dark background
+      statusBarIconBrightness: Brightness.light, // Light icons for dark background
     ),
   );
 

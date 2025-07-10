@@ -9,13 +9,15 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/services/biometric_service_2.dart'; // Updated import
+import 'package:must_invest/core/services/biometric_service_2.dart';
+import 'package:must_invest/core/services/debug_logger.dart'; // Import debug logger
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/debugger_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
@@ -34,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final BiometricService2 _biometricService = BiometricService2(); // Updated service
+  final BiometricService2 _biometricService = BiometricService2();
   bool isRemembered = true;
 
   // UI State variables
@@ -47,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeBiometric();
+    _initializeScreen();
   }
 
   @override
@@ -55,6 +57,33 @@ class _LoginScreenState extends State<LoginScreen> {
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // ==================== INITIALIZATION ====================
+
+  Future<void> _initializeScreen() async {
+    await DebugLogger.instance.log('LoginScreen', 'Screen initialization started');
+
+    try {
+      // Initialize debug logger first
+      await DebugLogger.instance.initialize();
+
+      // Log screen opening
+      await DebugLogger.instance.log('LoginScreen', 'LoginScreen opened');
+
+      // Initialize biometric
+      await _initializeBiometric();
+
+      await DebugLogger.instance.log('LoginScreen', 'Screen initialization completed successfully');
+    } catch (e, stackTrace) {
+      await DebugLogger.instance.logError('LoginScreen', 'Biometric initialization error', e, stackTrace);
+      _showError('Failed to initialize biometric authentication');
+    } finally {
+      await DebugLogger.instance.log('LoginScreen', 'Finishing biometric initialization...');
+      setState(() {
+        _isCheckingBiometrics = false;
+      });
+    }
   }
 
   // ==================== BIOMETRIC INITIALIZATION ====================
@@ -109,45 +138,66 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _getBiometricTypeName(List<BiometricType> biometrics) {
+    String type = 'Face ID'; // Default
+
     if (biometrics.contains(BiometricType.face)) {
-      return 'Face ID';
+      type = 'Face ID';
     } else if (biometrics.contains(BiometricType.fingerprint)) {
-      return 'Fingerprint';
+      type = 'Fingerprint';
     } else if (biometrics.contains(BiometricType.iris)) {
-      return 'Iris';
+      type = 'Iris';
     } else if (biometrics.isNotEmpty) {
-      return 'Biometric';
+      type = 'Biometric';
     }
-    return 'Face ID'; // Default
+
+    DebugLogger.instance.log(
+      'LoginScreen',
+      'Biometric type determination: ${biometrics.map((e) => e.name).toList()} -> $type',
+    );
+    return type;
   }
 
   // ==================== BIOMETRIC LOGIN ====================
 
-  // Update the _performBiometricLogin method in your LoginScreen
-
   Future<void> _performBiometricLogin() async {
+    await DebugLogger.instance.log('LoginScreen', 'Starting biometric login process');
+
     try {
       final result = await _biometricService.authenticateWithResult(
         phone: _phoneController.text,
         password: _passwordController.text,
       );
 
+      await DebugLogger.instance.log('LoginScreen', 'Biometric authentication result: ${result.toString()}');
+
       if (result.success) {
         // Use the saved credentials for login instead of form inputs
         final loginPhone = result.phone ?? _phoneController.text;
         final loginPassword = result.password ?? _passwordController.text;
 
+        await DebugLogger.instance.log('LoginScreen', 'Biometric login successful, proceeding with login');
+        await DebugLogger.instance.log('LoginScreen', 'Using phone: ${loginPhone.isNotEmpty ? 'Provided' : 'Empty'}');
+        await DebugLogger.instance.log(
+          'LoginScreen',
+          'Using password: ${loginPassword.isNotEmpty ? 'Provided' : 'Empty'}',
+        );
+
         // Login successful with biometric - use saved credentials
         AuthCubit.get(context).login(LoginParams(phone: loginPhone, password: loginPassword, isRemembered: true));
       } else {
+        await DebugLogger.instance.log(
+          'LoginScreen',
+          'Biometric authentication failed, handling action: ${result.action.name}',
+        );
+
         // Handle authentication failure
         switch (result.action) {
           case AuthenticationAction.openSettings:
+            await DebugLogger.instance.log('LoginScreen', 'Opening biometric enrollment dialog');
             await _showBiometricEnrollmentDialog();
-
-            // });
             break;
           case AuthenticationAction.usePassword:
+            await DebugLogger.instance.log('LoginScreen', 'Clearing biometric settings, prompting for password');
             // Clear biometric settings and prompt for password login
             await BiometricService2.clearCredentials();
             setState(() {
@@ -156,81 +206,108 @@ class _LoginScreenState extends State<LoginScreen> {
             _showError('Please login with your password to re-enable biometric authentication.');
             break;
           case AuthenticationAction.retry:
+            await DebugLogger.instance.log('LoginScreen', 'User can retry biometric authentication');
             // Allow user to retry biometric authentication
             break;
           case AuthenticationAction.none:
           default:
+            await DebugLogger.instance.log('LoginScreen', 'Showing error message: ${result.message}');
             _showError(result.message);
             break;
         }
       }
-    } catch (e) {
-      log('Biometric login error: $e');
+    } catch (e, stackTrace) {
+      await DebugLogger.instance.logError('LoginScreen', 'Biometric login process failed', e, stackTrace);
       _showError('Biometric authentication failed');
     }
   }
 
-  // Also update the _loadSavedCredentials method
   Future<void> _loadSavedCredentials() async {
+    await DebugLogger.instance.log('LoginScreen', 'Loading saved credentials...');
+
     try {
-      log('Loading saved credentials...');
       final savedPhone = await BiometricService2.getSavedPhone();
       final savedPassword = await BiometricService2.getSavedPassword();
 
-      log('Saved phone: ${savedPhone != null ? 'Found' : 'Not found'}');
-      log('Saved password: ${savedPassword != null ? 'Found' : 'Not found'}');
+      await DebugLogger.instance.log('LoginScreen', 'Saved phone: ${savedPhone != null ? 'Found' : 'Not found'}');
+      await DebugLogger.instance.log('LoginScreen', 'Saved password: ${savedPassword != null ? 'Found' : 'Not found'}');
 
       if (savedPhone != null) {
         setState(() {
           _phoneController.text = savedPhone;
         });
-        log('Phone loaded successfully');
+        await DebugLogger.instance.log('LoginScreen', 'Phone loaded successfully');
       }
 
       if (savedPassword != null) {
         setState(() {
           _passwordController.text = savedPassword;
         });
-        log('Password loaded successfully');
+        await DebugLogger.instance.log('LoginScreen', 'Password loaded successfully');
       }
 
-      log('Finished loading saved credentials');
-    } catch (e) {
-      log('Error loading saved credentials: $e');
+      await DebugLogger.instance.log('LoginScreen', 'Finished loading saved credentials');
+    } catch (e, stackTrace) {
+      await DebugLogger.instance.logError('LoginScreen', 'Error loading saved credentials', e, stackTrace);
     }
   }
+
   // ==================== REGULAR LOGIN ====================
 
   void _performRegularLogin() {
+    DebugLogger.instance.log('LoginScreen', 'Starting regular login process');
+    DebugLogger.instance.log('LoginScreen', 'Phone: ${_phoneController.text.isNotEmpty ? 'Provided' : 'Empty'}');
+    DebugLogger.instance.log('LoginScreen', 'Password: ${_passwordController.text.isNotEmpty ? 'Provided' : 'Empty'}');
+    DebugLogger.instance.log('LoginScreen', 'Remember me: $isRemembered');
+
     if (_formKey.currentState!.validate()) {
+      DebugLogger.instance.log('LoginScreen', 'Form validation passed, proceeding with login');
+
       AuthCubit.get(context).login(
         LoginParams(phone: _phoneController.text, password: _passwordController.text, isRemembered: isRemembered),
       );
+    } else {
+      DebugLogger.instance.log('LoginScreen', 'Form validation failed');
     }
   }
 
   // ==================== POST-LOGIN BIOMETRIC SETUP ====================
 
   Future<void> _handlePostLoginBiometricSetup() async {
-    if (!isRemembered) return;
+    await DebugLogger.instance.log('LoginScreen', 'Handling post-login biometric setup');
+    await DebugLogger.instance.log('LoginScreen', 'Remember me: $isRemembered');
+
+    if (!isRemembered) {
+      await DebugLogger.instance.log('LoginScreen', 'Remember me is false, skipping biometric setup');
+      return;
+    }
 
     final status = await _biometricService.checkBiometricStatus();
+    await DebugLogger.instance.log('LoginScreen', 'Post-login biometric status: ${status.name}');
 
     if (status == BiometricStatus.available && !_isBiometricEnabled) {
+      await DebugLogger.instance.log('LoginScreen', 'Showing biometric setup dialog');
       // Show setup dialog for enrolled biometrics
       await _showBiometricSetupBottomSheet();
     } else if (status == BiometricStatus.availableButNotEnrolled) {
+      await DebugLogger.instance.log('LoginScreen', 'Showing biometric enrollment dialog');
       // Show enrollment dialog
       await _showBiometricEnrollmentDialog();
+    } else {
+      await DebugLogger.instance.log('LoginScreen', 'No biometric setup needed');
     }
   }
 
   Future<void> _enableBiometricAuthentication() async {
+    await DebugLogger.instance.log('LoginScreen', 'Enabling biometric authentication');
+
     try {
       final success = await BiometricService2.saveCredentials(
         phone: _phoneController.text,
         password: _passwordController.text,
       );
+
+      await DebugLogger.instance.log('LoginScreen', 'Biometric enable result: $success');
 
       if (success) {
         setState(() {
@@ -240,17 +317,17 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         _showError('Failed to enable biometric authentication');
       }
-    } catch (e) {
-      log('Error enabling biometric: $e');
+    } catch (e, stackTrace) {
+      await DebugLogger.instance.logError('LoginScreen', 'Error enabling biometric', e, stackTrace);
       _showError('Failed to enable biometric authentication');
     }
   }
 
   // ==================== DIALOGS & BOTTOM SHEETS ====================
 
-  // Updated _showBiometricEnrollmentDialog method for your LoginScreen
-
   Future<void> _showBiometricEnrollmentDialog() async {
+    await DebugLogger.instance.log('LoginScreen', 'Showing biometric enrollment dialog');
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -314,6 +391,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () async {
+                          await DebugLogger.instance.log('LoginScreen', 'User selected device password option');
                           Navigator.pop(context);
                           await _authenticateWithDeviceCredentials();
                         },
@@ -334,7 +412,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () {
+                              DebugLogger.instance.log('LoginScreen', 'User selected later option');
+                              Navigator.pop(context);
+                            },
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -346,6 +427,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () async {
+                              await DebugLogger.instance.log('LoginScreen', 'User selected open settings option');
                               Navigator.pop(context);
                               await _biometricService.openBiometricSettings();
                             },
@@ -370,6 +452,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // New method to handle device credentials authentication
   Future<void> _authenticateWithDeviceCredentials() async {
+    await DebugLogger.instance.log('LoginScreen', 'Starting device credentials authentication');
+
     try {
       setState(() {
         _isCheckingBiometrics = true;
@@ -378,9 +462,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final AuthenticationResult result = await _biometricService.authenticateWithDeviceCredentialsResult(
         localizedReason: LocaleKeys.authenticate_with_device_credentials.tr(),
       );
-      await _loadSavedCredentials();
 
-      log('Biometric authentication result: ${result.toString()}');
+      await _loadSavedCredentials();
+      await DebugLogger.instance.log('LoginScreen', 'Device credentials authentication result: ${result.toString()}');
 
       if (result.success) {
         setState(() {
@@ -389,6 +473,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Perform login with the authenticated credentials
         if (result.phone != null && result.password != null) {
+          await DebugLogger.instance.log('LoginScreen', 'Performing login with device credentials');
           AuthCubit.get(
             context,
           ).login(LoginParams(phone: result.phone!, password: result.password!, isRemembered: true));
@@ -396,9 +481,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
         _showSuccess(LocaleKeys.device_authentication_success.tr());
       } else {
+        await DebugLogger.instance.log('LoginScreen', 'Device credentials authentication failed: ${result.message}');
+
         switch (result.action) {
           case AuthenticationAction.retry:
-            // Show option to retry
             _showError(result.message);
             break;
           default:
@@ -406,8 +492,8 @@ class _LoginScreenState extends State<LoginScreen> {
             break;
         }
       }
-    } catch (e) {
-      log('Device credentials authentication error: $e');
+    } catch (e, stackTrace) {
+      await DebugLogger.instance.logError('LoginScreen', 'Device credentials authentication error', e, stackTrace);
       _showError(LocaleKeys.device_authentication_failed.tr());
     } finally {
       setState(() {
@@ -417,6 +503,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _showQuickLoginBottomSheet() async {
+    await DebugLogger.instance.log('LoginScreen', 'Showing quick login bottom sheet');
+
     final shouldUseBiometric = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -424,9 +512,20 @@ class _LoginScreenState extends State<LoginScreen> {
       builder:
           (context) => _QuickLoginBottomSheet(
             biometricType: _biometricType,
-            onUseBiometric: () => Navigator.of(context).pop(true),
-            onUsePassword: () => Navigator.of(context).pop(false),
+            onUseBiometric: () {
+              DebugLogger.instance.log('LoginScreen', 'User selected biometric login from quick login');
+              Navigator.of(context).pop(true);
+            },
+            onUsePassword: () {
+              DebugLogger.instance.log('LoginScreen', 'User selected password login from quick login');
+              Navigator.of(context).pop(false);
+            },
           ),
+    );
+
+    await DebugLogger.instance.log(
+      'LoginScreen',
+      'Quick login selection: ${shouldUseBiometric == true ? 'Biometric' : 'Password'}',
     );
 
     if (shouldUseBiometric == true) {
@@ -435,6 +534,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _showBiometricSetupBottomSheet() async {
+    await DebugLogger.instance.log('LoginScreen', 'Showing biometric setup bottom sheet');
+
     final shouldEnable = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -442,9 +543,20 @@ class _LoginScreenState extends State<LoginScreen> {
       builder:
           (context) => _BiometricSetupBottomSheet(
             biometricType: _biometricType,
-            onEnable: () => Navigator.of(context).pop(true),
-            onSkip: () => Navigator.of(context).pop(false),
+            onEnable: () {
+              DebugLogger.instance.log('LoginScreen', 'User selected enable biometric');
+              Navigator.of(context).pop(true);
+            },
+            onSkip: () {
+              DebugLogger.instance.log('LoginScreen', 'User selected skip biometric');
+              Navigator.of(context).pop(false);
+            },
           ),
+    );
+
+    await DebugLogger.instance.log(
+      'LoginScreen',
+      'Biometric setup selection: ${shouldEnable == true ? 'Enable' : 'Skip'}',
     );
 
     if (shouldEnable == true) {
@@ -457,36 +569,47 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showError(String message) {
     if (mounted && message.isNotEmpty) {
       showErrorToast(context, message);
-      log('Biometric error: $message');
+      DebugLogger.instance.log('LoginScreen', 'Error shown: $message');
     }
   }
 
   void _showSuccess(String message) {
     if (mounted) {
-      showSuccessToast(context, message); // You might want to create a success toast method
-      log('Biometric success: $message');
+      showSuccessToast(context, message);
+      DebugLogger.instance.log('LoginScreen', 'Success shown: $message');
     }
   }
 
   void _handleBiometricButtonPress() async {
-    if (_isCheckingBiometrics) return;
+    await DebugLogger.instance.log('LoginScreen', 'Biometric button pressed');
+    await DebugLogger.instance.log('LoginScreen', 'Current status: ${_biometricStatus.name}');
+    await DebugLogger.instance.log('LoginScreen', 'Is checking: $_isCheckingBiometrics');
+
+    if (_isCheckingBiometrics) {
+      await DebugLogger.instance.log('LoginScreen', 'Already checking biometrics, ignoring press');
+      return;
+    }
 
     switch (_biometricStatus) {
       case BiometricStatus.available:
         if (_isBiometricEnabled) {
+          await DebugLogger.instance.log('LoginScreen', 'Performing biometric login');
           _performBiometricLogin();
         } else {
+          await DebugLogger.instance.log('LoginScreen', 'Showing biometric setup');
           _showBiometricSetupBottomSheet();
         }
         break;
       case BiometricStatus.availableButNotEnrolled:
+        await DebugLogger.instance.log('LoginScreen', 'Showing enrollment dialog');
         await _showBiometricEnrollmentDialog();
-
         break;
       case BiometricStatus.notSupported:
+        await DebugLogger.instance.log('LoginScreen', 'Biometric not supported');
         _showError('Biometric authentication is not supported on this device');
         break;
       case BiometricStatus.error:
+        await DebugLogger.instance.log('LoginScreen', 'Biometric error');
         _showError('Error checking biometric availability');
         break;
     }
@@ -506,44 +629,53 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomLayout(
-        withPadding: true,
-        patternOffset: const Offset(-150, -200),
-        spacerHeight: 35,
-        topPadding: 70,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-        upperContent: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(child: LogoWidget(type: LogoType.svg)),
-              27.gap,
-              Text(
-                LocaleKeys.login_to_your_account.tr(),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge!.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.white),
-                textAlign: TextAlign.center,
-              ),
-            ],
+    return DebugFloatingButton(
+      showInRelease: true, // Set to true for testing, false for production
+      child: Scaffold(
+        body: CustomLayout(
+          withPadding: true,
+          patternOffset: const Offset(-150, -200),
+          spacerHeight: 35,
+          topPadding: 70,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+          upperContent: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: LogoWidget(type: LogoType.svg)),
+                27.gap,
+                Text(
+                  LocaleKeys.login_to_your_account.tr(),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge!.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
+          children: [
+            30.gap,
+            _buildLoginForm(),
+            40.gap,
+            _buildActionButtons(),
+            71.gap,
+            _buildDivider(),
+            20.gap,
+            const SocialMediaButtons(),
+            20.gap,
+            SignUpButton(
+              isLogin: true,
+              onTap: () {
+                DebugLogger.instance.log('LoginScreen', 'User tapped sign up button');
+                context.push(Routes.register);
+              },
+            ),
+            30.gap,
+          ],
         ),
-        children: [
-          30.gap,
-          _buildLoginForm(),
-          40.gap,
-          _buildActionButtons(),
-          71.gap,
-          _buildDivider(),
-          20.gap,
-          const SocialMediaButtons(),
-          20.gap,
-          SignUpButton(isLogin: true, onTap: () => context.push(Routes.register)),
-          30.gap,
-        ],
       ),
     );
   }
@@ -598,6 +730,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           checkColor: AppColors.white,
                           value: isRemembered,
                           onChanged: (value) {
+                            DebugLogger.instance.log('LoginScreen', 'Remember me changed: ${value ?? false}');
                             setState(() {
                               isRemembered = value ?? false;
                             });
@@ -609,7 +742,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   GestureDetector(
-                    onTap: () => context.push(Routes.forgetPassword),
+                    onTap: () {
+                      DebugLogger.instance.log('LoginScreen', 'User tapped forgot password');
+                      context.push(Routes.forgetPassword);
+                    },
                     child: Text(
                       LocaleKeys.forgot_password.tr(),
                       style: context.bodyMedium.s12.bold.copyWith(color: AppColors.primary),
@@ -630,12 +766,16 @@ class _LoginScreenState extends State<LoginScreen> {
         Expanded(
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) async {
+              await DebugLogger.instance.log('LoginScreen', 'Auth state changed: ${state.runtimeType}');
+
               if (state is AuthSuccess) {
+                await DebugLogger.instance.log('LoginScreen', 'Login successful');
                 // Handle post-login biometric setup
                 await _handlePostLoginBiometricSetup();
                 UserCubit.get(context).setCurrentUser(state.user);
                 context.go(Routes.homeUser);
               } else if (state is AuthError) {
+                await DebugLogger.instance.log('LoginScreen', 'Login failed: ${state.message}');
                 showErrorToast(context, state.message);
               }
             },
@@ -929,7 +1069,9 @@ class SocialMediaButtons extends StatelessWidget {
             isBordered: true,
             backgroundColor: AppColors.white,
             title: LocaleKeys.google.tr(),
-            onPressed: () {},
+            onPressed: () {
+              DebugLogger.instance.log('LoginScreen', 'User tapped Google login');
+            },
           ),
         ),
         20.gap,
@@ -943,10 +1085,66 @@ class SocialMediaButtons extends StatelessWidget {
             textColor: AppColors.black,
             backgroundColor: AppColors.white,
             title: LocaleKeys.facebook.tr(),
-            onPressed: () {},
+            onPressed: () {
+              DebugLogger.instance.log('LoginScreen', 'User tapped Facebook login');
+            },
           ),
         ),
       ],
     );
   }
 }
+// Screen initialization failed', e, stackTrace);
+//     }
+//   }
+
+//   // ==================== BIOMETRIC INITIALIZATION ====================
+
+//   Future<void> _initializeBiometric() async {
+//     await DebugLogger.instance.logBiometricInit();
+//     await DebugLogger.instance.log('LoginScreen', 'Starting biometric initialization...');
+
+//     setState(() {
+//       _isCheckingBiometrics = true;
+//     });
+
+//     try {
+//       await DebugLogger.instance.log('LoginScreen', 'Checking biometric status...');
+
+//       // Check biometric status
+//       _biometricStatus = await _biometricService.checkBiometricStatus();
+//       await DebugLogger.instance.log('LoginScreen', 'Biometric status: ${_biometricStatus.name}');
+
+//       _isBiometricEnabled = await BiometricService2.isBiometricEnabled();
+//       await DebugLogger.instance.log('LoginScreen', 'Biometric enabled: $_isBiometricEnabled');
+
+//       _availableBiometrics = await _biometricService.availableBiometrics;
+//       await DebugLogger.instance.log('LoginScreen', 'Available biometrics: ${_availableBiometrics.map((e) => e.name).toList()}');
+
+//       // Determine biometric type
+//       _biometricType = _getBiometricTypeName(_availableBiometrics);
+//       await DebugLogger.instance.log('LoginScreen', 'Determined biometric type: $_biometricType');
+
+//       // Log complete biometric state
+//       await DebugLogger.instance.logBiometricStatus('initialization_complete', {
+//         'status': _biometricStatus.name,
+//         'enabled': _isBiometricEnabled,
+//         'type': _biometricType,
+//         'availableTypes': _availableBiometrics.map((e) => e.name).toList(),
+//       });
+
+//       // Show quick login if biometric is enabled and available
+//       if (_isBiometricEnabled && _biometricStatus == BiometricStatus.available) {
+//         await DebugLogger.instance.log('LoginScreen', 'Showing quick login bottom sheet...');
+//         await _showQuickLoginBottomSheet();
+//       }
+
+//       // Show enrollment prompt if biometric is available but not enrolled
+//       if (_biometricStatus == BiometricStatus.availableButNotEnrolled) {
+//         await DebugLogger.instance.log('LoginScreen', 'Showing biometric enrollment dialog...');
+//         await _showBiometricEnrollmentDialog();
+//       }
+
+//       await DebugLogger.instance.log('LoginScreen', 'Biometric initialization completed successfully');
+//     } catch (e, stackTrace) {
+//       await DebugLogger.instance.logError('LoginScreen', '
