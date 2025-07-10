@@ -268,7 +268,9 @@ class CodegenLoader extends AssetLoader{
   "authenticate_with_device_credentials": "Please authenticate with your device PIN, password, or pattern",
   "device_authentication_success": "Device authentication successful! Biometric login enabled.",
   "device_authentication_failed": "Device authentication failed. Please try again.",
-  "device_password_description": "Use your device PIN, password, or pattern to enable biometric authentication"
+  "device_password_description": "Use your device PIN, password, or pattern to enable biometric authentication",
+  "no_notification_yet": "No notifications yet",
+  "retry": "Retry"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -524,7 +526,9 @@ static const Map<String,dynamic> _ar = {
   "authenticate_with_device_credentials": "يرجى التحقق باستخدام رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك",
   "device_authentication_success": "تم التحقق من الجهاز بنجاح! تم تفعيل تسجيل الدخول البيومتري.",
   "device_authentication_failed": "فشل التحقق من الجهاز. يرجى المحاولة مرة أخرى.",
-  "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية"
+  "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية",
+  "no_notification_yet": "لا توجد إشعارات حتى الآن",
+  "retry": "اعادة المحاولة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

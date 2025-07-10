@@ -254,5 +254,7 @@ abstract class  LocaleKeys {
   static const device_authentication_success = 'device_authentication_success';
   static const device_authentication_failed = 'device_authentication_failed';
   static const device_password_description = 'device_password_description';
+  static const no_notification_yet = 'no_notification_yet';
+  static const retry = 'retry';
 
 }

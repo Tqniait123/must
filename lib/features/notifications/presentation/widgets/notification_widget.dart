@@ -39,7 +39,7 @@ class NotificationWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            notification.title,
+                            notification.message,
                             style: context.bodyMedium.semiBold.s16,
                           ),
                           4.gap,
@@ -47,7 +47,7 @@ class NotificationWidget extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: ScrollingText(
-                                  notification.description,
+                                  notification.message,
                                   style: context.bodyMedium.regular.s10
                                       .copyWith(
                                         color: AppColors.primary.withValues(
@@ -58,7 +58,7 @@ class NotificationWidget extends StatelessWidget {
                               ),
                               8.gap,
                               Text(
-                                notification.date,
+                                notification.createdAt.toString(),
                                 style: context.bodyMedium.regular.s10.copyWith(
                                   color: AppColors.primary.withValues(
                                     alpha: 0.5,

@@ -7,6 +7,8 @@ import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/explore/data/datasources/explore_remote_data_source.dart';
 import 'package:must_invest/features/explore/data/repositories/explore_repo.dart';
+import 'package:must_invest/features/notifications/data/datasources/notifications_remote_data_source.dart';
+import 'package:must_invest/features/notifications/data/repositories/notifications_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -28,12 +30,10 @@ Future<void> initLocator(SharedPreferences sharedPreferences) async {
   //* Repository
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl(), sl()));
   sl.registerLazySingleton<ExploreRepo>(() => ExploreRepoImpl(sl(), sl()));
+  sl.registerLazySingleton<NotificationsRepo>(() => NotificationsRepoImpl(sl(), sl()));
 
   //* Datasources
-  sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(sl()),
-  );
-  sl.registerLazySingleton<ExploreRemoteDataSource>(
-    () => ExploreRemoteDataSourceImpl(sl()),
-  );
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<ExploreRemoteDataSource>(() => ExploreRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<NotificationsRemoteDataSource>(() => NotificationsRemoteDataSourceImpl(sl()));
 }

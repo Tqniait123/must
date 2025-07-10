@@ -12,31 +12,11 @@ class Constants {
   static const String placeholderImage =
       'https://static.vecteezy.com/system/resources/thumbnails/004/511/281/small_2x/default-avatar-photo-placeholder-profile-picture-vector.jpg';
   static List<BoxShadow> shadow = [
-    BoxShadow(
-      offset: const Offset(0, 11),
-      blurRadius: 23,
-      color: Colors.black.withValues(alpha: 0.1),
-    ),
-    BoxShadow(
-      offset: const Offset(0, 42),
-      blurRadius: 42,
-      color: Colors.black.withValues(alpha: 0.09),
-    ),
-    BoxShadow(
-      offset: const Offset(0, 95),
-      blurRadius: 57,
-      color: Colors.black.withValues(alpha: 0.05),
-    ),
-    BoxShadow(
-      offset: const Offset(0, 169),
-      blurRadius: 67,
-      color: Colors.black.withValues(alpha: 0.01),
-    ),
-    BoxShadow(
-      offset: const Offset(0, 264),
-      blurRadius: 74,
-      color: Colors.black.withValues(alpha: 0),
-    ),
+    BoxShadow(offset: const Offset(0, 11), blurRadius: 23, color: Colors.black.withValues(alpha: 0.1)),
+    BoxShadow(offset: const Offset(0, 42), blurRadius: 42, color: Colors.black.withValues(alpha: 0.09)),
+    BoxShadow(offset: const Offset(0, 95), blurRadius: 57, color: Colors.black.withValues(alpha: 0.05)),
+    BoxShadow(offset: const Offset(0, 169), blurRadius: 67, color: Colors.black.withValues(alpha: 0.01)),
+    BoxShadow(offset: const Offset(0, 264), blurRadius: 74, color: Colors.black.withValues(alpha: 0)),
   ];
 
   static List<String> labsImages = [
@@ -50,36 +30,34 @@ class Constants {
 
   static List<NotificationModel> fakeNotifications = [
     NotificationModel(
-      id: '1',
-      title: 'طلب سحب',
-      description: 'سحب رصيد من المحفظة',
-
-      date: '2025-05-07',
+      id: 1,
+      message: 'طلب سحب - سحب رصيد من المحفظة',
+      createdAt: DateTime.parse('2025-05-07'),
+      readAt: null,
     ),
     NotificationModel(
-      id: '2',
-      title: 'إيداع رصيد',
-      description: 'تم شحن المحفظة عن طريق فودافون كاش',
-
-      date: '2025-05-06',
+      id: 2,
+      message: 'إيداع رصيد - تم شحن المحفظة عن طريق فودافون كاش',
+      createdAt: DateTime.parse('2025-05-06'),
+      readAt: DateTime.parse('2025-05-06T10:30:00'),
     ),
     NotificationModel(
-      id: '3',
-      title: 'طلب سحب',
-      description: 'فشل في سحب الرصيد',
-      date: '2025-05-05',
+      id: 3,
+      message: 'طلب سحب - فشل في سحب الرصيد',
+      createdAt: DateTime.parse('2025-05-05'),
+      readAt: null,
     ),
     NotificationModel(
-      id: '4',
-      title: 'إيداع رصيد',
-      description: 'إيداع عن طريق البنك',
-      date: '2025-05-04',
+      id: 4,
+      message: 'إيداع رصيد - إيداع عن طريق البنك',
+      createdAt: DateTime.parse('2025-05-04'),
+      readAt: DateTime.parse('2025-05-04T14:20:00'),
     ),
     NotificationModel(
-      id: '5',
-      title: 'طلب سحب',
-      description: 'تم سحب الرصيد بنجاح',
-      date: '2025-05-03',
+      id: 5,
+      message: 'طلب سحب - تم سحب الرصيد بنجاح',
+      createdAt: DateTime.parse('2025-05-03'),
+      readAt: DateTime.parse('2025-05-03T09:15:00'),
     ),
   ];
 
