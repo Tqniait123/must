@@ -21,36 +21,31 @@ class ParkingCard extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF4F4FA),
-          borderRadius: BorderRadius.circular(15),
-        ),
+        decoration: BoxDecoration(color: const Color(0xFFF4F4FA), borderRadius: BorderRadius.circular(15)),
         child: Row(
           children: [
             // Parking Image
-            Hero(
-              tag: '${parking.id}-${parking.gallery.gallery[0].image}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  parking.gallery.gallery[0].image,
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 90,
-                      height: 90,
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
+            if (parking.gallery.gallery.isNotEmpty)
+              Hero(
+                tag: '${parking.id}-${parking.gallery.gallery[0].image}',
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    parking.gallery.gallery[0].image,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 90,
+                        height: 90,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
             const SizedBox(width: 12),
 
             // Parking Information
@@ -61,21 +56,14 @@ class ParkingCard extends StatelessWidget {
                   // Title
                   Text(
                     parking.nameEn,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2B3085),
-                    ),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2B3085)),
                   ),
                   const SizedBox(height: 4),
 
                   // Address
                   Text(
                     parking.address,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: const Color(0xFF2B3085).withOpacity(0.5),
-                    ),
+                    style: TextStyle(fontSize: 14, color: const Color(0xFF2B3085).withOpacity(0.5)),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -125,8 +113,7 @@ class ParkingCard extends StatelessWidget {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text:
-                                  "${LocaleKeys.EGP.tr()} ${parking.pricePerHour}",
+                              text: "${LocaleKeys.EGP.tr()} ${parking.pricePerHour}",
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -135,10 +122,7 @@ class ParkingCard extends StatelessWidget {
                             ),
                             TextSpan(
                               text: "/${LocaleKeys.hour.tr()}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF2B3085),
-                              ),
+                              style: TextStyle(fontSize: 14, color: Color(0xFF2B3085)),
                             ),
                           ],
                         ),
@@ -146,10 +130,7 @@ class ParkingCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         "${parking.pricePerHour} ${LocaleKeys.EGP.tr()} = ${(parking.pricePerHour)} ${LocaleKeys.points.tr()}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF2B3085).withOpacity(0.7),
-                        ),
+                        style: TextStyle(fontSize: 12, color: Color(0xFF2B3085).withOpacity(0.7)),
                       ),
                     ],
                   ),

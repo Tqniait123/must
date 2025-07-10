@@ -8,7 +8,7 @@ class Parking {
   final String lat;
   final String lng;
   final String pricePerHour;
-  final String aboutParking;
+  final String? aboutParking;
   final String mostPopular;
   final String mostWanted;
   final String status;
@@ -29,7 +29,7 @@ class Parking {
     required this.lat,
     required this.lng,
     required this.pricePerHour,
-    required this.aboutParking,
+    this.aboutParking,
     required this.mostPopular,
     required this.mostWanted,
     required this.status,
