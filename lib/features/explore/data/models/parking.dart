@@ -5,9 +5,12 @@ class Parking {
   final Owner owner;
   final City city;
   final String address;
-  final String location;
+  final String lat;
+  final String lng;
   final String pricePerHour;
   final String aboutParking;
+  final String mostPopular;
+  final String mostWanted;
   final String status;
   final String mainImage;
   final Gallery gallery;
@@ -23,9 +26,12 @@ class Parking {
     required this.owner,
     required this.city,
     required this.address,
-    required this.location,
+    required this.lat,
+    required this.lng,
     required this.pricePerHour,
     required this.aboutParking,
+    required this.mostPopular,
+    required this.mostWanted,
     required this.status,
     required this.mainImage,
     required this.gallery,
@@ -43,9 +49,12 @@ class Parking {
       owner: Owner.fromJson(json['owner']),
       city: City.fromJson(json['city']),
       address: json['address'],
-      location: json['location'],
+      lat: json['lat'],
+      lng: json['lng'],
       pricePerHour: json['price / hour'],
       aboutParking: json['about parking'],
+      mostPopular: json['most popular'],
+      mostWanted: json['most wanted'],
       status: json['status'],
       mainImage: json['main image'],
       gallery: Gallery.fromJson(json['gallery']),
@@ -55,6 +64,10 @@ class Parking {
       points: json['points'],
     );
   }
+
+  // Helper method to get location as a formatted string
+  String get locationString => "$lat, $lng";
+
   static List<Parking> getFakeHistoryParkings() {
     return [
       Parking(
@@ -71,10 +84,13 @@ class Parking {
         ),
         city: City(id: 1, name: "New York"),
         address: "123 Main Street",
-        location: "40.7128° N, 74.0060° W",
+        lat: "40.7128",
+        lng: "-74.0060",
         pricePerHour: "5.00",
         aboutParking: "Modern parking facility in downtown",
-        status: "active",
+        mostPopular: "Yes",
+        mostWanted: "No",
+        status: "Active",
         mainImage: "assets/images/parking1.jpg",
         gallery: Gallery(
           galleryCount: 2,
@@ -90,15 +106,13 @@ class Parking {
             Gate(name: "Side Entrance", employer: "Available"),
           ],
           exitsCount: 2,
-          exit: [
-            Gate(name: "Main Exit", employer: "Available"),
-            Gate(name: "Emergency Exit", employer: "Available"),
-          ],
+          exit: [Gate(name: "Main Exit", employer: "Available"), Gate(name: "Emergency Exit", employer: "Available")],
         ),
         employers: Employers(
           employersCount: 2,
           employers: [
             Employer(
+              id: 1,
               name: "Mike Johnson",
               email: "mike@example.com",
               phone: "+1987654321",
@@ -106,6 +120,7 @@ class Parking {
               language: "English",
             ),
             Employer(
+              id: 2,
               name: "Sarah Wilson",
               email: "sarah@example.com",
               phone: "+1122334455",
@@ -138,10 +153,13 @@ class Parking {
         ),
         city: City(id: 2, name: "Los Angeles"),
         address: "456 Broadway Ave",
-        location: "34.0522° N, 118.2437° W",
+        lat: "34.0522",
+        lng: "-118.2437",
         pricePerHour: "6.50",
         aboutParking: "Secure parking in the heart of downtown",
-        status: "active",
+        mostPopular: "No",
+        mostWanted: "Yes",
+        status: "Active",
         mainImage: "assets/images/parking2.jpg",
         gallery: Gallery(
           galleryCount: 2,
@@ -160,6 +178,7 @@ class Parking {
           employersCount: 2,
           employers: [
             Employer(
+              id: 3,
               name: "Tom Davis",
               email: "tom@example.com",
               phone: "+1567891234",
@@ -167,6 +186,7 @@ class Parking {
               language: "English",
             ),
             Employer(
+              id: 4,
               name: "Lisa Anderson",
               email: "lisa@example.com",
               phone: "+1678912345",
@@ -237,10 +257,7 @@ class Gallery {
   factory Gallery.fromJson(Map<String, dynamic> json) {
     return Gallery(
       galleryCount: json['gallery count'],
-      gallery:
-          (json['gallery'] as List)
-              .map((e) => GalleryImage.fromJson(e))
-              .toList(),
+      gallery: (json['gallery'] as List).map((e) => GalleryImage.fromJson(e)).toList(),
     );
   }
 }
@@ -261,18 +278,12 @@ class Gates {
   final int exitsCount;
   final List<Gate> exit;
 
-  Gates({
-    required this.entrancesCount,
-    required this.entrance,
-    required this.exitsCount,
-    required this.exit,
-  });
+  Gates({required this.entrancesCount, required this.entrance, required this.exitsCount, required this.exit});
 
   factory Gates.fromJson(Map<String, dynamic> json) {
     return Gates(
       entrancesCount: json['entrances count'],
-      entrance:
-          (json['entrance'] as List).map((e) => Gate.fromJson(e)).toList(),
+      entrance: (json['entrance'] as List).map((e) => Gate.fromJson(e)).toList(),
       exitsCount: json['exits count'],
       exit: (json['exit'] as List).map((e) => Gate.fromJson(e)).toList(),
     );
@@ -288,10 +299,7 @@ class Gate {
   factory Gate.fromJson(Map<String, dynamic> json) {
     return Gate(
       name: json['name'],
-      employer:
-          json['employer'] is Map
-              ? Employer.fromJson(json['employer'])
-              : json['employer'],
+      employer: json['employer'] is Map ? Employer.fromJson(json['employer']) : json['employer'],
     );
   }
 }
@@ -305,29 +313,24 @@ class Employers {
   factory Employers.fromJson(Map<String, dynamic> json) {
     return Employers(
       employersCount: json['employers count'],
-      employers:
-          (json['employers'] as List).map((e) => Employer.fromJson(e)).toList(),
+      employers: (json['employers'] as List).map((e) => Employer.fromJson(e)).toList(),
     );
   }
 }
 
 class Employer {
+  final int? id;
   final String name;
   final String email;
   final String phone;
   final String image;
   final dynamic language;
 
-  Employer({
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.image,
-    this.language,
-  });
+  Employer({this.id, required this.name, required this.email, required this.phone, required this.image, this.language});
 
   factory Employer.fromJson(Map<String, dynamic> json) {
     return Employer(
+      id: json['id'],
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
@@ -359,10 +362,6 @@ class Floor {
   Floor({required this.name, required this.totalSpaces, required this.busy});
 
   factory Floor.fromJson(Map<String, dynamic> json) {
-    return Floor(
-      name: json['name'],
-      totalSpaces: json['total spaces'],
-      busy: json['busy'],
-    );
+    return Floor(name: json['name'], totalSpaces: json['total spaces'], busy: json['busy']);
   }
 }

@@ -97,6 +97,12 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       log('Biometric initialization completed successfully');
+
+      /// TODO
+      if (mounted) {
+        await AuthCubit.get(context).autoLogin();
+        
+      }
     } catch (e) {
       log('Biometric initialization error: $e');
       _showError('Failed to initialize biometric authentication');

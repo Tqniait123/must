@@ -71,14 +71,9 @@ class _MapScreenState extends State<MapScreen> {
       builder:
           (context) => AlertDialog(
             title: const Text('Location Permission Required'),
-            content: const Text(
-              'This app needs location permission to show your current position on the map.',
-            ),
+            content: const Text('This app needs location permission to show your current position on the map.'),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -103,10 +98,7 @@ class _MapScreenState extends State<MapScreen> {
               'Location permission has been permanently denied. Please enable it in app settings to use this feature.',
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -127,15 +119,8 @@ class _MapScreenState extends State<MapScreen> {
       builder:
           (context) => AlertDialog(
             title: const Text('Location Access Restricted'),
-            content: const Text(
-              'Location access is restricted on this device. Please check your device settings.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+            content: const Text('Location access is restricted on this device. Please check your device settings.'),
+            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
           ),
     );
   }
@@ -149,11 +134,7 @@ class _MapScreenState extends State<MapScreen> {
         if (!serviceEnabled) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Location service is disabled. Please enable it in device settings.',
-                ),
-              ),
+              const SnackBar(content: Text('Location service is disabled. Please enable it in device settings.')),
             );
           }
           return;
@@ -172,18 +153,13 @@ class _MapScreenState extends State<MapScreen> {
       final locationData = await _location.getLocation();
       if (locationData.latitude != null && locationData.longitude != null) {
         setState(() {
-          _currentLocation = LatLng(
-            locationData.latitude!,
-            locationData.longitude!,
-          );
+          _currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
         });
       }
     } catch (e) {
       debugPrint('Error getting location: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to get location: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to get location: ${e.toString()}')));
       }
     }
   }
@@ -206,15 +182,13 @@ class _MapScreenState extends State<MapScreen> {
                 children: [
                   FlutterMap(
                     options: MapOptions(
-                      initialCenter:
-                          _currentLocation ?? LatLng(30.0444, 31.2357),
+                      initialCenter: _currentLocation ?? LatLng(30.0444, 31.2357),
                       initialZoom: 12.0,
                       keepAlive: true,
                     ),
                     children: [
                       TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'com.example.app',
                       ),
                       MarkerLayer(
@@ -230,26 +204,14 @@ class _MapScreenState extends State<MapScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 9,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                                     decoration: BoxDecoration(
                                       color: Colors.blue,
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Icon(
-                                      Icons.directions_car,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
+                                    child: const Icon(Icons.directions_car, color: Colors.white, size: 20),
                                   ),
-                                  CustomPaint(
-                                    size: const Size(14, 8),
-                                    painter: _TrianglePainter(
-                                      color: Colors.blue,
-                                    ),
-                                  ),
+                                  CustomPaint(size: const Size(14, 8), painter: _TrianglePainter(color: Colors.blue)),
                                 ],
                               ),
                             ),
@@ -308,12 +270,7 @@ class _MapScreenState extends State<MapScreen> {
                     ],
                   ),
                   if (_selectedParking != null)
-                    Positioned(
-                      bottom: 20,
-                      left: 16,
-                      right: 16,
-                      child: _buildParkingDetails(_selectedParking!),
-                    ),
+                    Positioned(bottom: 20, left: 16, right: 16, child: _buildParkingDetails(_selectedParking!)),
                 ],
               ),
     );
@@ -362,29 +319,16 @@ class _MapScreenState extends State<MapScreen> {
                       const SizedBox(height: 4),
                       Text(
                         parking.address,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.primary.withValues(alpha: 0.5),
-                        ),
+                        style: TextStyle(fontSize: 14, color: AppColors.primary.withValues(alpha: 0.5)),
                       ),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE2E4FF),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(color: const Color(0xFFE2E4FF), borderRadius: BorderRadius.circular(10)),
                     child: Text(
-                      "${parking.location} ${LocaleKeys.min.tr()}",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2B3085),
-                      ),
+                      "${parking.address} ${LocaleKeys.min.tr()}",
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2B3085)),
                     ),
                   ),
                 ],
