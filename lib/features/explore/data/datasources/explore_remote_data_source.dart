@@ -6,10 +6,7 @@ import 'package:must_invest/features/explore/data/models/filter_model.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
 
 abstract class ExploreRemoteDataSource {
-  Future<ApiResponse<List<Parking>>> getAllParkings(
-    String token, {
-    FilterModel? filter,
-  });
+  Future<ApiResponse<List<Parking>>> getAllParkings(String token, {FilterModel? filter});
 }
 
 class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
@@ -17,22 +14,15 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
 
   ExploreRemoteDataSourceImpl(this.dioClient);
   @override
-  Future<ApiResponse<List<Parking>>> getAllParkings(
-    String token, {
-    FilterModel? filter,
-  }) async {
+  Future<ApiResponse<List<Parking>>> getAllParkings(String token, {FilterModel? filter}) async {
     return dioClient.request<List<Parking>>(
       method: RequestMethod.get,
-      filter?.byUserCity == true
-          ? EndPoints.parkingInUserCity
-          : EndPoints.parking,
+      filter?.byUserCity == true ? EndPoints.parkingInUserCity : EndPoints.parking,
       options: token.toAuthorizationOptions(),
+      data: filter?.toJson(),
       fromJson:
-          (json) => List<Parking>.from(
-            (json as List).map(
-              (parking) => Parking.fromJson(parking as Map<String, dynamic>),
-            ),
-          ),
+          (json) =>
+              List<Parking>.from((json as List).map((parking) => Parking.fromJson(parking as Map<String, dynamic>))),
     );
   }
 }
