@@ -9,6 +9,8 @@ import 'package:must_invest/features/explore/data/datasources/explore_remote_dat
 import 'package:must_invest/features/explore/data/repositories/explore_repo.dart';
 import 'package:must_invest/features/notifications/data/datasources/notifications_remote_data_source.dart';
 import 'package:must_invest/features/notifications/data/repositories/notifications_repo.dart';
+import 'package:must_invest/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:must_invest/features/profile/data/repositories/profile_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -31,9 +33,11 @@ Future<void> initLocator(SharedPreferences sharedPreferences) async {
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl(), sl()));
   sl.registerLazySingleton<ExploreRepo>(() => ExploreRepoImpl(sl(), sl()));
   sl.registerLazySingleton<NotificationsRepo>(() => NotificationsRepoImpl(sl(), sl()));
+  sl.registerLazySingleton<PagesRepo>(() => PagesRepoImpl(sl(), sl()));
 
   //* Datasources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<ExploreRemoteDataSource>(() => ExploreRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<NotificationsRemoteDataSource>(() => NotificationsRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<PagesRemoteDataSource>(() => PagesRemoteDataSourceImpl(sl()));
 }

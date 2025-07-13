@@ -256,5 +256,16 @@
     "device_authentication_failed": "فشل التحقق من الجهاز. يرجى المحاولة مرة أخرى.",
     "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية",
     "no_notification_yet": "لا توجد إشعارات حتى الآن",
-    "retry": "اعادة المحاولة"
+    "retry": "اعادة المحاولة",
+    "frequently_asked_questions": "الأسئلة الشائعة",
+  "find_answers_to_common_questions": "ابحث عن إجابات للأسئلة الشائعة",
+  "search_faqs": "البحث في الأسئلة الشائعة...",
+  "loading_faqs": "جاري تحميل الأسئلة الشائعة...",
+  "please_wait_while_fetching": "يرجى الانتظار بينما نحضر أحدث المعلومات",
+  "oops_something_went_wrong": "عذراً! حدث خطأ ما",
+  "try_again": "حاول مرة أخرى",
+  "no_faqs_found": "لم يتم العثور على أسئلة شائعة",
+  "no_faqs_match_search": "لا توجد أسئلة شائعة تطابق بحثك. جرب كلمات مختلفة.",
+  "no_faqs_available_at_moment": "لا توجد أسئلة شائعة متاحة في الوقت الحالي. تحقق لاحقاً!",
+  "back_to_top": "العودة إلى الأعلى"
 }

@@ -1,10 +1,30 @@
-part of 'profile_cubit.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class ProfileState extends Equatable {
-  const ProfileState();
+abstract class PagesState extends Equatable {
+  const PagesState();
 
   @override
   List<Object> get props => [];
 }
 
-class ProfileInitial extends ProfileState {}
+class PagesInitial extends PagesState {}
+
+class PagesLoading extends PagesState {}
+
+class PagesSuccess extends PagesState {
+  final dynamic data;
+
+  const PagesSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class PagesError extends PagesState {
+  final String message;
+
+  const PagesError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

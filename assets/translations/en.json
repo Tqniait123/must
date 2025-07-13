@@ -254,5 +254,16 @@
     "device_authentication_failed": "Device authentication failed. Please try again.",
     "device_password_description": "Use your device PIN, password, or pattern to enable biometric authentication",
     "no_notification_yet": "No notifications yet",
-    "retry": "Retry"
+    "retry": "Retry",
+    "frequently_asked_questions": "Frequently Asked Questions",
+  "find_answers_to_common_questions": "Find answers to common questions",
+  "search_faqs": "Search FAQs...",
+  "loading_faqs": "Loading FAQs...",
+  "please_wait_while_fetching": "Please wait while we fetch the latest information",
+  "oops_something_went_wrong": "Oops! Something went wrong",
+  "try_again": "Try Again",
+  "no_faqs_found": "No FAQs Found",
+  "no_faqs_match_search": "No FAQs match your search. Try different keywords.",
+  "no_faqs_available_at_moment": "No FAQs are available at the moment. Check back later!",
+  "back_to_top": "Back to Top"
 }

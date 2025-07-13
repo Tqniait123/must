@@ -30,7 +30,9 @@ import 'package:must_invest/features/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen.dart';
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
+import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
+import 'package:must_invest/features/profile/presentation/pages/faq_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_cars_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_qr_code_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/profile_screen.dart';
@@ -108,10 +110,7 @@ class AppRouter {
         path: Routes.otpScreen,
         builder: (context, state) {
           final extras = state.extra as Map<String, dynamic>;
-          return OtpScreen(
-            phone: extras['phone'] as String,
-            flow: extras['flow'] as OtpFlow,
-          );
+          return OtpScreen(phone: extras['phone'] as String, flow: extras['flow'] as OtpFlow);
         },
       ),
       GoRoute(
@@ -234,6 +233,13 @@ class AppRouter {
           return MyCarsScreen();
         },
       ),
+      GoRoute(
+        path: Routes.faq,
+        builder: (context, state) {
+          // Return the FAQscreen widget
+          return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: FAQScreen());
+        },
+      ),
     ],
   );
 
@@ -247,12 +253,7 @@ class AppRouter {
           children: [
             CustomBackButton(),
             100.gap,
-            Center(
-              child: Text(
-                "Un Found Route",
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
-            ),
+            Center(child: Text("Un Found Route", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold))),
           ],
         ),
       ).paddingHorizontal(24),

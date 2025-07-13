@@ -36,14 +36,8 @@ class ProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomBackButton(),
-                Text(
-                  LocaleKeys.profile.tr(),
-                  style: context.titleLarge.copyWith(color: AppColors.white),
-                ),
-                NotificationsButton(
-                  color: Color(0xffEAEAF3),
-                  iconColor: AppColors.primary,
-                ),
+                Text(LocaleKeys.profile.tr(), style: context.titleLarge.copyWith(color: AppColors.white)),
+                NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
               ],
             ),
             30.gap,
@@ -53,12 +47,7 @@ class ProfileScreen extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 43,
-                        backgroundImage: NetworkImage(
-                          Constants.placeholderProfileImage,
-                        ),
-                      ),
+                      CircleAvatar(radius: 43, backgroundImage: NetworkImage(Constants.placeholderProfileImage)),
                       24.gap,
                       Expanded(
                         child: Column(
@@ -128,11 +117,7 @@ class ProfileScreen extends StatelessWidget {
             },
           ),
 
-          ProfileItemWidget(
-            title: LocaleKeys.terms_and_conditions.tr(),
-            iconPath: AppIcons.termsIc,
-            onPressed: () {},
-          ),
+          ProfileItemWidget(title: LocaleKeys.terms_and_conditions.tr(), iconPath: AppIcons.termsIc, onPressed: () {}),
           ProfileItemWidget(
             title: LocaleKeys.history.tr(),
             iconPath: AppIcons.historyIc,
@@ -143,19 +128,13 @@ class ProfileScreen extends StatelessWidget {
           ProfileItemWidget(
             title: LocaleKeys.faq.tr(),
             iconPath: AppIcons.faqIc,
-            onPressed: () {},
+            onPressed: () {
+              context.push(Routes.faq);
+            },
           ),
-          ProfileItemWidget(
-            title: LocaleKeys.settings.tr(),
-            iconPath: AppIcons.settingsIc,
-            onPressed: () {},
-          ),
+          ProfileItemWidget(title: LocaleKeys.settings.tr(), iconPath: AppIcons.settingsIc, onPressed: () {}),
           20.gap,
-          CustomElevatedButton(
-            icon: AppIcons.supportIc,
-            onPressed: () {},
-            title: LocaleKeys.how_can_we_help_you.tr(),
-          ),
+          CustomElevatedButton(icon: AppIcons.supportIc, onPressed: () {}, title: LocaleKeys.how_can_we_help_you.tr()),
         ],
       ),
     );

@@ -256,5 +256,15 @@ abstract class  LocaleKeys {
   static const device_password_description = 'device_password_description';
   static const no_notification_yet = 'no_notification_yet';
   static const retry = 'retry';
+  static const frequently_asked_questions = 'frequently_asked_questions';
+  static const find_answers_to_common_questions = 'find_answers_to_common_questions';
+  static const search_faqs = 'search_faqs';
+  static const loading_faqs = 'loading_faqs';
+  static const please_wait_while_fetching = 'please_wait_while_fetching';
+  static const oops_something_went_wrong = 'oops_something_went_wrong';
+  static const no_faqs_found = 'no_faqs_found';
+  static const no_faqs_match_search = 'no_faqs_match_search';
+  static const no_faqs_available_at_moment = 'no_faqs_available_at_moment';
+  static const back_to_top = 'back_to_top';
 
 }

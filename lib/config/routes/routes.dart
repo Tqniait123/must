@@ -26,4 +26,5 @@ class Routes {
   static const String history = '/history';
   static const String scanQrcode = '/scanQrcode';
   static const String myCars = '/myCars';
+  static const String faq = '/faq';
 }

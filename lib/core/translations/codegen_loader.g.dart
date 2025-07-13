@@ -270,7 +270,17 @@ class CodegenLoader extends AssetLoader{
   "device_authentication_failed": "Device authentication failed. Please try again.",
   "device_password_description": "Use your device PIN, password, or pattern to enable biometric authentication",
   "no_notification_yet": "No notifications yet",
-  "retry": "Retry"
+  "retry": "Retry",
+  "frequently_asked_questions": "Frequently Asked Questions",
+  "find_answers_to_common_questions": "Find answers to common questions",
+  "search_faqs": "Search FAQs...",
+  "loading_faqs": "Loading FAQs...",
+  "please_wait_while_fetching": "Please wait while we fetch the latest information",
+  "oops_something_went_wrong": "Oops! Something went wrong",
+  "no_faqs_found": "No FAQs Found",
+  "no_faqs_match_search": "No FAQs match your search. Try different keywords.",
+  "no_faqs_available_at_moment": "No FAQs are available at the moment. Check back later!",
+  "back_to_top": "Back to Top"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -528,7 +538,17 @@ static const Map<String,dynamic> _ar = {
   "device_authentication_failed": "فشل التحقق من الجهاز. يرجى المحاولة مرة أخرى.",
   "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية",
   "no_notification_yet": "لا توجد إشعارات حتى الآن",
-  "retry": "اعادة المحاولة"
+  "retry": "اعادة المحاولة",
+  "frequently_asked_questions": "الأسئلة الشائعة",
+  "find_answers_to_common_questions": "ابحث عن إجابات للأسئلة الشائعة",
+  "search_faqs": "البحث في الأسئلة الشائعة...",
+  "loading_faqs": "جاري تحميل الأسئلة الشائعة...",
+  "please_wait_while_fetching": "يرجى الانتظار بينما نحضر أحدث المعلومات",
+  "oops_something_went_wrong": "عذراً! حدث خطأ ما",
+  "no_faqs_found": "لم يتم العثور على أسئلة شائعة",
+  "no_faqs_match_search": "لا توجد أسئلة شائعة تطابق بحثك. جرب كلمات مختلفة.",
+  "no_faqs_available_at_moment": "لا توجد أسئلة شائعة متاحة في الوقت الحالي. تحقق لاحقاً!",
+  "back_to_top": "العودة إلى الأعلى"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

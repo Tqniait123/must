@@ -20,4 +20,9 @@ class EndPoints {
   static const String parking = 'parking';
   static const String parkingInUserCity = 'parking_in_user_city';
   static const String notifications = 'notifications';
+  static const String faqs = 'faqs';
+  static String aboutUs(String lang) => 'about_us/$lang';
+  static String terms(String lang) => 'terms/$lang';
+  static String privacyPolicy(String lang) => 'privacy_policy/$lang';
+  static const String contactUs = 'contact_info';
 }
