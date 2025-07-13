@@ -316,7 +316,14 @@ class CodegenLoader extends AssetLoader{
   "cannot_make_call": "Cannot make phone call",
   "cannot_send_email": "Cannot send email",
   "cannot_open_map": "Cannot open map",
-  "contact_info_copied": "Contact information copied to clipboard"
+  "contact_info_copied": "Contact information copied to clipboard",
+  "about_us": "About Us",
+  "learn_more_about_us": "Learn more about our company and mission",
+  "loading_about_us": "Loading About Us",
+  "please_wait_loading_about_us": "Please wait while we load information about us...",
+  "failed_to_load_about_us": "Failed to Load About Us",
+  "no_about_us_available": "No About Us Information Available",
+  "no_about_us_available_description": "About us information is currently not available. Please try again later."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -620,7 +627,14 @@ static const Map<String,dynamic> _ar = {
   "cannot_make_call": "لا يمكن إجراء مكالمة هاتفية",
   "cannot_send_email": "لا يمكن إرسال بريد إلكتروني",
   "cannot_open_map": "لا يمكن فتح الخريطة",
-  "contact_info_copied": "تم نسخ معلومات الاتصال إلى الحافظة"
+  "contact_info_copied": "تم نسخ معلومات الاتصال إلى الحافظة",
+  "about_us": "من نحن",
+  "learn_more_about_us": "تعرف أكثر على شركتنا ورسالتنا",
+  "loading_about_us": "جاري تحميل معلومات من نحن",
+  "please_wait_loading_about_us": "يرجى الانتظار بينما نقوم بتحميل معلومات عنا...",
+  "failed_to_load_about_us": "فشل في تحميل معلومات من نحن",
+  "no_about_us_available": "معلومات من نحن غير متاحة",
+  "no_about_us_available_description": "معلومات من نحن غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

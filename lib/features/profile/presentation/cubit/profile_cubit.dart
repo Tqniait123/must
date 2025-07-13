@@ -57,4 +57,15 @@ class PagesCubit extends Cubit<PagesState> {
       emit(PagesError(e.toString()));
     }
   }
+   Future<void> getAboutUs({String? lang}) async {
+    try {
+      emit(PagesLoading());
+      final response = await _repository.getAboutUs(lang);
+      response.fold((faqs) => emit(PagesSuccess(faqs)), (error) => emit(PagesError(error.message)));
+    } on AppError catch (e) {
+      emit(PagesError(e.message));
+    } catch (e) {
+      emit(PagesError(e.toString()));
+    }
+  }
 }

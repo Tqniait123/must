@@ -1,6 +1,7 @@
 import 'package:must_invest/core/api/dio_client.dart';
 import 'package:must_invest/core/api/end_points.dart';
 import 'package:must_invest/core/api/response/response.dart';
+import 'package:must_invest/features/profile/data/models/about_us_model.dart';
 import 'package:must_invest/features/profile/data/models/contact_us_model.dart';
 import 'package:must_invest/features/profile/data/models/faq_model.dart';
 import 'package:must_invest/features/profile/data/models/privacy_policy_model.dart';
@@ -11,6 +12,7 @@ abstract class PagesRemoteDataSource {
   Future<ApiResponse<TermsAndConditionsModel>> getTermsAndConditions(String? lang);
   Future<ApiResponse<PrivacyPolicyModel>> getPrivacyPolicy(String? lang);
   Future<ApiResponse<ContactUsModel>> getContactUs(String? lang);
+  Future<ApiResponse<AboutUsModel>> getAboutUs(String? lang);
 }
 
 class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
@@ -52,6 +54,15 @@ class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
       method: RequestMethod.get,
       EndPoints.contactUs,
       fromJson: (json) => ContactUsModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<ApiResponse<AboutUsModel>> getAboutUs(String? lang) async {
+    return dioClient.request<AboutUsModel>(
+      method: RequestMethod.get,
+      EndPoints.aboutUs(lang ?? 'en'),
+      fromJson: (json) => AboutUsModel.fromJson(json as Map<String, dynamic>),
     );
   }
 }

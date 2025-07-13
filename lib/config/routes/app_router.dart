@@ -31,6 +31,7 @@ import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:must_invest/features/profile/presentation/pages/about_us_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/contact_us_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/faq_screen.dart';
@@ -262,6 +263,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the TermsAnsConditionsScreen widget
           return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: ContactUsScreen());
+        },
+      ),
+      GoRoute(
+        path: Routes.aboutUs,
+        builder: (context, state) {
+          // Return the AboutUsScreen widget
+          return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: AboutUsScreen());
         },
       ),
     ],

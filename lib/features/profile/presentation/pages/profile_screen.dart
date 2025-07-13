@@ -145,6 +145,13 @@ class ProfileScreen extends StatelessWidget {
               context.push(Routes.faq);
             },
           ),
+          ProfileItemWidget(
+            title: LocaleKeys.about_us.tr(),
+            iconPath: AppIcons.termsIc,
+            onPressed: () {
+              context.push(Routes.aboutUs);
+            },
+          ),
           ProfileItemWidget(title: LocaleKeys.settings.tr(), iconPath: AppIcons.settingsIc, onPressed: () {}),
           20.gap,
           CustomElevatedButton(

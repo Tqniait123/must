@@ -1,0 +1,26 @@
+class AboutUsModel {
+  final String content;
+
+  AboutUsModel({required this.content});
+
+  factory AboutUsModel.fromJson(Map<String, dynamic> json) {
+    return AboutUsModel(content: json['content'] as String? ?? '<p>Terms & Conditions Content</p>');
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'content': content};
+  }
+
+  AboutUsModel copyWith({String? content}) {
+    return AboutUsModel(content: content ?? this.content);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is AboutUsModel && other.content == content;
+  }
+
+  @override
+  int get hashCode => content.hashCode;
+}

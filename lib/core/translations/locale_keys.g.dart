@@ -302,5 +302,12 @@ abstract class  LocaleKeys {
   static const cannot_send_email = 'cannot_send_email';
   static const cannot_open_map = 'cannot_open_map';
   static const contact_info_copied = 'contact_info_copied';
+  static const about_us = 'about_us';
+  static const learn_more_about_us = 'learn_more_about_us';
+  static const loading_about_us = 'loading_about_us';
+  static const please_wait_loading_about_us = 'please_wait_loading_about_us';
+  static const failed_to_load_about_us = 'failed_to_load_about_us';
+  static const no_about_us_available = 'no_about_us_available';
+  static const no_about_us_available_description = 'no_about_us_available_description';
 
 }

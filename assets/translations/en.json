@@ -302,5 +302,12 @@
     "cannot_make_call": "Cannot make phone call",
     "cannot_send_email": "Cannot send email",
     "cannot_open_map": "Cannot open map",
-    "contact_info_copied": "Contact information copied to clipboard"
+    "contact_info_copied": "Contact information copied to clipboard",
+    "about_us": "About Us",
+    "learn_more_about_us": "Learn more about our company and mission",
+    "loading_about_us": "Loading About Us",
+    "please_wait_loading_about_us": "Please wait while we load information about us...",
+    "failed_to_load_about_us": "Failed to Load About Us",
+    "no_about_us_available": "No About Us Information Available",
+    "no_about_us_available_description": "About us information is currently not available. Please try again later."
 }

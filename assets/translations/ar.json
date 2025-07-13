@@ -304,5 +304,12 @@
     "cannot_make_call": "لا يمكن إجراء مكالمة هاتفية",
     "cannot_send_email": "لا يمكن إرسال بريد إلكتروني",
     "cannot_open_map": "لا يمكن فتح الخريطة",
-    "contact_info_copied": "تم نسخ معلومات الاتصال إلى الحافظة"
+    "contact_info_copied": "تم نسخ معلومات الاتصال إلى الحافظة",
+    "about_us": "من نحن",
+    "learn_more_about_us": "تعرف أكثر على شركتنا ورسالتنا",
+    "loading_about_us": "جاري تحميل معلومات من نحن",
+    "please_wait_loading_about_us": "يرجى الانتظار بينما نقوم بتحميل معلومات عنا...",
+    "failed_to_load_about_us": "فشل في تحميل معلومات من نحن",
+    "no_about_us_available": "معلومات من نحن غير متاحة",
+    "no_about_us_available_description": "معلومات من نحن غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً."
 }
