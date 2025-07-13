@@ -296,7 +296,27 @@ class CodegenLoader extends AssetLoader{
   "please_wait_loading_privacy_policy": "Please wait while we load the privacy policy...",
   "failed_to_load_privacy_policy": "Failed to Load Privacy Policy",
   "no_privacy_policy_available": "No Privacy Policy Available",
-  "no_privacy_policy_available_description": "Privacy policy content is currently not available. Please try again later."
+  "no_privacy_policy_available_description": "Privacy policy content is currently not available. Please try again later.",
+  "contact_us": "Contact Us",
+  "get_in_touch_with_us": "Get in touch with us",
+  "loading_contact_info": "Loading Contact Information",
+  "please_wait_loading_contact_info": "Please wait while we load the contact information...",
+  "failed_to_load_contact_info": "Failed to Load Contact Information",
+  "no_contact_info_available": "No Contact Information Available",
+  "no_contact_info_available_description": "Contact information is currently not available. Please try again later.",
+  "email_address": "Email Address",
+  "tap_to_call": "Tap to call",
+  "tap_to_email": "Tap to send email",
+  "tap_to_view_map": "Tap to view on map",
+  "quick_actions": "Quick Actions",
+  "copy_info": "Copy Info",
+  "share": "Share",
+  "contact_information": "Contact Information",
+  "contact_inquiry": "Contact Inquiry",
+  "cannot_make_call": "Cannot make phone call",
+  "cannot_send_email": "Cannot send email",
+  "cannot_open_map": "Cannot open map",
+  "contact_info_copied": "Contact information copied to clipboard"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -580,7 +600,27 @@ static const Map<String,dynamic> _ar = {
   "please_wait_loading_privacy_policy": "يرجى الانتظار بينما نقوم بتحميل سياسة الخصوصية...",
   "failed_to_load_privacy_policy": "فشل في تحميل سياسة الخصوصية",
   "no_privacy_policy_available": "سياسة الخصوصية غير متاحة",
-  "no_privacy_policy_available_description": "محتوى سياسة الخصوصية غير متاح حالياً. يرجى المحاولة مرة أخرى لاحقاً."
+  "no_privacy_policy_available_description": "محتوى سياسة الخصوصية غير متاح حالياً. يرجى المحاولة مرة أخرى لاحقاً.",
+  "contact_us": "اتصل بنا",
+  "get_in_touch_with_us": "تواصل معنا",
+  "loading_contact_info": "جاري تحميل معلومات الاتصال",
+  "please_wait_loading_contact_info": "يرجى الانتظار بينما نقوم بتحميل معلومات الاتصال...",
+  "failed_to_load_contact_info": "فشل في تحميل معلومات الاتصال",
+  "no_contact_info_available": "معلومات الاتصال غير متاحة",
+  "no_contact_info_available_description": "معلومات الاتصال غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً.",
+  "email_address": "عنوان البريد الإلكتروني",
+  "tap_to_call": "اضغط للاتصال",
+  "tap_to_email": "اضغط لإرسال بريد إلكتروني",
+  "tap_to_view_map": "اضغط لعرض الخريطة",
+  "quick_actions": "إجراءات سريعة",
+  "copy_info": "نسخ المعلومات",
+  "share": "مشاركة",
+  "contact_information": "معلومات الاتصال",
+  "contact_inquiry": "استفسار اتصال",
+  "cannot_make_call": "لا يمكن إجراء مكالمة هاتفية",
+  "cannot_send_email": "لا يمكن إرسال بريد إلكتروني",
+  "cannot_open_map": "لا يمكن فتح الخريطة",
+  "contact_info_copied": "تم نسخ معلومات الاتصال إلى الحافظة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

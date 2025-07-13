@@ -29,4 +29,5 @@ class Routes {
   static const String faq = '/faq';
   static const String termsAndConditions = '/termsAndConditions';
   static const String privacyPolicy = '/privacyPolicy';
+  static const String contactUs = '/contactUs';
 }

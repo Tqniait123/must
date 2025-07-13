@@ -31,6 +31,7 @@ import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:must_invest/features/profile/presentation/pages/contact_us_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/faq_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_cars_screen.dart';
@@ -53,7 +54,7 @@ class AppRouter {
       return CustomTransitionPage(
         transitionDuration: const Duration(milliseconds: 200),
         key: state.pageKey,
-        child: _unFoundRoute(),
+        child: _unFoundRoute(context),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -256,11 +257,18 @@ class AppRouter {
           return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: PrivacyPolicyScreen());
         },
       ),
+      GoRoute(
+        path: Routes.contactUs,
+        builder: (context, state) {
+          // Return the TermsAnsConditionsScreen widget
+          return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: ContactUsScreen());
+        },
+      ),
     ],
   );
 
   // Define a static method for the "Un Found Route" page
-  static Widget _unFoundRoute() {
+  static Widget _unFoundRoute(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(

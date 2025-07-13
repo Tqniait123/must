@@ -282,5 +282,25 @@ abstract class  LocaleKeys {
   static const failed_to_load_privacy_policy = 'failed_to_load_privacy_policy';
   static const no_privacy_policy_available = 'no_privacy_policy_available';
   static const no_privacy_policy_available_description = 'no_privacy_policy_available_description';
+  static const contact_us = 'contact_us';
+  static const get_in_touch_with_us = 'get_in_touch_with_us';
+  static const loading_contact_info = 'loading_contact_info';
+  static const please_wait_loading_contact_info = 'please_wait_loading_contact_info';
+  static const failed_to_load_contact_info = 'failed_to_load_contact_info';
+  static const no_contact_info_available = 'no_contact_info_available';
+  static const no_contact_info_available_description = 'no_contact_info_available_description';
+  static const email_address = 'email_address';
+  static const tap_to_call = 'tap_to_call';
+  static const tap_to_email = 'tap_to_email';
+  static const tap_to_view_map = 'tap_to_view_map';
+  static const quick_actions = 'quick_actions';
+  static const copy_info = 'copy_info';
+  static const share = 'share';
+  static const contact_information = 'contact_information';
+  static const contact_inquiry = 'contact_inquiry';
+  static const cannot_make_call = 'cannot_make_call';
+  static const cannot_send_email = 'cannot_send_email';
+  static const cannot_open_map = 'cannot_open_map';
+  static const contact_info_copied = 'contact_info_copied';
 
 }

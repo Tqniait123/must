@@ -33,11 +33,24 @@ class PagesCubit extends Cubit<PagesState> {
       emit(PagesError(e.toString()));
     }
   }
+
   Future<void> getPrivacyPolicy({String? lang}) async {
     try {
       emit(PagesLoading());
       final response = await _repository.getPrivacyPolicy(lang);
-      response.fold((faqs) => emit(PagesSuccess(faqs)), (error) => emit(PagesError(error.message)));
+      response.fold((privacyPolicy) => emit(PagesSuccess(privacyPolicy)), (error) => emit(PagesError(error.message)));
+    } on AppError catch (e) {
+      emit(PagesError(e.message));
+    } catch (e) {
+      emit(PagesError(e.toString()));
+    }
+  }
+
+  Future<void> getContactUs({String? lang}) async {
+    try {
+      emit(PagesLoading());
+      final response = await _repository.getContactUs(lang);
+      response.fold((contactUs) => emit(PagesSuccess(contactUs)), (error) => emit(PagesError(error.message)));
     } on AppError catch (e) {
       emit(PagesError(e.message));
     } catch (e) {

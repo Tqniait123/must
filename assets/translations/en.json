@@ -280,5 +280,27 @@
     "please_wait_loading_privacy_policy": "Please wait while we load the privacy policy...",
     "failed_to_load_privacy_policy": "Failed to Load Privacy Policy",
     "no_privacy_policy_available": "No Privacy Policy Available",
-    "no_privacy_policy_available_description": "Privacy policy content is currently not available. Please try again later."
+    "no_privacy_policy_available_description": "Privacy policy content is currently not available. Please try again later.",
+    "contact_us": "Contact Us",
+    "get_in_touch_with_us": "Get in touch with us",
+    "loading_contact_info": "Loading Contact Information",
+    "please_wait_loading_contact_info": "Please wait while we load the contact information...",
+    "failed_to_load_contact_info": "Failed to Load Contact Information",
+    "no_contact_info_available": "No Contact Information Available",
+    "no_contact_info_available_description": "Contact information is currently not available. Please try again later.",
+
+    "email_address": "Email Address",
+
+    "tap_to_call": "Tap to call",
+    "tap_to_email": "Tap to send email",
+    "tap_to_view_map": "Tap to view on map",
+    "quick_actions": "Quick Actions",
+    "copy_info": "Copy Info",
+    "share": "Share",
+    "contact_information": "Contact Information",
+    "contact_inquiry": "Contact Inquiry",
+    "cannot_make_call": "Cannot make phone call",
+    "cannot_send_email": "Cannot send email",
+    "cannot_open_map": "Cannot open map",
+    "contact_info_copied": "Contact information copied to clipboard"
 }
