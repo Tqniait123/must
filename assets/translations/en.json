@@ -261,9 +261,17 @@
   "loading_faqs": "Loading FAQs...",
   "please_wait_while_fetching": "Please wait while we fetch the latest information",
   "oops_something_went_wrong": "Oops! Something went wrong",
-  "try_again": "Try Again",
   "no_faqs_found": "No FAQs Found",
   "no_faqs_match_search": "No FAQs match your search. Try different keywords.",
   "no_faqs_available_at_moment": "No FAQs are available at the moment. Check back later!",
-  "back_to_top": "Back to Top"
+  "back_to_top": "Back to Top",
+  "our_terms_and_conditions": "Our Terms & Conditions",
+  "loading_terms": "Loading Terms & Conditions...",
+  "please_wait_loading_terms": "Please wait while we load the terms and conditions",
+  "no_terms_available": "No Terms Available",
+  "no_terms_available_description": "Terms and conditions are not available at the moment. Please try again later.",
+  "failed_to_load_terms": "Failed to load terms and conditions",
+  "share_terms": "Share",
+  "copy_link": "Copy Link",
+  "link_copied": "Link copied to clipboard"
 }

@@ -27,4 +27,5 @@ class Routes {
   static const String scanQrcode = '/scanQrcode';
   static const String myCars = '/myCars';
   static const String faq = '/faq';
+  static const String termsAndConditions = '/termsAndConditions';
 }

@@ -266,5 +266,14 @@ abstract class  LocaleKeys {
   static const no_faqs_match_search = 'no_faqs_match_search';
   static const no_faqs_available_at_moment = 'no_faqs_available_at_moment';
   static const back_to_top = 'back_to_top';
+  static const our_terms_and_conditions = 'our_terms_and_conditions';
+  static const loading_terms = 'loading_terms';
+  static const please_wait_loading_terms = 'please_wait_loading_terms';
+  static const no_terms_available = 'no_terms_available';
+  static const no_terms_available_description = 'no_terms_available_description';
+  static const failed_to_load_terms = 'failed_to_load_terms';
+  static const share_terms = 'share_terms';
+  static const copy_link = 'copy_link';
+  static const link_copied = 'link_copied';
 
 }

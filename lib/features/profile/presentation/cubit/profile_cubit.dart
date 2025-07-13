@@ -22,5 +22,15 @@ class PagesCubit extends Cubit<PagesState> {
     }
   }
 
-
+  Future<void> getTermsAndConditions({String? lang}) async {
+    try {
+      emit(PagesLoading());
+      final response = await _repository.getTermsAndConditions(lang);
+      response.fold((faqs) => emit(PagesSuccess(faqs)), (error) => emit(PagesError(error.message)));
+    } on AppError catch (e) {
+      emit(PagesError(e.message));
+    } catch (e) {
+      emit(PagesError(e.toString()));
+    }
+  }
 }

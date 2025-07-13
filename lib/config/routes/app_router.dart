@@ -37,6 +37,7 @@ import 'package:must_invest/features/profile/presentation/pages/my_cars_screen.d
 import 'package:must_invest/features/profile/presentation/pages/my_qr_code_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/scan_qr_code_screen.dart';
+import 'package:must_invest/features/profile/presentation/pages/terms_and_conditions_screen.dart';
 import 'package:must_invest/features/splash/presentation/pages/splash.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -238,6 +239,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the FAQscreen widget
           return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: FAQScreen());
+        },
+      ),
+      GoRoute(
+        path: Routes.termsAndConditions,
+        builder: (context, state) {
+          // Return the TermsAnsConditionsScreen widget
+          return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: TermsAndConditionsScreen());
         },
       ),
     ],

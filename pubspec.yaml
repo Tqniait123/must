@@ -54,6 +54,8 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   app_settings: ^6.1.1
   geolocator: ^14.0.2
+  flutter_html: ^3.0.0
+  share_plus: ^11.0.0
 
 # Add this at the bottom if you still get dependency conflicts
 dependency_overrides:

@@ -263,9 +263,17 @@
   "loading_faqs": "جاري تحميل الأسئلة الشائعة...",
   "please_wait_while_fetching": "يرجى الانتظار بينما نحضر أحدث المعلومات",
   "oops_something_went_wrong": "عذراً! حدث خطأ ما",
-  "try_again": "حاول مرة أخرى",
   "no_faqs_found": "لم يتم العثور على أسئلة شائعة",
   "no_faqs_match_search": "لا توجد أسئلة شائعة تطابق بحثك. جرب كلمات مختلفة.",
   "no_faqs_available_at_moment": "لا توجد أسئلة شائعة متاحة في الوقت الحالي. تحقق لاحقاً!",
-  "back_to_top": "العودة إلى الأعلى"
+  "back_to_top": "العودة إلى الأعلى",
+  "our_terms_and_conditions": "شروطنا وأحكامنا",
+  "loading_terms": "جاري تحميل الشروط والأحكام...",
+  "please_wait_loading_terms": "يرجى الانتظار بينما نحمل الشروط والأحكام",
+  "no_terms_available": "لا توجد شروط متاحة",
+  "no_terms_available_description": "الشروط والأحكام غير متاحة في الوقت الحالي. يرجى المحاولة لاحقاً.",
+  "failed_to_load_terms": "فشل في تحميل الشروط والأحكام",
+  "share_terms": "مشاركة",
+  "copy_link": "نسخ الرابط",
+  "link_copied": "تم نسخ الرابط إلى الحافظة"
 }

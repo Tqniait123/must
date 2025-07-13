@@ -280,7 +280,16 @@ class CodegenLoader extends AssetLoader{
   "no_faqs_found": "No FAQs Found",
   "no_faqs_match_search": "No FAQs match your search. Try different keywords.",
   "no_faqs_available_at_moment": "No FAQs are available at the moment. Check back later!",
-  "back_to_top": "Back to Top"
+  "back_to_top": "Back to Top",
+  "our_terms_and_conditions": "Our Terms & Conditions",
+  "loading_terms": "Loading Terms & Conditions...",
+  "please_wait_loading_terms": "Please wait while we load the terms and conditions",
+  "no_terms_available": "No Terms Available",
+  "no_terms_available_description": "Terms and conditions are not available at the moment. Please try again later.",
+  "failed_to_load_terms": "Failed to load terms and conditions",
+  "share_terms": "Share",
+  "copy_link": "Copy Link",
+  "link_copied": "Link copied to clipboard"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -548,7 +557,16 @@ static const Map<String,dynamic> _ar = {
   "no_faqs_found": "لم يتم العثور على أسئلة شائعة",
   "no_faqs_match_search": "لا توجد أسئلة شائعة تطابق بحثك. جرب كلمات مختلفة.",
   "no_faqs_available_at_moment": "لا توجد أسئلة شائعة متاحة في الوقت الحالي. تحقق لاحقاً!",
-  "back_to_top": "العودة إلى الأعلى"
+  "back_to_top": "العودة إلى الأعلى",
+  "our_terms_and_conditions": "شروطنا وأحكامنا",
+  "loading_terms": "جاري تحميل الشروط والأحكام...",
+  "please_wait_loading_terms": "يرجى الانتظار بينما نحمل الشروط والأحكام",
+  "no_terms_available": "لا توجد شروط متاحة",
+  "no_terms_available_description": "الشروط والأحكام غير متاحة في الوقت الحالي. يرجى المحاولة لاحقاً.",
+  "failed_to_load_terms": "فشل في تحميل الشروط والأحكام",
+  "share_terms": "مشاركة",
+  "copy_link": "نسخ الرابط",
+  "link_copied": "تم نسخ الرابط إلى الحافظة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
