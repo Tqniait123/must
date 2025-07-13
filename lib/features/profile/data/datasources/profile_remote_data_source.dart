@@ -2,11 +2,13 @@ import 'package:must_invest/core/api/dio_client.dart';
 import 'package:must_invest/core/api/end_points.dart';
 import 'package:must_invest/core/api/response/response.dart';
 import 'package:must_invest/features/profile/data/models/faq_model.dart';
+import 'package:must_invest/features/profile/data/models/privacy_policy_model.dart';
 import 'package:must_invest/features/profile/data/models/terms_and_conditions_model.dart';
 
 abstract class PagesRemoteDataSource {
   Future<ApiResponse<List<FAQModel>>> getFaq(String? lang);
   Future<ApiResponse<TermsAndConditionsModel>> getTermsAndConditions(String? lang);
+  Future<ApiResponse<PrivacyPolicyModel>> getPrivacyPolicy(String? lang);
 }
 
 class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
@@ -30,6 +32,15 @@ class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
       method: RequestMethod.get,
       EndPoints.terms(lang ?? 'en'),
       fromJson: (json) => TermsAndConditionsModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<ApiResponse<PrivacyPolicyModel>> getPrivacyPolicy(String? lang) async {
+    return dioClient.request<PrivacyPolicyModel>(
+      method: RequestMethod.get,
+      EndPoints.privacyPolicy(lang ?? 'en'),
+      fromJson: (json) => PrivacyPolicyModel.fromJson(json as Map<String, dynamic>),
     );
   }
 }

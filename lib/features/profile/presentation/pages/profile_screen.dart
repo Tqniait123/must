@@ -125,6 +125,13 @@ class ProfileScreen extends StatelessWidget {
             },
           ),
           ProfileItemWidget(
+            title: LocaleKeys.privacy_policy.tr(),
+            iconPath: AppIcons.termsIc,
+            onPressed: () {
+              context.push(Routes.privacyPolicy);
+            },
+          ),
+          ProfileItemWidget(
             title: LocaleKeys.history.tr(),
             iconPath: AppIcons.historyIc,
             onPressed: () {

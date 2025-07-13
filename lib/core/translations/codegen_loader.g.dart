@@ -289,7 +289,14 @@ class CodegenLoader extends AssetLoader{
   "failed_to_load_terms": "Failed to load terms and conditions",
   "share_terms": "Share",
   "copy_link": "Copy Link",
-  "link_copied": "Link copied to clipboard"
+  "link_copied": "Link copied to clipboard",
+  "privacy_policy": "Privacy Policy",
+  "our_privacy_policy": "Our privacy policy and data protection",
+  "loading_privacy_policy": "Loading Privacy Policy",
+  "please_wait_loading_privacy_policy": "Please wait while we load the privacy policy...",
+  "failed_to_load_privacy_policy": "Failed to Load Privacy Policy",
+  "no_privacy_policy_available": "No Privacy Policy Available",
+  "no_privacy_policy_available_description": "Privacy policy content is currently not available. Please try again later."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -566,7 +573,14 @@ static const Map<String,dynamic> _ar = {
   "failed_to_load_terms": "فشل في تحميل الشروط والأحكام",
   "share_terms": "مشاركة",
   "copy_link": "نسخ الرابط",
-  "link_copied": "تم نسخ الرابط إلى الحافظة"
+  "link_copied": "تم نسخ الرابط إلى الحافظة",
+  "privacy_policy": "سياسة الخصوصية",
+  "our_privacy_policy": "سياسة الخصوصية وحماية البيانات الخاصة بنا",
+  "loading_privacy_policy": "جاري تحميل سياسة الخصوصية",
+  "please_wait_loading_privacy_policy": "يرجى الانتظار بينما نقوم بتحميل سياسة الخصوصية...",
+  "failed_to_load_privacy_policy": "فشل في تحميل سياسة الخصوصية",
+  "no_privacy_policy_available": "سياسة الخصوصية غير متاحة",
+  "no_privacy_policy_available_description": "محتوى سياسة الخصوصية غير متاح حالياً. يرجى المحاولة مرة أخرى لاحقاً."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

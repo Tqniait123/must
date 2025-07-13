@@ -275,5 +275,12 @@
   "failed_to_load_terms": "فشل في تحميل الشروط والأحكام",
   "share_terms": "مشاركة",
   "copy_link": "نسخ الرابط",
-  "link_copied": "تم نسخ الرابط إلى الحافظة"
+  "link_copied": "تم نسخ الرابط إلى الحافظة",
+  "privacy_policy": "سياسة الخصوصية",
+    "our_privacy_policy": "سياسة الخصوصية وحماية البيانات الخاصة بنا",
+    "loading_privacy_policy": "جاري تحميل سياسة الخصوصية",
+    "please_wait_loading_privacy_policy": "يرجى الانتظار بينما نقوم بتحميل سياسة الخصوصية...",
+    "failed_to_load_privacy_policy": "فشل في تحميل سياسة الخصوصية",
+    "no_privacy_policy_available": "سياسة الخصوصية غير متاحة",
+    "no_privacy_policy_available_description": "محتوى سياسة الخصوصية غير متاح حالياً. يرجى المحاولة مرة أخرى لاحقاً."
 }

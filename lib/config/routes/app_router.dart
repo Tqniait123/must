@@ -35,6 +35,7 @@ import 'package:must_invest/features/profile/presentation/pages/edit_profile_scr
 import 'package:must_invest/features/profile/presentation/pages/faq_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_cars_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/my_qr_code_screen.dart';
+import 'package:must_invest/features/profile/presentation/pages/privacy_policy_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/profile_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/scan_qr_code_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/terms_and_conditions_screen.dart';
@@ -246,6 +247,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the TermsAnsConditionsScreen widget
           return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: TermsAndConditionsScreen());
+        },
+      ),
+      GoRoute(
+        path: Routes.privacyPolicy,
+        builder: (context, state) {
+          // Return the TermsAnsConditionsScreen widget
+          return BlocProvider(create: (BuildContext context) => PagesCubit(sl()), child: PrivacyPolicyScreen());
         },
       ),
     ],

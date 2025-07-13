@@ -275,5 +275,12 @@ abstract class  LocaleKeys {
   static const share_terms = 'share_terms';
   static const copy_link = 'copy_link';
   static const link_copied = 'link_copied';
+  static const privacy_policy = 'privacy_policy';
+  static const our_privacy_policy = 'our_privacy_policy';
+  static const loading_privacy_policy = 'loading_privacy_policy';
+  static const please_wait_loading_privacy_policy = 'please_wait_loading_privacy_policy';
+  static const failed_to_load_privacy_policy = 'failed_to_load_privacy_policy';
+  static const no_privacy_policy_available = 'no_privacy_policy_available';
+  static const no_privacy_policy_available_description = 'no_privacy_policy_available_description';
 
 }
