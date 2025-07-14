@@ -323,7 +323,30 @@ class CodegenLoader extends AssetLoader{
   "please_wait_loading_about_us": "Please wait while we load information about us...",
   "failed_to_load_about_us": "Failed to Load About Us",
   "no_about_us_available": "No About Us Information Available",
-  "no_about_us_available_description": "About us information is currently not available. Please try again later."
+  "no_about_us_available_description": "About us information is currently not available. Please try again later.",
+  "loading_cars": "Loading cars...",
+  "failed_to_load_cars": "Failed to load cars",
+  "car_added_successfully": "Car added successfully",
+  "car_updated_successfully": "Car updated successfully",
+  "car_deleted_successfully": "Car deleted successfully",
+  "enter_car_name": "Enter car name",
+  "please_enter_car_name": "Please enter car name",
+  "metal_plate": "Metal Plate",
+  "enter_metal_plate": "Enter metal plate",
+  "please_enter_metal_plate": "Please enter metal plate",
+  "manufacture_year": "Manufacture Year",
+  "enter_manufacture_year": "Enter manufacture year",
+  "please_enter_manufacture_year": "Please enter manufacture year",
+  "please_enter_valid_year": "Please enter a valid year",
+  "license_expiry_date": "License Expiry Date",
+  "select_expiry_date": "Select expiry date",
+  "please_select_expiry_date": "Please select expiry date",
+  "car_photo": "Car Photo",
+  "front_license": "Front License",
+  "back_license": "Back License",
+  "tap_to_select_image": "Tap to select image",
+  "please_select_all_images": "Please select all required images",
+  "loading": "Loading..."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -634,7 +657,30 @@ static const Map<String,dynamic> _ar = {
   "please_wait_loading_about_us": "يرجى الانتظار بينما نقوم بتحميل معلومات عنا...",
   "failed_to_load_about_us": "فشل في تحميل معلومات من نحن",
   "no_about_us_available": "معلومات من نحن غير متاحة",
-  "no_about_us_available_description": "معلومات من نحن غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً."
+  "no_about_us_available_description": "معلومات من نحن غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً.",
+  "loading_cars": "جاري تحميل السيارات...",
+  "failed_to_load_cars": "فشل في تحميل السيارات",
+  "car_added_successfully": "تم إضافة السيارة بنجاح",
+  "car_updated_successfully": "تم تحديث السيارة بنجاح",
+  "car_deleted_successfully": "تم حذف السيارة بنجاح",
+  "enter_car_name": "أدخل اسم السيارة",
+  "please_enter_car_name": "يرجى إدخال اسم السيارة",
+  "metal_plate": "اللوحة المعدنية",
+  "enter_metal_plate": "أدخل اللوحة المعدنية",
+  "please_enter_metal_plate": "يرجى إدخال اللوحة المعدنية",
+  "manufacture_year": "سنة الصنع",
+  "enter_manufacture_year": "أدخل سنة الصنع",
+  "please_enter_manufacture_year": "يرجى إدخال سنة الصنع",
+  "please_enter_valid_year": "يرجى إدخال سنة صحيحة",
+  "license_expiry_date": "تاريخ انتهاء الرخصة",
+  "select_expiry_date": "اختر تاريخ الانتهاء",
+  "please_select_expiry_date": "يرجى اختيار تاريخ الانتهاء",
+  "car_photo": "صورة السيارة",
+  "front_license": "الرخصة الأمامية",
+  "back_license": "الرخصة الخلفية",
+  "tap_to_select_image": "اضغط لاختيار الصورة",
+  "please_select_all_images": "يرجى اختيار جميع الصور المطلوبة",
+  "loading": "جاري التحميل..."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

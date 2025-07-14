@@ -1,16 +1,22 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/profile/data/datasources/cars_remote_data_source.dart';
+import 'package:must_invest/features/profile/presentation/cubit/cars_cubit.dart';
 
 class AddEditCarBottomSheet extends StatefulWidget {
   final Car? car;
-  final Function(Car) onSave;
+  final VoidCallback? onSuccess;
 
-  const AddEditCarBottomSheet({super.key, this.car, required this.onSave});
+  const AddEditCarBottomSheet({super.key, this.car, this.onSuccess});
 
   @override
   State<AddEditCarBottomSheet> createState() => _AddEditCarBottomSheetState();
@@ -18,133 +24,391 @@ class AddEditCarBottomSheet extends StatefulWidget {
 
 class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _modelController;
+  final _picker = ImagePicker();
+
+  // Text controllers
+  late TextEditingController _nameController;
   late TextEditingController _plateNumberController;
+  late TextEditingController _manufactureYearController;
+  late TextEditingController _licenseExpiryDateController;
+
+  // Image files
+  File? _carPhoto;
+  File? _frontLicense;
+  File? _backLicense;
+
+  // Date picker
+  DateTime? _selectedExpiryDate;
 
   @override
   void initState() {
     super.initState();
-    _modelController = TextEditingController(text: widget.car?.model ?? '');
-    _plateNumberController = TextEditingController(
-      text: widget.car?.plateNumber ?? '',
-    );
+    _nameController = TextEditingController(text: widget.car?.name ?? '');
+    _plateNumberController = TextEditingController(text: widget.car?.metalPlate ?? '');
+    _manufactureYearController = TextEditingController(text: widget.car?.manufactureYear ?? '');
+    _licenseExpiryDateController = TextEditingController(text: widget.car?.licenseExpiryDate ?? '');
+
+    // Parse existing expiry date if editing
+    if (widget.car?.licenseExpiryDate != null && widget.car!.licenseExpiryDate.isNotEmpty) {
+      try {
+        _selectedExpiryDate = DateTime.parse(widget.car!.licenseExpiryDate);
+      } catch (e) {
+        _selectedExpiryDate = null;
+      }
+    }
   }
 
   @override
   void dispose() {
-    _modelController.dispose();
+    _nameController.dispose();
     _plateNumberController.dispose();
+    _manufactureYearController.dispose();
+    _licenseExpiryDateController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage(ImageType type) async {
+    final pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      maxHeight: 1080,
+      imageQuality: 85,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        switch (type) {
+          case ImageType.carPhoto:
+            _carPhoto = File(pickedFile.path);
+            break;
+          case ImageType.frontLicense:
+            _frontLicense = File(pickedFile.path);
+            break;
+          case ImageType.backLicense:
+            _backLicense = File(pickedFile.path);
+            break;
+        }
+      });
+    }
+  }
+
+  Future<void> _selectExpiryDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedExpiryDate ?? DateTime.now().add(Duration(days: 365)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365 * 10)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedExpiryDate = picked;
+        _licenseExpiryDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
   }
 
   void _save() {
     if (_formKey.currentState!.validate()) {
-      final car = Car(
-        id: widget.car?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        model: _modelController.text.trim(),
-        plateNumber: _plateNumberController.text.trim(),
-      );
-      widget.onSave(car);
-      Navigator.pop(context);
+      final isEditing = widget.car != null;
+
+      if (isEditing) {
+        // Update existing car
+        final updateRequest = UpdateCarRequest(
+          name: _nameController.text.trim(),
+          metalPlate: _plateNumberController.text.trim(),
+          manufactureYear: _manufactureYearController.text.trim(),
+          licenseExpiryDate: _licenseExpiryDateController.text.trim(),
+          carPhoto: _carPhoto,
+          frontLicense: _frontLicense,
+          backLicense: _backLicense,
+        );
+
+        CarCubit.get(context).updateCar(widget.car!.id, updateRequest);
+      } else {
+        // Add new car
+        if (_carPhoto == null || _frontLicense == null || _backLicense == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(LocaleKeys.please_select_all_images.tr()), backgroundColor: Colors.red),
+          );
+          return;
+        }
+
+        final addRequest = AddCarRequest(
+          name: _nameController.text.trim(),
+          carPhoto: _carPhoto!,
+          frontLicense: _frontLicense!,
+          backLicense: _backLicense!,
+          metalPlate: _plateNumberController.text.trim(),
+          manufactureYear: _manufactureYearController.text.trim(),
+          licenseExpiryDate: _licenseExpiryDateController.text.trim(),
+        );
+
+        CarCubit.get(context).addCar(addRequest);
+      }
     }
+  }
+
+  Widget _buildImagePicker({
+    required String title,
+    required ImageType type,
+    required File? selectedImage,
+    required String? networkImage,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => _pickImage(type),
+          child: Container(
+            height: 120,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey[300]!),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey[50],
+            ),
+            child:
+                selectedImage != null
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(selectedImage, fit: BoxFit.cover),
+                    )
+                    : networkImage != null && networkImage.isNotEmpty
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        networkImage,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return _buildImagePlaceholder();
+                        },
+                      ),
+                    )
+                    : _buildImagePlaceholder(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[400]),
+        SizedBox(height: 8),
+        Text(LocaleKeys.tap_to_select_image.tr(), style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.car != null;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
+      constraints: BoxConstraints(maxHeight: screenHeight * 0.8),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
       ),
-      padding: EdgeInsets.only(
-        left: 30,
-        right: 30,
-        top: 30,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      padding: EdgeInsets.only(left: 30, right: 30, top: 30, bottom: MediaQuery.of(context).viewInsets.bottom + 16),
+      child: BlocConsumer<CarCubit, CarState>(
+        listener: (context, state) {
+          if (state is AddCarSuccess) {
+            Navigator.pop(context);
+            widget.onSuccess?.call();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(LocaleKeys.car_added_successfully.tr()), backgroundColor: Colors.green),
+            );
+          } else if (state is UpdateCarSuccess) {
+            Navigator.pop(context);
+            widget.onSuccess?.call();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(LocaleKeys.car_updated_successfully.tr()), backgroundColor: Colors.green),
+            );
+          } else if (state is AddCarError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
+          } else if (state is UpdateCarError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is AddCarLoading || state is UpdateCarLoading;
+
+          return Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    isEditing ? LocaleKeys.edit_car.tr() : LocaleKeys.add_new_car.tr(),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Car Name
+                  CustomTextFormField(
+                    controller: _nameController,
+                    title: LocaleKeys.car_name.tr(),
+                    hint: LocaleKeys.enter_car_name.tr(),
+                    margin: 0,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return LocaleKeys.please_enter_car_name.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Metal Plate
+                  CustomTextFormField(
+                    controller: _plateNumberController,
+                    title: LocaleKeys.metal_plate.tr(),
+                    hint: LocaleKeys.enter_metal_plate.tr(),
+                    margin: 0,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return LocaleKeys.please_enter_metal_plate.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Manufacture Year
+                  CustomTextFormField(
+                    controller: _manufactureYearController,
+                    title: LocaleKeys.manufacture_year.tr(),
+                    hint: LocaleKeys.enter_manufacture_year.tr(),
+                    margin: 0,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return LocaleKeys.please_enter_manufacture_year.tr();
+                      }
+                      final year = int.tryParse(value);
+                      final currentYear = DateTime.now().year;
+                      if (year == null || year < 1900 || year > currentYear + 1) {
+                        return LocaleKeys.please_enter_valid_year.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // License Expiry Date
+                  GestureDetector(
+                    onTap: _selectExpiryDate,
+                    child: AbsorbPointer(
+                      child: CustomTextFormField(
+                        controller: _licenseExpiryDateController,
+                        title: LocaleKeys.license_expiry_date.tr(),
+                        hint: LocaleKeys.select_expiry_date.tr(),
+                        margin: 0,
+                        suffixIC: Icon(Icons.calendar_today, color: AppColors.primary),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return LocaleKeys.please_select_expiry_date.tr();
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Car Photo
+                  _buildImagePicker(
+                    title: LocaleKeys.car_photo.tr(),
+                    type: ImageType.carPhoto,
+                    selectedImage: _carPhoto,
+                    networkImage: widget.car?.carPhoto,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Front License
+                  _buildImagePicker(
+                    title: LocaleKeys.front_license.tr(),
+                    type: ImageType.frontLicense,
+                    selectedImage: _frontLicense,
+                    networkImage: widget.car?.frontLicense,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Back License
+                  _buildImagePicker(
+                    title: LocaleKeys.back_license.tr(),
+                    type: ImageType.backLicense,
+                    selectedImage: _backLicense,
+                    networkImage: widget.car?.backLicense,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomElevatedButton(
+                          isFilled: false,
+                          textColor: AppColors.black,
+                          onPressed: isLoading ? null : () => Navigator.pop(context),
+                          title: LocaleKeys.cancel.tr(),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: CustomElevatedButton(
+                          onPressed: isLoading ? null : _save,
+                          loading: isLoading,
+                          title:
+                              isLoading
+                                  ? LocaleKeys.loading.tr()
+                                  : (isEditing ? LocaleKeys.update.tr() : LocaleKeys.save.tr()),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-            Text(
-              isEditing
-                  ? LocaleKeys.edit_car.tr()
-                  : LocaleKeys.add_new_car.tr(),
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 24),
-            CustomTextFormField(
-              controller: _modelController,
-              title: LocaleKeys.model.tr(),
-              hint: LocaleKeys.enter_car_model.tr(),
-              margin: 0,
-
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return LocaleKeys.enter_car_model.tr();
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            CustomTextFormField(
-              controller: _plateNumberController,
-              title: LocaleKeys.plate_number.tr(),
-              hint: LocaleKeys.enter_car_plate_number.tr(),
-              margin: 0,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return LocaleKeys.enter_car_plate_number.tr();
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomElevatedButton(
-                    isFilled: false,
-                    textColor: AppColors.black,
-                    onPressed: () => Navigator.pop(context),
-                    title: LocaleKeys.cancel.tr(),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: CustomElevatedButton(
-                    onPressed: _save,
-
-                    title:
-                        isEditing
-                            ? LocaleKeys.update.tr()
-                            : LocaleKeys.save.tr(),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 }
+
+enum ImageType { carPhoto, frontLicense, backLicense }

@@ -51,27 +51,53 @@ class AppUser {
     );
   }
 }
-
 class Car {
   final String id;
-  final String model;
-  final String plateNumber;
+  final String name; // Changed from model to name
+  final String metalPlate; // Changed from plateNumber to metalPlate
+  final String manufactureYear;
+  final String licenseExpiryDate;
+  final String? carPhoto;
+  final String? frontLicense;
+  final String? backLicense;
 
-  const Car({required this.id, required this.model, required this.plateNumber});
+  const Car({
+    required this.id,
+    required this.name,
+    required this.metalPlate,
+    required this.manufactureYear,
+    required this.licenseExpiryDate,
+    this.carPhoto,
+    this.frontLicense,
+    this.backLicense,
+  });
 
   factory Car.fromJson(Map<String, dynamic> json) {
     return Car(
-      id: json['id'],
-      model: json['model'],
-      plateNumber: json['plate_number'],
+      id: json['id'].toString(),
+      name: json['name'] ?? '',
+      metalPlate: json['metal_plate'] ?? '',
+      manufactureYear: json['manufacture_year'] ?? '',
+      licenseExpiryDate: json['license_expiry_date'] ?? '',
+      carPhoto: json['car_photo'],
+      frontLicense: json['front_license'],
+      backLicense: json['back_license'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'model': model, 'plate_number': plateNumber};
+    return {
+      'id': id,
+      'name': name,
+      'metal_plate': metalPlate,
+      'manufacture_year': manufactureYear,
+      'license_expiry_date': licenseExpiryDate,
+      'car_photo': carPhoto,
+      'front_license': frontLicense,
+      'back_license': backLicense,
+    };
   }
 }
-
 /// User model for the example
 class User {
   final int id;

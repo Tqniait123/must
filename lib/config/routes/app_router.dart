@@ -30,6 +30,7 @@ import 'package:must_invest/features/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen.dart';
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
+import 'package:must_invest/features/profile/presentation/cubit/cars_cubit.dart';
 import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:must_invest/features/profile/presentation/pages/about_us_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/contact_us_screen.dart';
@@ -234,7 +235,7 @@ class AppRouter {
         path: Routes.myCars,
         builder: (context, state) {
           // Return the MyCarsScreen widget
-          return MyCarsScreen();
+          return BlocProvider(create: (BuildContext context) => CarCubit(sl()), child: MyCarsScreen());
         },
       ),
       GoRoute(

@@ -56,7 +56,7 @@ class DeleteConfirmationBottomSheet extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             LocaleKeys.delete_confirmation.tr(
-              namedArgs: {'carModel': car.model},
+              namedArgs: {'carModel': car.name},
             ),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16, color: Colors.grey.shade600),

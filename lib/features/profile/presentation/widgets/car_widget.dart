@@ -28,12 +28,7 @@ class CarWidget extends StatelessWidget {
   });
 
   /// 🛠 Editable version with edit/delete buttons
-  factory CarWidget.editable({
-    Key? key,
-    required Car car,
-    VoidCallback? onEdit,
-    VoidCallback? onDelete,
-  }) {
+  factory CarWidget.editable({Key? key, required Car car, VoidCallback? onEdit, VoidCallback? onDelete}) {
     return CarWidget._(key: key, car: car, onEdit: onEdit, onDelete: onDelete);
   }
 
@@ -44,22 +39,11 @@ class CarWidget extends StatelessWidget {
     required bool isSelect,
     required ValueChanged<bool?> onSelectChanged,
   }) {
-    return CarWidget._(
-      key: key,
-      car: car,
-      isSelectable: true,
-      isSelect: isSelect,
-      onSelectChanged: onSelectChanged,
-    );
+    return CarWidget._(key: key, car: car, isSelectable: true, isSelect: isSelect, onSelectChanged: onSelectChanged);
   }
 
   /// 🔧 Custom version with any trailing widget
-  factory CarWidget.custom({
-    Key? key,
-    required Car car,
-    required Widget trailing,
-    
-  }) {
+  factory CarWidget.custom({Key? key, required Car car, required Widget trailing}) {
     return CarWidget._(key: key, car: car, trailing: trailing);
   }
 
@@ -69,17 +53,9 @@ class CarWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border:
-            isSelectable && isSelect
-                ? Border.all(color: AppColors.primary, width: 2)
-                : null,
+        border: isSelectable && isSelect ? Border.all(color: AppColors.primary, width: 2) : null,
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Padding(
@@ -93,11 +69,7 @@ class CarWidget extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                Icons.directions_car,
-                color: AppColors.primary,
-                size: 30,
-              ),
+              child: Icon(Icons.directions_car, color: AppColors.primary, size: 30),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -105,21 +77,13 @@ class CarWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    car.model,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
+                    car.manufactureYear,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    car.plateNumber,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    car.metalPlate,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -127,11 +91,7 @@ class CarWidget extends StatelessWidget {
             // 🧠 Use trailing if provided
             trailing ??
                 (isSelectable
-                    ? Checkbox(
-                      value: isSelect,
-                      onChanged: onSelectChanged,
-                      activeColor: AppColors.primary,
-                    )
+                    ? Checkbox(value: isSelect, onChanged: onSelectChanged, activeColor: AppColors.primary)
                     : Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

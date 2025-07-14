@@ -309,5 +309,28 @@ abstract class  LocaleKeys {
   static const failed_to_load_about_us = 'failed_to_load_about_us';
   static const no_about_us_available = 'no_about_us_available';
   static const no_about_us_available_description = 'no_about_us_available_description';
+  static const loading_cars = 'loading_cars';
+  static const failed_to_load_cars = 'failed_to_load_cars';
+  static const car_added_successfully = 'car_added_successfully';
+  static const car_updated_successfully = 'car_updated_successfully';
+  static const car_deleted_successfully = 'car_deleted_successfully';
+  static const enter_car_name = 'enter_car_name';
+  static const please_enter_car_name = 'please_enter_car_name';
+  static const metal_plate = 'metal_plate';
+  static const enter_metal_plate = 'enter_metal_plate';
+  static const please_enter_metal_plate = 'please_enter_metal_plate';
+  static const manufacture_year = 'manufacture_year';
+  static const enter_manufacture_year = 'enter_manufacture_year';
+  static const please_enter_manufacture_year = 'please_enter_manufacture_year';
+  static const please_enter_valid_year = 'please_enter_valid_year';
+  static const license_expiry_date = 'license_expiry_date';
+  static const select_expiry_date = 'select_expiry_date';
+  static const please_select_expiry_date = 'please_select_expiry_date';
+  static const car_photo = 'car_photo';
+  static const front_license = 'front_license';
+  static const back_license = 'back_license';
+  static const tap_to_select_image = 'tap_to_select_image';
+  static const please_select_all_images = 'please_select_all_images';
+  static const loading = 'loading';
 
 }
