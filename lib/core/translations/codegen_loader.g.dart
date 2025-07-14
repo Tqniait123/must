@@ -346,7 +346,16 @@ class CodegenLoader extends AssetLoader{
   "back_license": "Back License",
   "tap_to_select_image": "Tap to select image",
   "please_select_all_images": "Please select all required images",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "car_color": "Car Color",
+  "enter_car_color": "Enter car color",
+  "please_enter_car_color": "Please enter car color",
+  "no_image_available": "No Image Available",
+  "not_specified": "Not Specified",
+  "license_documents": "License Documents",
+  "no_image": "No Image",
+  "expired": "Expired",
+  "expires_soon": "Expires Soon"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -680,7 +689,16 @@ static const Map<String,dynamic> _ar = {
   "back_license": "الرخصة الخلفية",
   "tap_to_select_image": "اضغط لاختيار الصورة",
   "please_select_all_images": "يرجى اختيار جميع الصور المطلوبة",
-  "loading": "جاري التحميل..."
+  "loading": "جاري التحميل...",
+  "car_color": "لون السيارة",
+  "enter_car_color": "أدخل لون السيارة",
+  "please_enter_car_color": "يرجى إدخال لون السيارة",
+  "no_image_available": "لا توجد صورة متاحة",
+  "not_specified": "غير محدد",
+  "license_documents": "وثائق الترخيص",
+  "no_image": "لا توجد صورة",
+  "expired": "منتهي الصلاحية",
+  "expires_soon": "تنتهي قريباً"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

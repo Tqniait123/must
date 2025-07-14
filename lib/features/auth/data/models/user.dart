@@ -42,15 +42,12 @@ class AppUser {
       isOnline: json['is_online'],
       phoneNumber: json['phone_number'],
       type: json['type'] == 'user' ? UserType.user : UserType.parkingMan,
-      cars:
-          (json['cars'] as List<dynamic>?)
-              ?.map((car) => Car.fromJson(car))
-              .toList() ??
-          [],
+      cars: (json['cars'] as List<dynamic>?)?.map((car) => Car.fromJson(car)).toList() ?? [],
       isActivated: json['is_activated'],
     );
   }
 }
+
 class Car {
   final String id;
   final String name; // Changed from model to name
@@ -60,6 +57,7 @@ class Car {
   final String? carPhoto;
   final String? frontLicense;
   final String? backLicense;
+  final String? color;
 
   const Car({
     required this.id,
@@ -70,18 +68,20 @@ class Car {
     this.carPhoto,
     this.frontLicense,
     this.backLicense,
+    this.color,
   });
 
   factory Car.fromJson(Map<String, dynamic> json) {
     return Car(
       id: json['id'].toString(),
       name: json['name'] ?? '',
-      metalPlate: json['metal_plate'] ?? '',
-      manufactureYear: json['manufacture_year'] ?? '',
-      licenseExpiryDate: json['license_expiry_date'] ?? '',
-      carPhoto: json['car_photo'],
-      frontLicense: json['front_license'],
-      backLicense: json['back_license'],
+      metalPlate: json['metal plate'] ?? '',
+      manufactureYear: json['manufacture year'] ?? '',
+      licenseExpiryDate: json['license']['expiry date'] ?? '',
+      carPhoto: json['car photo'],
+      frontLicense: json['license']['front'],
+      backLicense: json['license']['back'],
+      color: json['color'],
     );
   }
 
@@ -95,9 +95,11 @@ class Car {
       'car_photo': carPhoto,
       'front_license': frontLicense,
       'back_license': backLicense,
+      'color': color,
     };
   }
 }
+
 /// User model for the example
 class User {
   final int id;
@@ -124,11 +126,7 @@ class User {
       phone: json['phone'] ?? '',
       image: json['image'],
       points:
-          json['points'] is List
-              ? (json['points'] as List)
-                  .map((point) => PointsRecord.fromJson(point))
-                  .toList()
-              : [],
+          json['points'] is List ? (json['points'] as List).map((point) => PointsRecord.fromJson(point)).toList() : [],
     );
   }
 
@@ -171,13 +169,7 @@ class PointsRecord {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'parking': parking,
-      'points': points,
-      'equivalent money': equivalentMoney,
-      'status': status,
-      'date': date,
-    };
+    return {'parking': parking, 'points': points, 'equivalent money': equivalentMoney, 'status': status, 'date': date};
   }
 }
 
@@ -189,10 +181,7 @@ class UserData {
   UserData({required this.user, required this.accessToken});
 
   factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      user: User.fromJson(json['user']),
-      accessToken: json['access_token'] ?? '',
-    );
+    return UserData(user: User.fromJson(json['user']), accessToken: json['access_token'] ?? '');
   }
 
   Map<String, dynamic> toJson() {

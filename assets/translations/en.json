@@ -335,5 +335,14 @@
     "tap_to_select_image": "Tap to select image",
     "please_select_all_images": "Please select all required images",
 
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "car_color": "Car Color",
+    "enter_car_color": "Enter car color",
+    "please_enter_car_color": "Please enter car color",
+     "no_image_available": "No Image Available",
+    "not_specified": "Not Specified",
+    "license_documents": "License Documents",
+    "no_image": "No Image",
+    "expired": "Expired",
+    "expires_soon": "Expires Soon"
 }

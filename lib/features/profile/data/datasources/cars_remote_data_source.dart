@@ -67,7 +67,7 @@ class CarRemoteDataSourceImpl implements CarRemoteDataSource {
   @override
   Future<ApiResponse<void>> deleteCar(String token, String carId) async {
     return dioClient.request<void>(
-      method: RequestMethod.delete,
+      method: RequestMethod.get,
       '${EndPoints.deleteCar}/$carId',
       options: token.toAuthorizationOptions(),
       fromJson: (json) {},
@@ -83,6 +83,7 @@ class AddCarRequest {
   final String metalPlate;
   final String manufactureYear;
   final String licenseExpiryDate;
+  final String color;
 
   const AddCarRequest({
     required this.name,
@@ -92,6 +93,7 @@ class AddCarRequest {
     required this.metalPlate,
     required this.manufactureYear,
     required this.licenseExpiryDate,
+    required this.color,
   });
 
   Future<FormData> toFormData() async {
@@ -109,6 +111,7 @@ class AddCarRequest {
       'metal_plate': metalPlate,
       'manufacture_year': manufactureYear,
       'license_expiry_date': licenseExpiryDate,
+      'color': color,
     });
   }
 }
@@ -121,6 +124,7 @@ class UpdateCarRequest {
   final String metalPlate;
   final String manufactureYear;
   final String licenseExpiryDate;
+  final String color;
 
   const UpdateCarRequest({
     required this.name,
@@ -130,6 +134,7 @@ class UpdateCarRequest {
     required this.metalPlate,
     required this.manufactureYear,
     required this.licenseExpiryDate,
+    required this.color,
   });
 
   Future<FormData> toFormData() async {
@@ -138,6 +143,7 @@ class UpdateCarRequest {
       'metal_plate': metalPlate,
       'manufacture_year': manufactureYear,
       'license_expiry_date': licenseExpiryDate,
+      'color': color,
     };
 
     // Only add files if they are provided (for updates)

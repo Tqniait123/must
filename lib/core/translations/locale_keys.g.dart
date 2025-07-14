@@ -332,5 +332,14 @@ abstract class  LocaleKeys {
   static const tap_to_select_image = 'tap_to_select_image';
   static const please_select_all_images = 'please_select_all_images';
   static const loading = 'loading';
+  static const car_color = 'car_color';
+  static const enter_car_color = 'enter_car_color';
+  static const please_enter_car_color = 'please_enter_car_color';
+  static const no_image_available = 'no_image_available';
+  static const not_specified = 'not_specified';
+  static const license_documents = 'license_documents';
+  static const no_image = 'no_image';
+  static const expired = 'expired';
+  static const expires_soon = 'expires_soon';
 
 }

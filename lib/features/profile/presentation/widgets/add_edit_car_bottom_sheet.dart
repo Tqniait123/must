@@ -31,6 +31,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
   late TextEditingController _plateNumberController;
   late TextEditingController _manufactureYearController;
   late TextEditingController _licenseExpiryDateController;
+  late TextEditingController _colorController;
 
   // Image files
   File? _carPhoto;
@@ -47,6 +48,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     _plateNumberController = TextEditingController(text: widget.car?.metalPlate ?? '');
     _manufactureYearController = TextEditingController(text: widget.car?.manufactureYear ?? '');
     _licenseExpiryDateController = TextEditingController(text: widget.car?.licenseExpiryDate ?? '');
+    _colorController = TextEditingController(text: widget.car?.color ?? '');
 
     // Parse existing expiry date if editing
     if (widget.car?.licenseExpiryDate != null && widget.car!.licenseExpiryDate.isNotEmpty) {
@@ -64,6 +66,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     _plateNumberController.dispose();
     _manufactureYearController.dispose();
     _licenseExpiryDateController.dispose();
+    _colorController.dispose();
     super.dispose();
   }
 
@@ -132,6 +135,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
           metalPlate: _plateNumberController.text.trim(),
           manufactureYear: _manufactureYearController.text.trim(),
           licenseExpiryDate: _licenseExpiryDateController.text.trim(),
+          color: _colorController.text.trim(),
           carPhoto: _carPhoto,
           frontLicense: _frontLicense,
           backLicense: _backLicense,
@@ -155,6 +159,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
           metalPlate: _plateNumberController.text.trim(),
           manufactureYear: _manufactureYearController.text.trim(),
           licenseExpiryDate: _licenseExpiryDateController.text.trim(),
+          color: _colorController.text.trim(),
         );
 
         CarCubit.get(context).addCar(addRequest);
@@ -323,6 +328,21 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
                       final currentYear = DateTime.now().year;
                       if (year == null || year < 1900 || year > currentYear + 1) {
                         return LocaleKeys.please_enter_valid_year.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Car Color
+                  CustomTextFormField(
+                    controller: _colorController,
+                    title: LocaleKeys.car_color.tr(),
+                    hint: LocaleKeys.enter_car_color.tr(),
+                    margin: 0,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return LocaleKeys.please_enter_car_color.tr();
                       }
                       return null;
                     },
