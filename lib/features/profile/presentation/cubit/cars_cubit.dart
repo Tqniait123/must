@@ -9,6 +9,8 @@ part 'cars_state.dart';
 
 class CarCubit extends Cubit<CarState> {
   final CarRepo carRepo;
+  List<Car> _currentCars = [];
+
   CarCubit(this.carRepo) : super(CarInitial());
 
   static CarCubit get(context) => BlocProvider.of<CarCubit>(context);
@@ -17,7 +19,10 @@ class CarCubit extends Cubit<CarState> {
     try {
       emit(CarsLoading());
       final response = await carRepo.getMyCars();
-      response.fold((cars) => emit(CarsSuccess(cars)), (error) => emit(CarsError(error.message)));
+      response.fold((cars) {
+        _currentCars = List.from(cars);
+        emit(CarsSuccess(cars));
+      }, (error) => emit(CarsError(error.message)));
     } on AppError catch (e) {
       emit(CarsError(e.message));
     } catch (e) {
@@ -41,7 +46,13 @@ class CarCubit extends Cubit<CarState> {
     try {
       emit(AddCarLoading());
       final response = await carRepo.addCar(request);
-      response.fold((car) => emit(AddCarSuccess(car)), (error) => emit(AddCarError(error.message)));
+      response.fold((newCar) {
+        // Optimistically add the new car to the list
+        _currentCars.add(newCar);
+        emit(AddCarSuccess(newCar));
+        // Update the cars list with the new car included
+        emit(CarsSuccess(List.from(_currentCars)));
+      }, (error) => emit(AddCarError(error.message)));
     } on AppError catch (e) {
       emit(AddCarError(e.message));
     } catch (e) {
@@ -53,7 +64,16 @@ class CarCubit extends Cubit<CarState> {
     try {
       emit(UpdateCarLoading());
       final response = await carRepo.updateCar(carId, request);
-      response.fold((car) => emit(UpdateCarSuccess(car)), (error) => emit(UpdateCarError(error.message)));
+      response.fold((updatedCar) {
+        // Optimistically update the car in the list
+        final index = _currentCars.indexWhere((car) => car.id == carId);
+        if (index != -1) {
+          _currentCars[index] = updatedCar;
+        }
+        emit(UpdateCarSuccess(updatedCar));
+        // Update the cars list with the updated car
+        emit(CarsSuccess(List.from(_currentCars)));
+      }, (error) => emit(UpdateCarError(error.message)));
     } on AppError catch (e) {
       emit(UpdateCarError(e.message));
     } catch (e) {
@@ -63,9 +83,26 @@ class CarCubit extends Cubit<CarState> {
 
   Future<void> deleteCar(String carId) async {
     try {
-      emit(DeleteCarLoading());
+      // Optimistically remove the car from the list immediately
+      final carToDelete = _currentCars.firstWhere((car) => car.id == carId);
+      _currentCars.removeWhere((car) => car.id == carId);
+
+      // Update UI immediately
+      emit(CarsSuccess(List.from(_currentCars)));
+
       final response = await carRepo.deleteCar(carId);
-      response.fold((success) => emit(DeleteCarSuccess()), (error) => emit(DeleteCarError(error.message)));
+      response.fold(
+        (success) {
+          // emit(DeleteCarSuccess());
+          // Keep the optimistic update - car already removed from list
+        },
+        (error) {
+          // Rollback: add the car back if deletion failed
+          _currentCars.add(carToDelete);
+          emit(DeleteCarError(error.message));
+          emit(CarsSuccess(List.from(_currentCars)));
+        },
+      );
     } on AppError catch (e) {
       emit(DeleteCarError(e.message));
     } catch (e) {
@@ -73,8 +110,11 @@ class CarCubit extends Cubit<CarState> {
     }
   }
 
-  // Helper method to refresh cars list after add/update/delete
+  // Helper method to manually refresh if needed
   Future<void> refreshCars() async {
     await getMyCars();
   }
+
+  // Get current cars list
+  List<Car> get currentCars => List.from(_currentCars);
 }

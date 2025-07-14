@@ -18,7 +18,7 @@ class CarsSuccess extends CarState {
   const CarsSuccess(this.cars);
 
   @override
-  List<Object> get props => [cars];
+  List<Object> get props => [identityHashCode(this)];
 }
 
 class CarsError extends CarState {

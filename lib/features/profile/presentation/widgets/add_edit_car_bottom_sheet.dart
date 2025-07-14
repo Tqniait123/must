@@ -240,15 +240,15 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
           if (state is AddCarSuccess) {
             Navigator.pop(context);
             widget.onSuccess?.call();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(LocaleKeys.car_added_successfully.tr()), backgroundColor: Colors.green),
-            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(content: Text(LocaleKeys.car_added_successfully.tr()), backgroundColor: Colors.green),
+            // );
           } else if (state is UpdateCarSuccess) {
             Navigator.pop(context);
             widget.onSuccess?.call();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(LocaleKeys.car_updated_successfully.tr()), backgroundColor: Colors.green),
-            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(content: Text(LocaleKeys.car_updated_successfully.tr()), backgroundColor: Colors.green),
+            // );
           } else if (state is AddCarError) {
             ScaffoldMessenger.of(
               context,

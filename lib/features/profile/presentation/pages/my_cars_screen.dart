@@ -5,6 +5,7 @@ import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
@@ -22,6 +23,9 @@ class MyCarsScreen extends StatefulWidget {
 }
 
 class _MyCarsScreenState extends State<MyCarsScreen> {
+  List<Car> displayedCars = [];
+  bool isInitialLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +34,7 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
   }
 
   void _showAddEditCarBottomSheet({Car? car}) {
-    final carCubit = CarCubit.get(context); // Get it from the current context
+    final carCubit = CarCubit.get(context);
 
     showModalBottomSheet(
       context: context,
@@ -38,11 +42,12 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
       backgroundColor: Colors.transparent,
       builder:
           (context) => BlocProvider.value(
-            value: carCubit, // Use the stored reference
+            value: carCubit,
             child: AddEditCarBottomSheet(
               car: car,
               onSuccess: () {
-                carCubit.getMyCars(); // Use the stored reference here too
+                // The cubit handles optimistic updates automatically
+                // No need to navigate or refresh anything
               },
             ),
           ),
@@ -119,14 +124,39 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: CarWidget.editable(
-            car: cars[index],
-            onEdit: () => _showAddEditCarBottomSheet(car: cars[index]),
-            onDelete: () => _showDeleteConfirmationBottomSheet(cars[index]),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: CarWidget.editable(
+              key: ValueKey(cars[index].id),
+              car: cars[index],
+              onEdit: () => _showAddEditCarBottomSheet(car: cars[index]),
+              onDelete: () => _showDeleteConfirmationBottomSheet(cars[index]),
+            ),
           ),
         );
       },
     );
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    if (!mounted) return;
+    switch (isError) {
+      case true:
+        showErrorToast(context, message);
+        break;
+      case false:
+        showSuccessToast(context, message);
+        break;
+    }
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(message),
+    //     backgroundColor: isError ? Colors.red : Colors.green,
+    //     behavior: SnackBarBehavior.floating,
+    //     margin: EdgeInsets.all(16),
+    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    //   ),
+    // );
   }
 
   @override
@@ -148,32 +178,44 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
             Expanded(
               child: BlocConsumer<CarCubit, CarState>(
                 listener: (context, state) {
-                  if (state is DeleteCarSuccess) {
-                    // Show success message and refresh cars
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(LocaleKeys.car_deleted_successfully.tr()), backgroundColor: Colors.green),
-                    );
-                    CarCubit.get(context).getMyCars();
+                  // Handle success/error messages without affecting the main UI
+                  if (state is AddCarSuccess) {
+                    _showSnackBar(LocaleKeys.car_added_successfully.tr());
+                  } else if (state is AddCarError) {
+                    _showSnackBar(state.message, isError: true);
+                  } else if (state is UpdateCarSuccess) {
+                    _showSnackBar(LocaleKeys.car_updated_successfully.tr());
+                  } else if (state is UpdateCarError) {
+                    _showSnackBar(state.message, isError: true);
+                  } else if (state is DeleteCarSuccess) {
+                    _showSnackBar(LocaleKeys.car_deleted_successfully.tr());
                   } else if (state is DeleteCarError) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
+                    _showSnackBar(state.message, isError: true);
                   }
                 },
                 builder: (context, state) {
-                  if (state is CarsLoading) {
+                  // Handle cars list updates
+                  if (state is CarsSuccess) {
+                    displayedCars = state.cars;
+                    isInitialLoading = false;
+                  }
+
+                  // Show initial loading only
+                  if (isInitialLoading && state is CarsLoading) {
                     return _buildLoadingState();
-                  } else if (state is CarsSuccess) {
-                    if (state.cars.isEmpty) {
-                      return _buildEmptyState();
-                    }
-                    return _buildCarsList(state.cars);
-                  } else if (state is CarsError) {
+                  }
+
+                  // Show error state only for initial load failures
+                  if (isInitialLoading && state is CarsError) {
                     return _buildErrorState(state.message);
                   }
 
-                  // Initial state or other states
-                  return _buildEmptyState();
+                  // Show cars list or empty state
+                  if (displayedCars.isEmpty) {
+                    return _buildEmptyState();
+                  }
+
+                  return _buildCarsList(displayedCars);
                 },
               ),
             ),
