@@ -9,6 +9,8 @@ import 'package:must_invest/features/explore/data/datasources/explore_remote_dat
 import 'package:must_invest/features/explore/data/repositories/explore_repo.dart';
 import 'package:must_invest/features/history/data/datasources/history_remote_data_source.dart';
 import 'package:must_invest/features/history/data/repositories/history_repo.dart';
+import 'package:must_invest/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:must_invest/features/home/data/repositories/home_repo.dart';
 import 'package:must_invest/features/notifications/data/datasources/notifications_remote_data_source.dart';
 import 'package:must_invest/features/notifications/data/repositories/notifications_repo.dart';
 import 'package:must_invest/features/profile/data/datasources/cars_remote_data_source.dart';
@@ -40,6 +42,7 @@ Future<void> initLocator(SharedPreferences sharedPreferences) async {
   sl.registerLazySingleton<PagesRepo>(() => PagesRepoImpl(sl(), sl()));
   sl.registerLazySingleton<CarRepo>(() => CarRepoImpl(sl(), sl()));
   sl.registerLazySingleton<HistoryRepo>(() => HistoryRepoImpl(sl(), sl()));
+  sl.registerLazySingleton<HomeRepo>(() => HomeRepoImpl(sl(), sl()));
 
   //* Datasources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
@@ -48,4 +51,5 @@ Future<void> initLocator(SharedPreferences sharedPreferences) async {
   sl.registerLazySingleton<PagesRemoteDataSource>(() => PagesRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<CarRemoteDataSource>(() => CarRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<HistoryRemoteDataSource>(() => HistoryRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<HomeRemoteDataSource>(() => HomeRemoteDataSourceImpl(sl()));
 }

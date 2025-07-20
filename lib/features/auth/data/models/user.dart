@@ -14,6 +14,7 @@ class AppUser {
   final String? phoneNumber;
   final UserType type;
   final List<Car> cars;
+  final int points;
 
   const AppUser({
     required this.id,
@@ -29,6 +30,7 @@ class AppUser {
     required this.type,
     required this.cars,
     this.isActivated = false,
+    this.points = 0,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class AppUser {
       type: json['type'] == 'user' ? UserType.user : UserType.parkingMan,
       cars: (json['cars'] as List<dynamic>?)?.map((car) => Car.fromJson(car)).toList() ?? [],
       isActivated: json['is_activated'],
+      points: json['points'],
     );
   }
 }
@@ -107,9 +110,9 @@ class User {
   final String email;
   final String phone;
   final String? image;
-  final List<PointsRecord> points;
+  final int points;
 
-  User({
+  const User._({
     required this.id,
     required this.name,
     required this.email,
@@ -118,27 +121,30 @@ class User {
     required this.points,
   });
 
+  User copyWith({int? id, String? name, String? email, String? phone, String? image, int? points}) {
+    return User._(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      image: image ?? this.image,
+      points: points ?? this.points,
+    );
+  }
+
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+    return User._(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
       image: json['image'],
-      points:
-          json['points'] is List ? (json['points'] as List).map((point) => PointsRecord.fromJson(point)).toList() : [],
+      points: json['points'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'image': image,
-      'points': points.map((point) => point.toJson()).toList(),
-    };
+    return {'id': id, 'name': name, 'email': email, 'phone': phone, 'image': image, 'points': points};
   }
 }
 

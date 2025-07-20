@@ -346,5 +346,6 @@
     "expired": "Expired",
     "expires_soon": "Expires Soon",
     "no_history_found": "No history found",
-    "no_cars_found": "No cars found"
+    "no_cars_found": "No cars found",
+    "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points"
 }

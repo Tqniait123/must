@@ -14,6 +14,11 @@ class UserCubit extends Cubit<UserState> {
     emit(UserAuthenticated(user));
   }
 
+  void updateUserPoints(int points) {
+    currentUser = currentUser!.copyWith(points: points);
+    emit(UserAuthenticated(currentUser!));
+  }
+
   void removeCurrentUser() {
     currentUser = null;
     emit(UserUnauthenticated());

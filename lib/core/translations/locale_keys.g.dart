@@ -343,5 +343,6 @@ abstract class  LocaleKeys {
   static const expires_soon = 'expires_soon';
   static const no_history_found = 'no_history_found';
   static const no_cars_found = 'no_cars_found';
+  static const points_added_successfully = 'points_added_successfully';
 
 }

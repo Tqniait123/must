@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
+import 'package:must_invest/features/home/data/models/charge_points_response.dart';
 
 import '../datasources/home_remote_data_source.dart';
 
@@ -21,7 +22,7 @@ class HomeRepoImpl implements HomeRepo {
     try {
       final result = await _remoteDataSource.chargePoints(equivalentMoney, token ?? '');
       if (result.isSuccess) {
-        return Left((result.data as Map<String, dynamic>)['points']);
+        return Left((result.data as ChargePointsResponse).points.toDouble());
       } else {
         return Right(AppError(message: result.errorMessage, apiResponse: result, type: ErrorType.api));
       }

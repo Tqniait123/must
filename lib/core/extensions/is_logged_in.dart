@@ -7,5 +7,6 @@ extension UserCubitX on BuildContext {
 
   bool get isLoggedIn => userCubit.isLoggedIn();
   void setCurrentUser(User user) => userCubit.setCurrentUser(user);
+  void updateUserPoints(int points) => userCubit.updateUserPoints(points);
   User get user => UserCubit.get(this).currentUser!;
 }

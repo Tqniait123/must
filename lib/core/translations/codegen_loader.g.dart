@@ -357,7 +357,8 @@ class CodegenLoader extends AssetLoader{
   "expired": "Expired",
   "expires_soon": "Expires Soon",
   "no_history_found": "No history found",
-  "no_cars_found": "No cars found"
+  "no_cars_found": "No cars found",
+  "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -702,7 +703,8 @@ static const Map<String,dynamic> _ar = {
   "expired": "منتهي الصلاحية",
   "expires_soon": "تنتهي قريباً",
   "no_history_found": "لا يوجد سجل",
-  "no_cars_found": "لا يوجد سيارات"
+  "no_cars_found": "لا يوجد سيارات",
+  "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
