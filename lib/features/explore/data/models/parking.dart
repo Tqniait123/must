@@ -18,6 +18,7 @@ class Parking {
   final Employers employers;
   final Floors floors;
   final String points;
+  final bool isBusy;
 
   Parking({
     required this.id,
@@ -39,6 +40,7 @@ class Parking {
     required this.employers,
     required this.floors,
     required this.points,
+    this.isBusy = false,
   });
 
   factory Parking.fromJson(Map<String, dynamic> json) {
@@ -62,6 +64,7 @@ class Parking {
       employers: Employers.fromJson(json['employers']),
       floors: Floors.fromJson(json['floors']),
       points: json['points'],
+      isBusy: json['is_busy'] ?? false,
     );
   }
 

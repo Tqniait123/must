@@ -21,6 +21,7 @@ import 'package:must_invest/features/auth/presentation/pages/register_step_three
 import 'package:must_invest/features/auth/presentation/pages/register_step_two.dart';
 import 'package:must_invest/features/auth/presentation/pages/reset_password.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
+import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.dart';
 import 'package:must_invest/features/explore/presentation/pages/explore_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/parking_details_screen.dart';
@@ -166,7 +167,7 @@ class AppRouter {
         path: Routes.maps,
         builder: (context, state) {
           // Return the MapsScreen widget
-          return MapScreen();
+          return BlocProvider(create: (BuildContext context) => ExploreCubit(sl()), child: MapScreen());
         },
       ),
       GoRoute(
