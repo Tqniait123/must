@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/profile/data/models/contact_us_model.dart';
-import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
-import 'package:must_invest/features/profile/presentation/cubit/profile_state.dart';
+import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
+import 'package:must_invest/features/profile/presentation/cubit/pages_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsScreen extends StatefulWidget {

@@ -32,7 +32,7 @@ import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/profile/presentation/cubit/cars_cubit.dart';
-import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
 import 'package:must_invest/features/profile/presentation/pages/about_us_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/contact_us_screen.dart';
 import 'package:must_invest/features/profile/presentation/pages/edit_profile_screen.dart';
@@ -208,7 +208,14 @@ class AppRouter {
         path: Routes.editProfile,
         builder: (context, state) {
           // Return the EditProfileScreen widget
-          return EditProfileScreen();
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => CountriesCubit(sl())),
+              BlocProvider(create: (context) => GovernoratesCubit(sl())),
+              BlocProvider(create: (context) => CitiesCubit(sl())),
+            ],
+            child: EditProfileScreen(),
+          );
         },
       ),
       GoRoute(

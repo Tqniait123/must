@@ -13,6 +13,7 @@ class EndPoints {
   static const String resendOtp = 'resend_otp';
   static const String forgetPassword = 'forgot_password';
   static const String resetPassword = 'reset_password';
+  static const String updateProfile = 'update_profile';
   static const String home = 'home';
   static const String countries = 'countries';
   static String governorates(int id) => 'governorates/$id';

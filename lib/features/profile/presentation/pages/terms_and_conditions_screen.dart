@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/profile/data/models/terms_and_conditions_model.dart';
-import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
-import 'package:must_invest/features/profile/presentation/cubit/profile_state.dart';
+import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
+import 'package:must_invest/features/profile/presentation/cubit/pages_state.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
