@@ -6,7 +6,6 @@ import 'package:must_invest/core/extensions/flipped_for_lcale.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/static/constants.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -47,7 +46,8 @@ class ProfileScreen extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      CircleAvatar(radius: 43, backgroundImage: NetworkImage(Constants.placeholderProfileImage)),
+                      if (context.user.image != null && context.user.image!.isNotEmpty)
+                        CircleAvatar(radius: 43, backgroundImage: NetworkImage(context.user.image ?? '')),
                       24.gap,
                       Expanded(
                         child: Column(

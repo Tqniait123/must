@@ -16,6 +16,7 @@ import 'package:must_invest/core/utils/dialogs/selection_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/inputs/image_picker_avatar.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/city.dart';
 import 'package:must_invest/features/auth/data/models/country.dart';
@@ -300,36 +301,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     // Profile Image Section
                     Center(
-                      child: Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
-                            backgroundImage: profileImage != null ? MemoryImage(profileImage!.bytes!) : null,
-                            child: profileImage == null ? Icon(Icons.person, size: 50, color: AppColors.primary) : null,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: InkWell(
-                              onTap:
-                                  () => _pickFile((file) {
-                                    setState(() {
-                                      profileImage = file;
-                                    });
-                                  }),
-                              child: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 2),
-                                ),
-                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: ImagePickerAvatar(
+                        initialImage: context.user.image,
+                        pickedImage: profileImage,
+                        onPick: (file) {
+                          setState(() {
+                            profileImage = file;
+                          });
+                        },
                       ),
                     ),
                     28.gap,
