@@ -2,21 +2,27 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/services/qr_code_service.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
+import 'package:must_invest/features/profile/data/models/parking_process_model.dart';
+import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
 
 class ScanQrCodeScreen extends StatefulWidget {
@@ -34,7 +40,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
   bool _isProcessing = false;
   String? _scannedData;
   bool _flashOn = false;
-  late Car? selectedCar;
+  Car? selectedCar;
   late bool isEmployee;
 
   @override
@@ -598,27 +604,33 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                               ),
                               16.gap,
                               Expanded(
-                                child: SizedBox(
-                                  height: 52,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      _handleEmployeeConfirmation(employeeData);
+                                child: BlocProvider(
+                                  create: (BuildContext context) => ProfileCubit(sl()),
+                                  child: BlocConsumer<ProfileCubit, ProfileState>(
+                                    listener: (BuildContext context, ProfileState state) {
+                                      if (state is StartParkingSuccess) {
+                                        Navigator.of(context).pop();
+                                        _handleEmployeeConfirmation(employeeData);
+                                      }
+                                      if (state is StartParkingError) {
+                                        showErrorToast(context, state.message);
+                                      }
                                     },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.check_circle, size: 20),
-                                        8.gap,
-                                        Text('تأكيد', style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
-                                      ],
-                                    ),
+                                    builder:
+                                        (BuildContext context, ProfileState state) => SizedBox(
+                                          child: CustomElevatedButton(
+                                            loading: state is StartParkingLoading,
+                                            onPressed: () {
+                                              ProfileCubit.get(context).startParking(
+                                                ParkingProcessModel(
+                                                  car: selectedCar!,
+                                                  employerId: employeeData.employeeId.toString(),
+                                                ),
+                                              );
+                                            },
+                                            title: 'تأكيد',
+                                          ),
+                                        ),
                                   ),
                                 ),
                               ),
@@ -915,9 +927,6 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
       icon: Icons.check_circle,
       color: Colors.green,
     );
-
-    // TODO: إرسال البيانات للداتابيز
-    // await saveCarEntryToDatabase(userData);
   }
 
   // معالجة تأكيد الموظف (لليوزر)
@@ -1093,6 +1102,12 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
     });
   }
 
+  void _onCarChanged(Car newCar) {
+    setState(() {
+      selectedCar = newCar;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1111,8 +1126,8 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
 
             16.gap,
 
-            // Car Selection Widget (only for employees)
-            if (isEmployee && selectedCar != null) ...[
+            // Car Selection Widget (for both employee and user)
+            if (selectedCar != null) ...[
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 child: CarWidget.custom(
@@ -1124,70 +1139,55 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                     iconColor: AppColors.primary,
                     iconAsset: AppIcons.changeIc,
                     onPressed: () {
-                      showAllCarsBottomSheet(
-                        context,
-                        title: LocaleKeys.select_car.tr(),
-                        onChooseCar: (car) {
-                          setState(() {
-                            selectedCar = car;
-                          });
-                        },
-                      );
+                      showAllCarsBottomSheet(context, title: LocaleKeys.select_car.tr(), onChooseCar: _onCarChanged);
                     },
                   ),
                 ).withPressEffect(
                   onTap: () {
-                    showAllCarsBottomSheet(
-                      context,
-                      title: LocaleKeys.select_car.tr(),
-                      onChooseCar: (car) {
-                        setState(() {
-                          selectedCar = car;
-                        });
-                      },
-                    );
+                    showAllCarsBottomSheet(context, title: LocaleKeys.select_car.tr(), onChooseCar: _onCarChanged);
                   },
                 ),
               ),
               16.gap,
-            ],
-
-            // Instructions based on user type
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isEmployee ? Colors.green.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isEmployee ? Colors.green.withOpacity(0.3) : Colors.blue.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      isEmployee ? Icons.badge : Icons.person,
-                      color: isEmployee ? Colors.green : Colors.blue,
-                      size: 20,
+            ] else ...[
+              // Instructions when no car is selected
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isEmployee ? Colors.green.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isEmployee ? Colors.green.withOpacity(0.3) : Colors.blue.withOpacity(0.3),
+                      width: 1,
                     ),
-                    12.gap,
-                    Expanded(
-                      child: Text(
-                        isEmployee ? 'اسكان QR العميل عشان تشوف بيانات العربية' : 'اسكان QR الموظف عشان تعرف مين دخلك',
-                        style: context.bodyMedium.copyWith(
-                          color: isEmployee ? Colors.green : Colors.blue,
-                          fontWeight: FontWeight.w500,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isEmployee ? Icons.badge : Icons.person,
+                        color: isEmployee ? Colors.green : Colors.blue,
+                        size: 20,
+                      ),
+                      12.gap,
+                      Expanded(
+                        child: Text(
+                          isEmployee
+                              ? 'اسكان QR العميل عشان تشوف بيانات العربية'
+                              : 'اسكان QR الموظف عشان تعرف مين دخلك',
+                          style: context.bodyMedium.copyWith(
+                            color: isEmployee ? Colors.green : Colors.blue,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-            24.gap,
+              16.gap,
+            ],
 
             // QR Scanner Section
             Expanded(

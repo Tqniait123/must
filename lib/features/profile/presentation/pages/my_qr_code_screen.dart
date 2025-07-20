@@ -7,6 +7,7 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/services/qr_code_service.dart';
 import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -21,11 +22,14 @@ import 'package:must_invest/features/auth/data/models/payment_request_model.dart
 import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
-import 'package:qr_flutter/qr_flutter.dart'; // Add this dependency
+import 'package:qr_flutter/qr_flutter.dart';
+// Import the ParkingQrService
 
 class MyQrCodeScreen extends StatefulWidget {
   final Car car;
-  const MyQrCodeScreen({super.key, required this.car});
+  final User? user; // Add user parameter to get user info
+
+  const MyQrCodeScreen({super.key, required this.car, this.user});
 
   @override
   State<MyQrCodeScreen> createState() => _MyQrCodeScreenState();
@@ -34,14 +38,15 @@ class MyQrCodeScreen extends StatefulWidget {
 class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
   bool _isLoading = true;
   bool _isRegenerating = false;
-  String _userId = '';
   String _qrData = '';
   late Car selectedCar;
+  User? currentUser;
 
   @override
   void initState() {
     super.initState();
     selectedCar = widget.car;
+    currentUser = widget.user;
     _generateInitialQrCode();
   }
 
@@ -53,7 +58,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
     // Simulate loading delay
     await Future.delayed(const Duration(seconds: 2));
 
-    // Generate user ID and QR data
+    // Generate QR code using the service
     _generateQrCode();
 
     setState(() {
@@ -62,12 +67,28 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
   }
 
   void _generateQrCode() {
-    // Simulate user ID generation (replace with actual user ID from your auth system)
-    _userId = 'USER_${Random().nextInt(999999).toString().padLeft(6, '0')}';
+    try {
+      // Get user info (you might need to get this from your auth service)
+      final userId = currentUser?.id ?? 'USER_${Random().nextInt(999999).toString().padLeft(6, '0')}';
+      final userName = currentUser?.name ?? 'Unknown User';
 
-    // Create QR data with user information
-    _qrData =
-        'must_invest://user/$_userId?timestamp=${DateTime.now().millisecondsSinceEpoch}';
+      // Generate QR code using ParkingQrService
+      _qrData = ParkingQrService.generateUserQr(
+        userId: userId.toString(),
+        userName: userName,
+        carId: selectedCar.id ?? selectedCar.hashCode.toString(),
+        carName: selectedCar.name ?? 'Unknown Car',
+        metalPlate: selectedCar.metalPlate ?? 'No Plate',
+        carColor: selectedCar.color,
+      );
+    } catch (e) {
+      // Handle error
+      print('Error generating QR code: $e');
+
+      // Fallback to simple QR data
+      _qrData =
+          'must_invest://user/${currentUser?.id ?? 'unknown'}?car=${selectedCar.id}&timestamp=${DateTime.now().millisecondsSinceEpoch}';
+    }
   }
 
   Future<void> _regenerateQrCode() async {
@@ -85,14 +106,21 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
       _isRegenerating = false;
     });
 
-    // // Show success message
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text(LocaleKeys.qr_code_regenerated.tr()),
-    //     backgroundColor: AppColors.primary,
-    //     duration: const Duration(seconds: 2),
-    //   ),
-    // );
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم تجديد رمز الاستجابة السريعة بنجاح'),
+        backgroundColor: AppColors.primary,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _onCarChanged(Car newCar) {
+    setState(() {
+      selectedCar = newCar;
+    });
+    _regenerateQrCode();
   }
 
   @override
@@ -113,19 +141,14 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
                 pointsEquivalent: 150,
               ),
               onApprove: () {
-                // هتعمل ايه لما يوافق
                 print("تمت الموافقة على الدفع ✅");
               },
               onReject: (reason) {
-                // هتعمل ايه لما يرفض
                 print("تم رفض الدفع ❌ بسبب: $reason");
               },
             );
           },
-          label: Text(
-            'Simulate Payment Request',
-            style: context.bodyMedium.s8.copyWith(color: Colors.white),
-          ),
+          label: Text('Simulate Payment Request', style: context.bodyMedium.s8.copyWith(color: Colors.white)),
         ),
       ),
       body: SafeArea(
@@ -136,14 +159,8 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomBackButton(),
-                Text(
-                  LocaleKeys.my_qr.tr(),
-                  style: context.titleLarge.copyWith(),
-                ),
-                NotificationsButton(
-                  color: Color(0xffEAEAF3),
-                  iconColor: AppColors.primary,
-                ),
+                Text(LocaleKeys.my_qr.tr(), style: context.titleLarge.copyWith()),
+                NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
               ],
             ),
 
@@ -152,6 +169,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Car Selection Widget
                   CarWidget.custom(
                     car: selectedCar,
                     trailing: CustomIconButton(
@@ -160,39 +178,22 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
                       color: Color(0xffEAEAF3),
                       iconColor: AppColors.primary,
                       iconAsset: AppIcons.changeIc,
-
                       onPressed: () {
-                        showAllCarsBottomSheet(
-                          context,
-                          onChooseCar: (car) {
-                            setState(() {
-                              selectedCar = car;
-                              _regenerateQrCode();
-                            });
-                          },
-                        );
+                        showAllCarsBottomSheet(context, onChooseCar: _onCarChanged);
                       },
                     ),
                   ).withPressEffect(
                     onTap: () {
-                      showAllCarsBottomSheet(
-                        context,
-                        onChooseCar: (car) {
-                          setState(() {
-                            selectedCar = car;
-                            _regenerateQrCode();
-                          });
-                        },
-                      );
+                      showAllCarsBottomSheet(context, onChooseCar: _onCarChanged);
                     },
                   ),
                   24.gap,
-                  Center(
-                    child:
-                        _isLoading
-                            ? _buildLoadingWidget()
-                            : _buildQrCodeWidget(),
-                  ),
+
+                  // QR Code Display
+                  Center(child: _isLoading ? _buildLoadingWidget() : _buildQrCodeWidget()),
+
+                  // Car Info Display
+                  if (!_isLoading) ...[16.gap, _buildCarInfoWidget()],
                 ],
               ),
             ),
@@ -218,30 +219,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
             child: CustomElevatedButton(
               loading: _isRegenerating,
               onPressed: _isRegenerating ? null : _regenerateQrCode,
-              title:
-                  _isRegenerating
-                      ? LocaleKeys.generating.tr()
-                      : LocaleKeys.re_generate.tr(),
-              // child:
-              //     _isRegenerating
-              //         ? Row(
-              //           mainAxisSize: MainAxisSize.min,
-              //           children: [
-              //             SizedBox(
-              //               width: 16,
-              //               height: 16,
-              //               child: CircularProgressIndicator(
-              //                 strokeWidth: 2,
-              //                 valueColor: AlwaysStoppedAnimation<Color>(
-              //                   Colors.white,
-              //                 ),
-              //               ),
-              //             ),
-              //             8.gap,
-              //             Text(LocaleKeys.generating.tr()),
-              //           ],
-              //         )
-              //         : null,
+              title: _isRegenerating ? LocaleKeys.generating.tr() : LocaleKeys.re_generate.tr(),
             ),
           ),
         ],
@@ -265,14 +243,12 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
+                CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
                 16.gap,
-                // Text(
-                //   LocaleKeys.generating_qr_code.tr(),
-                //   style: context.bodyMedium.copyWith(color: Colors.grey[600]),
-                // ),
+                Text(
+                  'جاري إنشاء رمز الاستجابة السريعة...',
+                  style: context.bodyMedium.copyWith(color: Colors.grey[600]),
+                ),
               ],
             ),
           ),
@@ -291,13 +267,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))],
           ),
           child: QrImageView(
             data: _qrData,
@@ -305,54 +275,57 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
             size: 250.0,
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
-            dataModuleStyle: QrDataModuleStyle(
-              dataModuleShape: QrDataModuleShape.circle,
-              color: AppColors.primary,
-            ),
+            dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.circle, color: AppColors.primary),
             eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.circle),
             errorCorrectionLevel: QrErrorCorrectLevel.M,
-            embeddedImage: AssetImage(
-              AppImages.logo,
-            ), // Optional: Add your app logo
+            embeddedImage: AssetImage(AppImages.logo),
             embeddedImageStyle: QrEmbeddedImageStyle(size: Size(60, 60)),
           ),
         ),
+      ],
+    );
+  }
 
-        24.gap,
+  Widget _buildCarInfoWidget() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.directions_car, color: AppColors.primary, size: 20),
+              8.gap,
+              Text(
+                'معلومات السيارة',
+                style: context.bodyMedium.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          12.gap,
+          _buildInfoRow('الاسم:', selectedCar.name ?? 'غير محدد'),
+          ...[4.gap, _buildInfoRow('رقم اللوحة:', selectedCar.metalPlate)],
+          if (selectedCar.color != null) ...[4.gap, _buildInfoRow('اللون:', selectedCar.color!)],
+        ],
+      ),
+    );
+  }
 
-        // // User ID Display
-        // Container(
-        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        //   decoration: BoxDecoration(
-        //     color: AppColors.primary.withOpacity(0.1),
-        //     borderRadius: BorderRadius.circular(12),
-        //   ),
-        //   child: Row(
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       Icon(Icons.person_outline, color: AppColors.primary, size: 20),
-        //       8.gap,
-        //       Text(
-        //         'ID: $_userId',
-        //         style: context.bodyMedium.copyWith(
-        //           color: AppColors.primary,
-        //           fontWeight: FontWeight.w600,
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        16.gap,
-
-        // Instructions
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 40),
-        //   child: Text(
-        //     LocaleKeys.qr_code_instructions.tr(),
-        //     textAlign: TextAlign.center,
-        //     style: context.bodySmall.copyWith(color: Colors.grey[600]),
-        //   ),
-        // ),
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 80,
+          child: Text(label, style: context.bodySmall.copyWith(color: Colors.grey[600], fontWeight: FontWeight.w500)),
+        ),
+        Expanded(child: Text(value, style: context.bodySmall.copyWith(color: Colors.grey[800]))),
       ],
     );
   }
