@@ -341,5 +341,7 @@ abstract class  LocaleKeys {
   static const no_image = 'no_image';
   static const expired = 'expired';
   static const expires_soon = 'expires_soon';
+  static const no_history_found = 'no_history_found';
+  static const no_cars_found = 'no_cars_found';
 
 }

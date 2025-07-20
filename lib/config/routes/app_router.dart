@@ -25,6 +25,7 @@ import 'package:must_invest/features/explore/presentation/pages/explore_screen.d
 import 'package:must_invest/features/explore/presentation/pages/map_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/parking_details_screen.dart';
 import 'package:must_invest/features/explore/presentation/pages/routing_parking_screen.dart';
+import 'package:must_invest/features/history/presentation/cubit/history_cubit.dart';
 import 'package:must_invest/features/history/presentation/pages/history_screen.dart';
 import 'package:must_invest/features/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen.dart';
@@ -221,7 +222,7 @@ class AppRouter {
         path: Routes.history,
         builder: (context, state) {
           // Return the HistoryScreen widget
-          return HistoryScreen();
+          return BlocProvider(create: (BuildContext context) => HistoryCubit(sl()), child: const HistoryScreen());
         },
       ),
       GoRoute(

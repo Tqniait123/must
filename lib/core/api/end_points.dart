@@ -29,4 +29,7 @@ class EndPoints {
   static const String addCar = 'cars/store';
   static const String updateCar = 'cars/update';
   static const String deleteCar = 'cars/delete';
+  static const String chargePoints = 'points/charge';
+  static String parkingPointsWithdrawn(int id) => '/parking/$id/points_withdrawn';
+  static const String history = 'history';
 }

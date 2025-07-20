@@ -346,5 +346,7 @@
     "license_documents": "وثائق الترخيص",
     "no_image": "لا توجد صورة",
     "expired": "منتهي الصلاحية",
-    "expires_soon": "تنتهي قريباً"
+    "expires_soon": "تنتهي قريباً",
+    "no_history_found": "لا يوجد سجل",
+    "no_cars_found": "لا يوجد سيارات"
 }

@@ -7,6 +7,8 @@ import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/explore/data/datasources/explore_remote_data_source.dart';
 import 'package:must_invest/features/explore/data/repositories/explore_repo.dart';
+import 'package:must_invest/features/history/data/datasources/history_remote_data_source.dart';
+import 'package:must_invest/features/history/data/repositories/history_repo.dart';
 import 'package:must_invest/features/notifications/data/datasources/notifications_remote_data_source.dart';
 import 'package:must_invest/features/notifications/data/repositories/notifications_repo.dart';
 import 'package:must_invest/features/profile/data/datasources/cars_remote_data_source.dart';
@@ -37,6 +39,7 @@ Future<void> initLocator(SharedPreferences sharedPreferences) async {
   sl.registerLazySingleton<NotificationsRepo>(() => NotificationsRepoImpl(sl(), sl()));
   sl.registerLazySingleton<PagesRepo>(() => PagesRepoImpl(sl(), sl()));
   sl.registerLazySingleton<CarRepo>(() => CarRepoImpl(sl(), sl()));
+  sl.registerLazySingleton<HistoryRepo>(() => HistoryRepoImpl(sl(), sl()));
 
   //* Datasources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(sl()));
@@ -44,4 +47,5 @@ Future<void> initLocator(SharedPreferences sharedPreferences) async {
   sl.registerLazySingleton<NotificationsRemoteDataSource>(() => NotificationsRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<PagesRemoteDataSource>(() => PagesRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<CarRemoteDataSource>(() => CarRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<HistoryRemoteDataSource>(() => HistoryRemoteDataSourceImpl(sl()));
 }

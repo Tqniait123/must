@@ -344,5 +344,7 @@
     "license_documents": "License Documents",
     "no_image": "No Image",
     "expired": "Expired",
-    "expires_soon": "Expires Soon"
+    "expires_soon": "Expires Soon",
+    "no_history_found": "No history found",
+    "no_cars_found": "No cars found"
 }

@@ -1,4 +1,4 @@
-part of 'home_cubit.dart';
+import 'package:equatable/equatable.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -8,3 +8,37 @@ abstract class HomeState extends Equatable {
 }
 
 class HomeInitial extends HomeState {}
+
+class HomeLoading extends HomeState {}
+
+class HomeSuccess extends HomeState {
+  final double points;
+
+  const HomeSuccess(this.points);
+
+  @override
+  List<Object> get props => [points];
+}
+
+class HomeError extends HomeState {
+  final String message;
+
+  const HomeError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+
+class WithdrawPointsLoading extends HomeState {}
+
+class WithdrawPointsSuccess extends HomeState {}
+
+class WithdrawPointsError extends HomeState {
+  final String message;
+
+  const WithdrawPointsError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

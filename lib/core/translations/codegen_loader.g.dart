@@ -355,7 +355,9 @@ class CodegenLoader extends AssetLoader{
   "license_documents": "License Documents",
   "no_image": "No Image",
   "expired": "Expired",
-  "expires_soon": "Expires Soon"
+  "expires_soon": "Expires Soon",
+  "no_history_found": "No history found",
+  "no_cars_found": "No cars found"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -698,7 +700,9 @@ static const Map<String,dynamic> _ar = {
   "license_documents": "وثائق الترخيص",
   "no_image": "لا توجد صورة",
   "expired": "منتهي الصلاحية",
-  "expires_soon": "تنتهي قريباً"
+  "expires_soon": "تنتهي قريباً",
+  "no_history_found": "لا يوجد سجل",
+  "no_cars_found": "لا يوجد سيارات"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
