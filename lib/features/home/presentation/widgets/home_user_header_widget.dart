@@ -75,7 +75,15 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 iconAsset: AppIcons.cameraIc,
                 color: AppColors.primary,
                 onPressed: () {
-                  context.push(Routes.scanQrcode);
+                  // Show car selection for camera scan
+                  showAllCarsBottomSheet(
+                    context,
+                    title: LocaleKeys.select_car.tr(), // You might need to add this translation key
+                    onChooseCar: (car) {
+                      // Navigate to scan QR code screen with selected car
+                      context.push(Routes.scanQrcode, extra: car);
+                    },
+                  );
                 },
               ),
               6.gap,
@@ -83,7 +91,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 iconAsset: AppIcons.qrCodeIc,
                 color: AppColors.primary,
                 onPressed: () {
-                  showAllCarsBottomSheet(context, onChooseCar: onChooseCar);
+                  showAllCarsBottomSheet(context, title: LocaleKeys.my_cars.tr(), onChooseCar: onChooseCar);
                 },
               ),
             ],
@@ -94,7 +102,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
   }
 }
 
-void showAllCarsBottomSheet(BuildContext context, {void Function(Car car)? onChooseCar}) async {
+void showAllCarsBottomSheet(BuildContext context, {void Function(Car car)? onChooseCar, String? title}) async {
   Car? selectedCar;
   final selectedCarId = await showModalBottomSheet<String>(
     context: context,
@@ -115,7 +123,7 @@ void showAllCarsBottomSheet(BuildContext context, {void Function(Car car)? onCho
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(LocaleKeys.my_cars.tr(), style: context.titleMedium.bold),
+                Text(title ?? LocaleKeys.my_cars.tr(), style: context.titleMedium.bold),
                 16.gap,
                 BlocProvider(
                   create: (BuildContext context) => CarCubit(sl())..getMyCars(),

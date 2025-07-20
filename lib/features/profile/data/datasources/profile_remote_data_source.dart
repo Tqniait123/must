@@ -6,6 +6,7 @@ import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/profile/data/models/about_us_model.dart';
 import 'package:must_invest/features/profile/data/models/contact_us_model.dart';
 import 'package:must_invest/features/profile/data/models/faq_model.dart';
+import 'package:must_invest/features/profile/data/models/parking_process_model.dart';
 import 'package:must_invest/features/profile/data/models/privacy_policy_model.dart';
 import 'package:must_invest/features/profile/data/models/terms_and_conditions_model.dart';
 import 'package:must_invest/features/profile/data/models/update_profile_params.dart';
@@ -13,6 +14,7 @@ import 'package:must_invest/features/profile/data/models/update_profile_params.d
 abstract class PagesRemoteDataSource {
   Future<ApiResponse<List<FAQModel>>> getFaq(String? lang);
   Future<ApiResponse<User>> updateProfile(String token, UpdateProfileParams params);
+  Future<ApiResponse<void>> startParking(String token, ParkingProcessModel params);
   Future<ApiResponse<TermsAndConditionsModel>> getTermsAndConditions(String? lang);
   Future<ApiResponse<PrivacyPolicyModel>> getPrivacyPolicy(String? lang);
   Future<ApiResponse<ContactUsModel>> getContactUs(String? lang);
@@ -80,6 +82,17 @@ class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
       data: formData,
       contentType: ContentType.formData,
       fromJson: (json) => User.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> startParking(String token, ParkingProcessModel params) async {
+    return dioClient.request<void>(
+      method: RequestMethod.post,
+      EndPoints.startParking,
+      options: token.toAuthorizationOptions(),
+      data: params.toJson(),
+      fromJson: (json) => (),
     );
   }
 }

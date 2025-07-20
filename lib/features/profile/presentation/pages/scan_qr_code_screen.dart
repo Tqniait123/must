@@ -5,13 +5,20 @@ import 'package:mobile_scanner/mobile_scanner.dart'; // Modern QR scanner packag
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
+import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
+import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
+import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
 
 class ScanQrCodeScreen extends StatefulWidget {
-  const ScanQrCodeScreen({super.key});
+  final Car? selectedCar;
+  const ScanQrCodeScreen({super.key, this.selectedCar});
 
   @override
   State<ScanQrCodeScreen> createState() => _ScanQrCodeScreenState();
@@ -23,10 +30,12 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
   bool _isProcessing = false;
   String? _scannedData;
   bool _flashOn = false;
+  late Car? selectedCar;
 
   @override
   void initState() {
     super.initState();
+    selectedCar = widget.selectedCar;
   }
 
   @override
@@ -45,10 +54,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
     }
   }
 
-  Future<void> _handleScannedData(
-    BuildContext context,
-    String scannedData,
-  ) async {
+  Future<void> _handleScannedData(BuildContext context, String scannedData) async {
     if (_isProcessing) return;
 
     setState(() {
@@ -93,10 +99,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
   bool _isValidQrCode(String qrData) {
     // Add your QR code validation logic here
     // For example, check if it contains your app's scheme
-    return qrData.isNotEmpty &&
-        (qrData.startsWith('must_invest://') ||
-            qrData.startsWith('http') ||
-            qrData.length > 5);
+    return qrData.isNotEmpty && (qrData.startsWith('must_invest://') || qrData.startsWith('http') || qrData.length > 5);
   }
 
   void _showProcessingDialog() {
@@ -108,9 +111,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
+                CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
                 16.gap,
                 Text(LocaleKeys.processing.tr(), style: context.bodyMedium),
               ],
@@ -176,24 +177,115 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomBackButton(),
-                // Text(
-                //   LocaleKeys.scan_qr_code.tr(),
-                //   style: context.titleLarge.copyWith(),
-                // ),
-                NotificationsButton(
-                  color: Color(0xffEAEAF3),
-                  iconColor: AppColors.primary,
-                ),
+                Text(LocaleKeys.scan_qr_code.tr(), style: context.titleLarge.copyWith()),
+                NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
               ],
             ).paddingHorizontal(24),
 
             16.gap,
 
+            // Car Selection Widget (if car is selected)
+            if (selectedCar != null) ...[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                child: CarWidget.custom(
+                  car: selectedCar!,
+                  trailing: CustomIconButton(
+                    height: 30,
+                    width: 30,
+                    color: Color(0xffEAEAF3),
+                    iconColor: AppColors.primary,
+                    iconAsset: AppIcons.changeIc,
+                    onPressed: () {
+                      showAllCarsBottomSheet(
+                        context,
+                        title: LocaleKeys.select_car.tr(),
+                        onChooseCar: (car) {
+                          setState(() {
+                            selectedCar = car;
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ).withPressEffect(
+                  onTap: () {
+                    showAllCarsBottomSheet(
+                      context,
+                      title: LocaleKeys.select_car.tr(),
+                      onChooseCar: (car) {
+                        setState(() {
+                          selectedCar = car;
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+              16.gap,
+            ],
+
+            // Car selection prompt (if no car is selected)
+            if (selectedCar == null) ...[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+                    12.gap,
+                    Expanded(
+                      child: Text(
+                        LocaleKeys.select_car.tr(),
+                        style: context.bodyMedium.copyWith(color: AppColors.primary, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    CustomIconButton(
+                      height: 32,
+                      width: 32,
+                      color: AppColors.primary,
+                      iconColor: Colors.white,
+                      iconAsset: AppIcons.carIc,
+                      onPressed: () {
+                        showAllCarsBottomSheet(
+                          context,
+                          title: LocaleKeys.select_car.tr(),
+                          onChooseCar: (car) {
+                            setState(() {
+                              selectedCar = car;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ).withPressEffect(
+                onTap: () {
+                  showAllCarsBottomSheet(
+                    context,
+                    title: LocaleKeys.select_car.tr(),
+                    onChooseCar: (car) {
+                      setState(() {
+                        selectedCar = car;
+                      });
+                    },
+                  );
+                },
+              ),
+              16.gap,
+            ],
+
             // Instructions
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                LocaleKeys.scan_qr_instructions.tr(),
+                selectedCar != null ? LocaleKeys.scan_qr_instructions.tr() : LocaleKeys.select_car.tr(),
                 textAlign: TextAlign.center,
                 style: context.bodyMedium.copyWith(color: Colors.grey[600]),
               ),
@@ -207,22 +299,22 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 24),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    // overflow: Clip.hardEdge,
-                  ),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   child: Stack(
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: MobileScanner(
                           controller: controller,
-                          onDetect: (data) {
-                            _onDetect(context, data);
-                          },
+                          onDetect:
+                              selectedCar != null
+                                  ? (data) {
+                                    _onDetect(context, data);
+                                  }
+                                  : null, // Disable scanning if no car selected
                           overlayBuilder: (context, capture) {
                             return Container(
-                              color: Colors.transparent,
+                              color: selectedCar == null ? Colors.black.withOpacity(0.7) : Colors.transparent,
                               child: Center(
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -231,14 +323,30 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                       width: 200,
                                       height: 200,
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.5),
+                                        color:
+                                            selectedCar != null
+                                                ? Colors.black.withOpacity(0.5)
+                                                : Colors.black.withOpacity(0.8),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Center(
-                                        child: Icon(
-                                          Icons.qr_code_scanner,
-                                          color: Colors.white,
-                                          size: 30,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              selectedCar != null ? Icons.qr_code_scanner : Icons.no_photography,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                            if (selectedCar == null) ...[
+                                              8.gap,
+                                              Text(
+                                                LocaleKeys.select_car.tr(),
+                                                style: context.bodySmall.copyWith(color: Colors.white),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -247,36 +355,25 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                               ),
                             );
                           },
-                          // overlay: Container(
-                          //   decoration: BoxDecoration(
-                          //     border: Border.all(
-                          //       color: AppColors.primary,
-                          //       width: 2,
-                          //     ),
-                          //     borderRadius: BorderRadius.circular(16),
-                          //   ),
-                          // ),
                         ),
                       ),
 
-                      // Flash toggle button
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: IconButton(
-                            onPressed: _toggleFlash,
-                            icon: Icon(
-                              _flashOn ? Icons.flash_on : Icons.flash_off,
-                              color: Colors.white,
+                      // Flash toggle button (only show if car is selected)
+                      if (selectedCar != null)
+                        Positioned(
+                          top: 16,
+                          right: 16,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: _toggleFlash,
+                              icon: Icon(_flashOn ? Icons.flash_on : Icons.flash_off, color: Colors.white),
                             ),
                           ),
                         ),
-                      ),
 
                       // Scanning indicator
                       if (_isProcessing)
@@ -286,17 +383,11 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
+                                CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
                                 16.gap,
                                 Text(
                                   LocaleKeys.processing.tr(),
-                                  style: context.bodyMedium.copyWith(
-                                    color: Colors.white,
-                                  ),
+                                  style: context.bodyMedium.copyWith(color: Colors.white),
                                 ),
                               ],
                             ),
@@ -316,9 +407,9 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color:
-                    _isScanning
-                        ? AppColors.primary.withOpacity(0.1)
-                        : Colors.grey.withOpacity(0.1),
+                    selectedCar != null
+                        ? (_isScanning ? AppColors.primary.withOpacity(0.1) : Colors.grey.withOpacity(0.1))
+                        : Colors.orange.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -328,17 +419,17 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: _isScanning ? Colors.green : Colors.orange,
+                      color: selectedCar != null ? (_isScanning ? Colors.green : Colors.orange) : Colors.orange,
                       shape: BoxShape.circle,
                     ),
                   ),
                   8.gap,
                   Text(
-                    _isScanning
-                        ? LocaleKeys.ready_to_scan.tr()
-                        : LocaleKeys.processing.tr(),
+                    selectedCar != null
+                        ? (_isScanning ? LocaleKeys.ready_to_scan.tr() : LocaleKeys.processing.tr())
+                        : LocaleKeys.select_car.tr(),
                     style: context.bodyMedium.copyWith(
-                      color: _isScanning ? AppColors.primary : Colors.grey[600],
+                      color: selectedCar != null ? (_isScanning ? AppColors.primary : Colors.grey[600]) : Colors.orange,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -350,35 +441,6 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
           ],
         ),
       ),
-      // bottomNavigationBar: Row(
-      //   children: [
-      //     Expanded(
-      //       child: CustomElevatedButton(
-      //         heroTag: 'cancel',
-      //         onPressed: () {
-      //           context.pop();
-      //         },
-      //         title: LocaleKeys.cancel.tr(),
-      //         backgroundColor: Color(0xffF4F4FA),
-      //         textColor: AppColors.primary.withValues(alpha: 0.5),
-      //         isBordered: false,
-      //       ),
-      //     ),
-      //     16.gap,
-      //     Expanded(
-      //       child: CustomElevatedButton(
-      //         onPressed:
-      //             _isProcessing
-      //                 ? null
-      //                 : () async {
-      //                   await _resumeScanning();
-      //                 },
-      //         title: LocaleKeys.rescan.tr(),
-      //         loading: _isProcessing,
-      //       ),
-      //     ),
-      //   ],
-      // ).paddingAll(30),
     );
   }
 }

@@ -236,7 +236,7 @@ class AppRouter {
         path: Routes.scanQrcode,
         builder: (context, state) {
           // Return the ScanQrcodeScreen widget
-          return ScanQrCodeScreen();
+          return ScanQrCodeScreen(selectedCar: state.extra as Car);
         },
       ),
       GoRoute(

@@ -28,3 +28,16 @@ class ProfileError extends ProfileState {
   @override
   List<Object> get props => [message];
 }
+
+class StartParkingLoading extends ProfileState {}
+
+class StartParkingSuccess extends ProfileState {}
+
+class StartParkingError extends ProfileState {
+  final String message;
+
+  const StartParkingError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

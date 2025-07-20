@@ -6,6 +6,7 @@ import 'package:must_invest/features/profile/data/datasources/profile_remote_dat
 import 'package:must_invest/features/profile/data/models/about_us_model.dart';
 import 'package:must_invest/features/profile/data/models/contact_us_model.dart';
 import 'package:must_invest/features/profile/data/models/faq_model.dart';
+import 'package:must_invest/features/profile/data/models/parking_process_model.dart';
 import 'package:must_invest/features/profile/data/models/privacy_policy_model.dart';
 import 'package:must_invest/features/profile/data/models/terms_and_conditions_model.dart';
 import 'package:must_invest/features/profile/data/models/update_profile_params.dart';
@@ -18,6 +19,7 @@ abstract class PagesRepo {
   Future<Either<PrivacyPolicyModel, AppError>> getPrivacyPolicy(String? lang);
   Future<Either<ContactUsModel, AppError>> getContactUs(String? lang);
   Future<Either<User, AppError>> updateProfile(UpdateProfileParams params);
+  Future<Either<void, AppError>> startParking(ParkingProcessModel params);
 }
 
 class PagesRepoImpl implements PagesRepo {
@@ -114,6 +116,22 @@ class PagesRepoImpl implements PagesRepo {
 
       if (response.isSuccess) {
         return Left(response.data!);
+      } else {
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<void, AppError>> startParking(ParkingProcessModel params) async {
+    try {
+      final token = _localDataSource.getToken();
+      final response = await _remoteDataSource.startParking(token ?? '', params);
+
+      if (response.isSuccess) {
+        return const Left(null);
       } else {
         return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }

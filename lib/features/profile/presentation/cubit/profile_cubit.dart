@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/errors/app_error.dart';
+import 'package:must_invest/features/profile/data/models/parking_process_model.dart';
 import 'package:must_invest/features/profile/data/models/update_profile_params.dart';
 import 'package:must_invest/features/profile/data/repositories/profile_repo.dart';
 
@@ -22,6 +23,18 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileError(e.message));
     } catch (e) {
       emit(ProfileError(e.toString()));
+    }
+  }
+
+  Future<void> startParking(ParkingProcessModel params) async {
+    try {
+      emit(StartParkingLoading());
+      final response = await _repository.startParking(params);
+      response.fold((_) => emit(StartParkingSuccess()), (error) => emit(StartParkingError(error.message)));
+    } on AppError catch (e) {
+      emit(StartParkingError(e.message));
+    } catch (e) {
+      emit(StartParkingError(e.toString()));
     }
   }
 }
