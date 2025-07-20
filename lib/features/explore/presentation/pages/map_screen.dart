@@ -18,6 +18,8 @@ import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+enum MapType { satellite, streetMap, darkMode, terrain, artistic }
+
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
@@ -29,36 +31,273 @@ class _MapScreenState extends State<MapScreen> {
   Parking? _selectedParking;
   LatLng? _currentLocation;
   final Location _location = Location();
+  MapType _currentMapType = MapType.satellite; // Default to beautiful satellite view
+  bool _showMapTypeSelector = false;
 
   @override
   void initState() {
     super.initState();
     _checkPermissionsAndGetLocation();
-    // Fetch parkings data when screen initializes
     _fetchParkingsData();
   }
 
   void _fetchParkingsData() {
-    // Get the cubit and fetch data
     final exploreCubit = ExploreCubit.get(context);
-    exploreCubit.getAllParkings(); // You can pass FilterModel if needed
+    exploreCubit.getAllParkings();
   }
 
   void _refreshData() {
     _fetchParkingsData();
   }
 
+  // Map tile configurations for different beautiful map types
+  Widget _getTileLayer() {
+    switch (_currentMapType) {
+      case MapType.satellite:
+        // ESRI World Imagery - Beautiful satellite view
+        return TileLayer(
+          urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          userAgentPackageName: 'com.mustinvest.app',
+          maxZoom: 18,
+          maxNativeZoom: 19,
+          retinaMode: true,
+        );
+
+      case MapType.streetMap:
+        // ESRI World Street Map - Clean, professional street map
+        return TileLayer(
+          urlTemplate:
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+          userAgentPackageName: 'com.mustinvest.app',
+          maxZoom: 18,
+          maxNativeZoom: 19,
+          retinaMode: true,
+        );
+
+      case MapType.darkMode:
+        // CartoDB Dark Matter - Sleek dark theme
+        return TileLayer(
+          urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+          subdomains: const ['a', 'b', 'c', 'd'],
+          userAgentPackageName: 'com.mustinvest.app',
+          maxZoom: 18,
+          maxNativeZoom: 19,
+          retinaMode: true,
+        );
+
+      case MapType.terrain:
+        // OpenTopoMap - Beautiful topographic view
+        return TileLayer(
+          urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+          subdomains: const ['a', 'b', 'c'],
+          userAgentPackageName: 'com.mustinvest.app',
+          maxZoom: 17,
+          maxNativeZoom: 17,
+          retinaMode: true,
+        );
+
+      case MapType.artistic:
+        // Stamen Watercolor - Artistic, unique style
+        return TileLayer(
+          urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+          subdomains: const ['a', 'b', 'c', 'd'],
+          userAgentPackageName: 'com.mustinvest.app',
+          maxZoom: 16,
+          maxNativeZoom: 16,
+          retinaMode: true,
+        );
+    }
+  }
+
+  Widget _getAttributionWidget() {
+    switch (_currentMapType) {
+      case MapType.satellite:
+      case MapType.streetMap:
+        return RichAttributionWidget(
+          attributions: [
+            TextSourceAttribution('© Esri', onTap: () {}),
+            TextSourceAttribution('© World Imagery', onTap: () {}),
+          ],
+        );
+      case MapType.darkMode:
+        return RichAttributionWidget(
+          attributions: [
+            TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
+            TextSourceAttribution('© CartoDB', onTap: () {}),
+          ],
+        );
+      case MapType.terrain:
+        return RichAttributionWidget(
+          attributions: [
+            TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
+            TextSourceAttribution('© OpenTopoMap', onTap: () {}),
+          ],
+        );
+      case MapType.artistic:
+        return RichAttributionWidget(
+          attributions: [
+            TextSourceAttribution('© Stamen Design', onTap: () {}),
+            TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
+          ],
+        );
+    }
+  }
+
+  Color _getMarkerColor(bool isBusy) {
+    switch (_currentMapType) {
+      case MapType.satellite:
+        return isBusy ? const Color(0xffFF1744) : const Color(0xff00E676);
+      case MapType.darkMode:
+        return isBusy ? const Color(0xffFF5252) : const Color(0xff69F0AE);
+      case MapType.streetMap:
+        return isBusy ? const Color(0xffE60A0E) : const Color(0xff1DD76E);
+      case MapType.terrain:
+        return isBusy ? const Color(0xffD32F2F) : const Color(0xff388E3C);
+      case MapType.artistic:
+        return isBusy ? const Color(0xff8E24AA) : const Color(0xff43A047);
+    }
+  }
+
+  Color _getCurrentLocationMarkerColor() {
+    switch (_currentMapType) {
+      case MapType.satellite:
+        return const Color(0xff2196F3);
+      case MapType.darkMode:
+        return const Color(0xff64B5F6);
+      case MapType.streetMap:
+        return const Color(0xff1976D2);
+      case MapType.terrain:
+        return const Color(0xff0277BD);
+      case MapType.artistic:
+        return const Color(0xff7B1FA2);
+    }
+  }
+
+  Widget _buildMapTypeSelector() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.1), spreadRadius: 1, blurRadius: 10, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Map Style', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _showMapTypeSelector = false;
+                    });
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          ...MapType.values.map((mapType) {
+            final isSelected = _currentMapType == mapType;
+            return ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
+                ),
+                child: ClipRRect(borderRadius: BorderRadius.circular(6), child: _getMapTypePreview(mapType)),
+              ),
+              title: Text(_getMapTypeName(mapType)),
+              subtitle: Text(_getMapTypeDescription(mapType)),
+              trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.blue) : null,
+              onTap: () {
+                setState(() {
+                  _currentMapType = mapType;
+                  _showMapTypeSelector = false;
+                });
+              },
+            );
+          }),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _getMapTypePreview(MapType mapType) {
+    switch (mapType) {
+      case MapType.satellite:
+        return Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff4CAF50), Color(0xff2196F3)])),
+          child: const Icon(Icons.satellite_alt, color: Colors.white, size: 20),
+        );
+      case MapType.streetMap:
+        return Container(color: const Color(0xffF5F5F5), child: const Icon(Icons.map, color: Colors.grey, size: 20));
+      case MapType.darkMode:
+        return Container(
+          color: const Color(0xff212121),
+          child: const Icon(Icons.dark_mode, color: Colors.white, size: 20),
+        );
+      case MapType.terrain:
+        return Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff8BC34A), Color(0xff795548)])),
+          child: const Icon(Icons.terrain, color: Colors.white, size: 20),
+        );
+      case MapType.artistic:
+        return Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff9C27B0), Color(0xffE91E63)])),
+          child: const Icon(Icons.palette, color: Colors.white, size: 20),
+        );
+    }
+  }
+
+  String _getMapTypeName(MapType mapType) {
+    switch (mapType) {
+      case MapType.satellite:
+        return 'Satellite';
+      case MapType.streetMap:
+        return 'Street Map';
+      case MapType.darkMode:
+        return 'Dark Mode';
+      case MapType.terrain:
+        return 'Terrain';
+      case MapType.artistic:
+        return 'Artistic';
+    }
+  }
+
+  String _getMapTypeDescription(MapType mapType) {
+    switch (mapType) {
+      case MapType.satellite:
+        return 'High-resolution satellite imagery';
+      case MapType.streetMap:
+        return 'Clean street map with labels';
+      case MapType.darkMode:
+        return 'Sleek dark theme for night use';
+      case MapType.terrain:
+        return 'Topographic view with elevation';
+      case MapType.artistic:
+        return 'Watercolor artistic style';
+    }
+  }
+
   Future<void> _checkPermissionsAndGetLocation() async {
-    // First check current permission status
     final status = await Permission.location.status;
 
     if (status.isGranted) {
-      // Permission already granted, get location
       await _getCurrentLocation();
     } else if (status.isDenied) {
-      // Permission denied but not permanently, request it
       final newStatus = await Permission.location.request();
-
       if (newStatus.isGranted) {
         await _getCurrentLocation();
       } else if (newStatus.isPermanentlyDenied) {
@@ -67,17 +306,14 @@ class _MapScreenState extends State<MapScreen> {
         _showPermissionDeniedDialog();
       }
     } else if (status.isPermanentlyDenied) {
-      // Permission permanently denied, show settings dialog
       _showPermissionPermanentlyDeniedDialog();
     } else if (status.isRestricted) {
-      // Permission restricted (iOS)
       _showPermissionRestrictedDialog();
     }
   }
 
   void _showPermissionDeniedDialog() {
     if (!mounted) return;
-
     showDialog(
       context: context,
       builder:
@@ -89,7 +325,7 @@ class _MapScreenState extends State<MapScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  _checkPermissionsAndGetLocation(); // Retry permission request
+                  _checkPermissionsAndGetLocation();
                 },
                 child: const Text('Retry'),
               ),
@@ -100,7 +336,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _showPermissionPermanentlyDeniedDialog() {
     if (!mounted) return;
-
     showDialog(
       context: context,
       builder:
@@ -125,7 +360,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _showPermissionRestrictedDialog() {
     if (!mounted) return;
-
     showDialog(
       context: context,
       builder:
@@ -139,7 +373,6 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      // Check if location service is enabled
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService();
@@ -153,7 +386,6 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
 
-      // Check location permission using permission handler
       final permissionStatus = await Permission.location.status;
       if (permissionStatus.isDenied) {
         final newStatus = await Permission.location.request();
@@ -221,93 +453,65 @@ class _MapScreenState extends State<MapScreen> {
             minZoom: 3.0,
           ),
           children: [
-            // BEST FREE SOLUTION: CartoDB Positron
-            TileLayer(
-              urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-              subdomains: const ['a', 'b', 'c', 'd'],
-              userAgentPackageName: 'com.mustinvest.app', // Replace with your actual package name
-              maxZoom: 18,
-              maxNativeZoom: 19,
-              retinaMode: true,
-              errorTileCallback: (tile, error, stackTrace) {
-                debugPrint('Tile loading error: $error');
-              },
-              tileProvider: NetworkTileProvider(),
-            ),
-
-            // Attribution widget (required for CartoDB)
-            RichAttributionWidget(
-              attributions: [
-                TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
-                TextSourceAttribution('© CartoDB', onTap: () {}),
-              ],
-            ),
-
+            _getTileLayer(),
+            _getAttributionWidget(),
             MarkerLayer(
               rotate: false,
               markers: [
-                // Current location marker
+                // Enhanced current location marker
                 if (_currentLocation != null)
                   Marker(
                     rotate: false,
-                    width: 100.0,
-                    height: 100.0,
+                    width: 120.0,
+                    height: 120.0,
                     point: _currentLocation!,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(10),
+                            color: _getCurrentLocationMarkerColor(),
+                            borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withOpacity(0.3),
                                 spreadRadius: 1,
-                                blurRadius: 3,
-                                offset: const Offset(0, 1),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.my_location, color: Colors.white, size: 20),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.my_location, color: Colors.white, size: 18),
+                              const SizedBox(width: 4),
+                              Text(
+                                'You',
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
-                        CustomPaint(size: const Size(14, 8), painter: _TrianglePainter(color: Colors.blue)),
+                        CustomPaint(
+                          size: const Size(16, 10),
+                          painter: _TrianglePainter(color: _getCurrentLocationMarkerColor()),
+                        ),
                       ],
                     ),
                   ),
 
-                // Parking markers from real API data
+                // Enhanced parking markers
                 ...parkings.map((parking) {
-                  // Use real coordinates from parking model if available
-                  // If parking doesn't have lat/lng properties, you might need to add them to your model
-                  // For now, I'll assume you have lat and lng properties in your Parking model
-                  // If not, you'll need to add them or use a fallback method
-
-                  double lat, lng;
-
-                  // Check if your Parking model has lat/lng properties
-                  // Replace this with actual property access if available
-                  try {
-                    // Assuming your parking model has lat and lng properties
-                    // lat = parking.lat ?? 30.0444;
-                    // lng = parking.lng ?? 31.2357;
-
-                    // If no lat/lng in model, generate realistic coordinates around Cairo
-                    final Random random = Random(parking.hashCode);
-                    lat = 30.0444 + (random.nextDouble() - 0.5) * 0.1;
-                    lng = 31.2357 + (random.nextDouble() - 0.5) * 0.1;
-                  } catch (e) {
-                    // Fallback coordinates
-                    final Random random = Random(parking.hashCode);
-                    lat = 30.0444 + (random.nextDouble() - 0.5) * 0.1;
-                    lng = 31.2357 + (random.nextDouble() - 0.5) * 0.1;
-                  }
+                  final Random random = Random(parking.hashCode);
+                  final double lat = 30.0444 + (random.nextDouble() - 0.5) * 0.1;
+                  final double lng = 31.2357 + (random.nextDouble() - 0.5) * 0.1;
 
                   return Marker(
                     rotate: false,
-                    width: 100.0,
-                    height: 100.0,
+                    width: 120.0,
+                    height: 120.0,
                     point: LatLng(lat, lng),
                     child: GestureDetector(
                       onTap: () {
@@ -319,29 +523,38 @@ class _MapScreenState extends State<MapScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: parking.isBusy ? const Color(0xffE60A0E) : const Color(0xff1DD76E),
-                              borderRadius: BorderRadius.circular(10),
+                              color: _getMarkerColor(parking.isBusy),
+                              borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withOpacity(0.3),
                                   spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 1),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
-                            child: Text(
-                              '${parking.pricePerHour} EGP',
-                              style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${parking.pricePerHour} EGP',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Icon(parking.isBusy ? Icons.block : Icons.local_parking, color: Colors.white, size: 16),
+                              ],
                             ),
                           ),
                           CustomPaint(
-                            size: const Size(14, 8),
-                            painter: _TrianglePainter(
-                              color: parking.isBusy ? const Color(0xffE60A0E) : const Color(0xff1DD76E),
-                            ),
+                            size: const Size(16, 10),
+                            painter: _TrianglePainter(color: _getMarkerColor(parking.isBusy)),
                           ),
                         ],
                       ),
@@ -353,16 +566,37 @@ class _MapScreenState extends State<MapScreen> {
           ],
         ),
 
-        // Floating refresh button
+        // Enhanced floating controls
         Positioned(
           top: 50,
           right: 16,
-          child: FloatingActionButton.small(
-            onPressed: _refreshData,
-            backgroundColor: Colors.white,
-            child: const Icon(Icons.refresh, color: Colors.blue),
+          child: Column(
+            children: [
+              // Map type selector button
+              FloatingActionButton.small(
+                heroTag: "mapType",
+                onPressed: () {
+                  setState(() {
+                    _showMapTypeSelector = !_showMapTypeSelector;
+                  });
+                },
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.layers, color: Colors.blue),
+              ),
+              const SizedBox(height: 8),
+              // Refresh button
+              FloatingActionButton.small(
+                heroTag: "refresh",
+                onPressed: _refreshData,
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.refresh, color: Colors.blue),
+              ),
+            ],
           ),
         ),
+
+        // Map type selector overlay
+        if (_showMapTypeSelector) Positioned(top: 50, left: 16, right: 80, child: _buildMapTypeSelector()),
 
         if (_selectedParking != null)
           Positioned(bottom: 20, left: 16, right: 16, child: _buildParkingDetails(_selectedParking!)),
@@ -375,9 +609,7 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: BlocConsumer<ExploreCubit, ExploreState>(
         listener: (context, state) {
-          // Handle any side effects here
           if (state is ParkingsError) {
-            // Optionally show a snackbar for errors
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Error: ${state.message}'),
@@ -395,7 +627,6 @@ class _MapScreenState extends State<MapScreen> {
           } else if (state is ParkingsSuccess) {
             return _buildMapWidget(state.parkings);
           } else {
-            // Initial state - show loading
             return _buildLoadingWidget();
           }
         },
@@ -424,14 +655,14 @@ class _MapScreenState extends State<MapScreen> {
             borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 10,
-                offset: const Offset(0, 1),
+                color: Colors.black.withOpacity(0.15),
+                spreadRadius: 2,
+                blurRadius: 15,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
-          padding: const EdgeInsets.all(21),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,48 +675,56 @@ class _MapScreenState extends State<MapScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(parking.nameEn, style: context.titleLarge),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           parking.address,
-                          style: TextStyle(fontSize: 14, color: AppColors.primary.withValues(alpha: 0.5)),
+                          style: TextStyle(fontSize: 14, color: AppColors.primary.withValues(alpha: 0.7)),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: const Color(0xFFE2E4FF), borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors:
+                            parking.isBusy
+                                ? [Colors.red.shade400, Colors.red.shade600]
+                                : [Colors.green.shade400, Colors.green.shade600],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Text(
-                      "${parking.pricePerHour} EGP/${LocaleKeys.min.tr()}",
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2B3085)),
+                      parking.isBusy ? 'FULL' : 'AVAILABLE',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               SizedBox(
-                height: 80,
+                height: 90,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: parking.gallery.gallery.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     return ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(15),
                       child: Image.network(
                         parking.gallery.gallery[index].image,
-                        width: 129,
-                        height: 80,
+                        width: 140,
+                        height: 90,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            width: 129,
-                            height: 80,
+                            width: 140,
+                            height: 90,
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(12),
+                              gradient: LinearGradient(colors: [Colors.grey.shade300, Colors.grey.shade400]),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                            child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 30),
                           );
                         },
                       ),
@@ -493,7 +732,7 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               CustomElevatedButton(
                 isDisabled: _selectedParking?.isBusy ?? false,
                 title: _selectedParking?.isBusy == true ? 'Parking Full' : LocaleKeys.start_now.tr(),
