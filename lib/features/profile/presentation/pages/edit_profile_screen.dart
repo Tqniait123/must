@@ -54,14 +54,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+
+    final user = context.user;
+
     // Initialize controllers with current user data
-    _nameController = TextEditingController(text: context.user.name);
-    _countryController = TextEditingController(text: '');
-    _governorateController = TextEditingController(text: '');
-    _cityController = TextEditingController(text: '');
+    _nameController = TextEditingController(text: user.name);
+    _countryController = TextEditingController();
+    _governorateController = TextEditingController();
+    _cityController = TextEditingController();
 
     // Load countries on init
     context.read<CountriesCubit>().getCountries();
+
+    // If user has city data, we need to load the hierarchy
+    _loadUserLocationData();
+  }
+
+  Future<void> _loadUserLocationData() async {
+    final user = context.user;
+
+    // If user has a city, we need to load the complete hierarchy
+    if (user.city != null && user.city!.isNotEmpty) {
+      try {
+        // Set the city name directly if it's just a string
+        _cityController.text = user.city!;
+
+        // If you have a way to get city ID from the city name or user data
+        // you might need to implement a search or lookup mechanism here
+        // For example:
+        // final cityData = await _findCityByName(user.city!);
+        // if (cityData != null) {
+        //   selectedCityId = cityData.id;
+        //   // Load governorate and country data based on city
+        //   await _loadLocationHierarchy(cityData);
+        // }
+      } catch (e) {
+        log('Error loading user location data: $e');
+      }
+    }
+  }
+
+  // Optional: Helper method to load the complete location hierarchy
+  // This would be useful if you have APIs to get parent locations
+  Future<void> _loadLocationHierarchy(City city) async {
+    try {
+      // Load governorate for this city
+      // final governorate = await _getGovernorateByCity(city.id);
+      // if (governorate != null) {
+      //   _governorateController.text = governorate.name;
+      //   context.read<CitiesCubit>().getCities(governorate.id);
+      //
+      //   // Load country for this governorate
+      //   final country = await _getCountryByGovernorate(governorate.id);
+      //   if (country != null) {
+      //     _countryController.text = country.name;
+      //     context.read<GovernoratesCubit>().getGovernorates(country.id);
+      //   }
+      // }
+    } catch (e) {
+      log('Error loading location hierarchy: $e');
+    }
   }
 
   @override
@@ -79,8 +131,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required PlatformFile? currentFile,
     required VoidCallback onTap,
     required IconData icon,
+    String? existingImageUrl, // Add this parameter for existing images
   }) {
     final isSelected = currentFile != null;
+    final hasExistingImage = existingImageUrl != null && existingImageUrl.isNotEmpty;
+    final hasAnyImage = isSelected || hasExistingImage;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -96,7 +151,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient:
-                  isSelected
+                  hasAnyImage
                       ? LinearGradient(
                         colors: [AppColors.primary.withOpacity(0.05), AppColors.primary.withOpacity(0.02)],
                         begin: Alignment.topLeft,
@@ -109,15 +164,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? AppColors.primary.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
-                width: isSelected ? 2 : 1.5,
+                color: hasAnyImage ? AppColors.primary.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
+                width: hasAnyImage ? 2 : 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.black.withOpacity(0.04),
-                  blurRadius: isSelected ? 12 : 8,
+                  color: hasAnyImage ? AppColors.primary.withOpacity(0.1) : Colors.black.withOpacity(0.04),
+                  blurRadius: hasAnyImage ? 12 : 8,
                   offset: const Offset(0, 4),
-                  spreadRadius: isSelected ? 2 : 0,
+                  spreadRadius: hasAnyImage ? 2 : 0,
                 ),
               ],
             ),
@@ -129,7 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     gradient:
-                        isSelected
+                        hasAnyImage
                             ? LinearGradient(
                               colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
                               begin: Alignment.topLeft,
@@ -142,7 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow:
-                        isSelected
+                        hasAnyImage
                             ? [
                               BoxShadow(
                                 color: AppColors.primary.withOpacity(0.3),
@@ -155,9 +210,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
                     child: Icon(
-                      isSelected ? Icons.check_circle_rounded : icon,
-                      key: ValueKey(isSelected),
-                      color: isSelected ? Colors.white : Colors.grey[600],
+                      hasAnyImage ? Icons.check_circle_rounded : icon,
+                      key: ValueKey(hasAnyImage),
+                      color: hasAnyImage ? Colors.white : Colors.grey[600],
                       size: 26,
                     ),
                   ),
@@ -174,7 +229,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         duration: const Duration(milliseconds: 200),
                         style: context.textTheme.bodyLarge!.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? AppColors.primary : Colors.black87,
+                          color: hasAnyImage ? AppColors.primary : Colors.black87,
                           height: 1.2,
                         ),
                         child: Text(title),
@@ -185,10 +240,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 200),
                         child: Text(
-                          isSelected ? '${currentFile.name} • ${_formatFileSize(currentFile.size)}' : subtitle,
-                          key: ValueKey(isSelected),
+                          _getImageDisplayText(currentFile, existingImageUrl, subtitle),
+                          key: ValueKey('${isSelected}_${hasExistingImage}'),
                           style: context.textTheme.bodySmall!.copyWith(
-                            color: isSelected ? AppColors.primary.withOpacity(0.7) : Colors.grey[600],
+                            color: hasAnyImage ? AppColors.primary.withOpacity(0.7) : Colors.grey[600],
                             height: 1.3,
                           ),
                           maxLines: 1,
@@ -197,7 +252,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
 
                       // Progress indicator for selected state
-                      if (isSelected) ...[
+                      if (hasAnyImage) ...[
                         const SizedBox(height: 8),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
@@ -205,7 +260,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(2), color: Colors.grey[200]),
                           child: FractionallySizedBox(
                             alignment: Alignment.centerLeft,
-                            widthFactor: 1.0, // You can make this dynamic for upload progress
+                            widthFactor: 1.0,
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(2),
@@ -228,12 +283,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                    color: hasAnyImage ? AppColors.primary.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    isSelected ? Icons.edit_rounded : Icons.cloud_upload_rounded,
-                    color: isSelected ? AppColors.primary : Colors.grey[500],
+                    hasAnyImage ? Icons.edit_rounded : Icons.cloud_upload_rounded,
+                    color: hasAnyImage ? AppColors.primary : Colors.grey[500],
                     size: 20,
                   ),
                 ),
@@ -243,6 +298,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  // Helper method to get the appropriate display text for images
+  String _getImageDisplayText(PlatformFile? currentFile, String? existingImageUrl, String subtitle) {
+    if (currentFile != null) {
+      return '${currentFile.name} • ${_formatFileSize(currentFile.size)}';
+    } else if (existingImageUrl != null && existingImageUrl.isNotEmpty) {
+      return 'Current image uploaded • Tap to change';
+    } else {
+      return subtitle;
+    }
   }
 
   // Helper function to format file size
@@ -468,6 +534,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'National ID Front',
                       subtitle: 'Upload front side of your national ID',
                       currentFile: nationalIdFront,
+                      existingImageUrl: context.user.nationalId?.front, // Add existing image
                       icon: Icons.credit_card,
                       onTap:
                           () => _pickFile((file) {
@@ -482,6 +549,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'National ID Back',
                       subtitle: 'Upload back side of your national ID',
                       currentFile: nationalIdBack,
+                      existingImageUrl: context.user.nationalId?.back, // Add existing image
                       icon: Icons.credit_card,
                       onTap:
                           () => _pickFile((file) {
@@ -496,6 +564,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'Driving License Front',
                       subtitle: 'Upload front side of your driving license',
                       currentFile: drivingLicenseFront,
+                      existingImageUrl: context.user.drivingLicense?.front, // Add existing image
                       icon: Icons.drive_eta,
                       onTap:
                           () => _pickFile((file) {
@@ -510,6 +579,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'Driving License Back',
                       subtitle: 'Upload back side of your driving license',
                       currentFile: drivingLicenseBack,
+                      existingImageUrl: context.user.drivingLicense?.back, // Add existing image
                       icon: Icons.drive_eta,
                       onTap:
                           () => _pickFile((file) {

@@ -103,13 +103,37 @@ class Car {
   }
 }
 
-/// User model for the example
+/// Document model for national ID and driving license
+class Document {
+  final String? front;
+  final String? back;
+
+  const Document({this.front, this.back});
+
+  Document copyWith({String? front, String? back}) {
+    return Document(front: front ?? this.front, back: back ?? this.back);
+  }
+
+  factory Document.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return const Document();
+    return Document(front: json['front'], back: json['back']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'front': front, 'back': back};
+  }
+}
+
+/// Updated User model
 class User {
   final int id;
   final String name;
   final String email;
   final String phone;
+  final String? city;
   final String? image;
+  final Document? nationalId;
+  final Document? drivingLicense;
   final int points;
 
   const User._({
@@ -117,17 +141,33 @@ class User {
     required this.name,
     required this.email,
     required this.phone,
+    this.city,
     this.image,
+    this.nationalId,
+    this.drivingLicense,
     required this.points,
   });
 
-  User copyWith({int? id, String? name, String? email, String? phone, String? image, int? points}) {
+  User copyWith({
+    int? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? city,
+    String? image,
+    Document? nationalId,
+    Document? drivingLicense,
+    int? points,
+  }) {
     return User._(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      city: city ?? this.city,
       image: image ?? this.image,
+      nationalId: nationalId ?? this.nationalId,
+      drivingLicense: drivingLicense ?? this.drivingLicense,
       points: points ?? this.points,
     );
   }
@@ -138,13 +178,26 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
+      city: json['city'],
       image: json['image'],
-      points: json['points'],
+      nationalId: Document.fromJson(json['national_id']),
+      drivingLicense: Document.fromJson(json['driving_license']),
+      points: json['points'] ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email, 'phone': phone, 'image': image, 'points': points};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'city': city,
+      'image': image,
+      'national_id': nationalId?.toJson(),
+      'driving_license': drivingLicense?.toJson(),
+      'points': points,
+    };
   }
 }
 
