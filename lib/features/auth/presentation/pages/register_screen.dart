@@ -111,13 +111,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       title: LocaleKeys.email.tr(),
                     ),
                     16.gap,
-                    CustomTextFormField(
+                    CustomPhoneFormField(
                       controller: _phoneController,
                       margin: 0,
                       hint: LocaleKeys.phone_number.tr(),
                       title: LocaleKeys.phone_number.tr(),
-                      keyboardType: TextInputType.phone,
 
+                      // keyboardType: TextInputType.phone,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return LocaleKeys.please_enter_phone_number.tr();
@@ -128,6 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
+                      selectedCode: '+20',
                     ),
                     16.gap,
                     BlocProvider.value(

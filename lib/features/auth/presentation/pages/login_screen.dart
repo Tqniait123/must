@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
       /// TODO: REMOVE THIS LINE BEFORE PRODUCTION
       ///  TO AVOID AUTO LOGIN ON APP START
       if (mounted) {
-        await AuthCubit.get(context).autoLogin();
+        // await AuthCubit.get(context).autoLogin();
       }
     } catch (e) {
       log('Biometric initialization error: $e');
@@ -563,13 +563,15 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.transparent,
           child: Column(
             children: [
-              CustomTextFormField(
+              CustomPhoneFormField(
+                includeCountryCodeInValue: true,
                 controller: _phoneController,
                 margin: 0,
                 hint: LocaleKeys.phone_number.tr(),
                 title: LocaleKeys.phone_number.tr(),
-                keyboardType: TextInputType.phone,
+                onChanged: (phone) {},
 
+                // keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return LocaleKeys.please_enter_phone_number.tr();
@@ -580,6 +582,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                   return null;
                 },
+                selectedCode: '+20',
               ),
               16.gap,
               CustomTextFormField(

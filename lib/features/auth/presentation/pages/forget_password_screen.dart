@@ -64,12 +64,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(40)),
                           child: Column(
                             children: [
-                              CustomTextFormField(
+                              CustomPhoneFormField(
                                 controller: phoneController,
 
                                 hint: LocaleKeys.phone_number.tr(),
                                 title: LocaleKeys.phone_number.tr(),
-                                keyboardType: TextInputType.phone,
+                                // keyboardType: TextInputType.phone,
                                 isRequired: true,
 
                                 validator: (value) {
@@ -82,6 +82,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                   }
                                   return null;
                                 },
+                                selectedCode: '+20',
                               ),
                               48.gap,
                             ],
