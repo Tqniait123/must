@@ -358,7 +358,9 @@ class CodegenLoader extends AssetLoader{
   "expires_soon": "Expires Soon",
   "no_history_found": "No history found",
   "no_cars_found": "No cars found",
-  "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points"
+  "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points",
+  "please_enter_full_name": "Please enter your full name",
+  "name_should_not_contain_special_characters": "Name should only contain letters and spaces"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -704,7 +706,9 @@ static const Map<String,dynamic> _ar = {
   "expires_soon": "تنتهي قريباً",
   "no_history_found": "لا يوجد سجل",
   "no_cars_found": "لا يوجد سيارات",
-  "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة"
+  "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة",
+  "please_enter_full_name": "يرجى إدخال اسمك الكامل",
+  "name_should_not_contain_special_characters": "يجب أن يحتوي الاسم على أحرف ومسافات فقط"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

@@ -41,6 +41,7 @@ class CustomTextFormField extends StatefulWidget {
     this.waitTyping = false, // New bool parameter
     this.isRequired = false,
     this.textAlign = TextAlign.start,
+     this.inputFormatters,
   });
 
   final TextEditingController controller;
@@ -68,6 +69,7 @@ class CustomTextFormField extends StatefulWidget {
   final TextAlign textAlign;
   final bool isRequired;
   final String gender;
+  final List<TextInputFormatter>? inputFormatters;
   final bool waitTyping; // New property to enable or disable debounce
 
   @override

@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final BiometricService2 _biometricService = BiometricService2(); // Updated service
-  bool isRemembered = true;
+  bool isRemembered = false;
 
   // UI State variables
   BiometricStatus _biometricStatus = BiometricStatus.error;
@@ -568,8 +568,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 margin: 0,
                 hint: LocaleKeys.phone_number.tr(),
                 title: LocaleKeys.phone_number.tr(),
+                keyboardType: TextInputType.phone,
+
                 validator: (value) {
                   if (value == null || value.isEmpty) {
+                    return LocaleKeys.please_enter_phone_number.tr();
+                  }
+                  // Check if value contains only digits
+                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
                     return LocaleKeys.please_enter_phone_number.tr();
                   }
                   return null;

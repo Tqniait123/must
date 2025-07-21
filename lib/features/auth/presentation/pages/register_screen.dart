@@ -39,8 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _governorateController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   int? selectedCityId;
 
@@ -70,11 +69,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               27.gap,
               Text(
                 LocaleKeys.register.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.white,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge!.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.white),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -95,6 +92,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       margin: 0,
                       hint: LocaleKeys.full_name.tr(),
                       title: LocaleKeys.full_name.tr(),
+                      validator: (text) {
+                        if (text == null || text.isEmpty) {
+                          return LocaleKeys.please_enter_full_name.tr();
+                        }
+                        // Check if text contains special characters
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(text)) {
+                          return LocaleKeys.name_should_not_contain_special_characters.tr();
+                        }
+                        return null;
+                      },
                     ),
                     16.gap,
                     CustomTextFormField(
@@ -109,6 +116,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       margin: 0,
                       hint: LocaleKeys.phone_number.tr(),
                       title: LocaleKeys.phone_number.tr(),
+                      keyboardType: TextInputType.phone,
+
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return LocaleKeys.please_enter_phone_number.tr();
+                        }
+                        // Check if value contains only digits
+                        if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                          return LocaleKeys.please_enter_phone_number.tr();
+                        }
+                        return null;
+                      },
                     ),
                     16.gap,
                     BlocProvider.value(
@@ -123,27 +142,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   margin: 0,
                                   hint: LocaleKeys.country.tr(),
                                   title: LocaleKeys.country.tr(),
-                                  suffixIC: Icon(
-                                    Icons.arrow_drop_down_rounded,
-                                    color: AppColors.primary,
-                                  ),
+                                  suffixIC: Icon(Icons.arrow_drop_down_rounded, color: AppColors.primary),
                                   readonly: true,
                                   onTap: () {
                                     showSelectionBottomSheet<Country>(
                                       context,
                                       items: state.countries,
-                                      itemLabelBuilder:
-                                          (country) => country.name,
+                                      itemLabelBuilder: (country) => country.name,
                                       onSelect: (country) {
                                         setState(() {
                                           selectedCityId = null;
                                           _cityController.clear();
                                           _governorateController.clear();
-                                          _countryController.text =
-                                              country.name;
-                                          context
-                                              .read<GovernoratesCubit>()
-                                              .getGovernorates(country.id);
+                                          _countryController.text = country.name;
+                                          context.read<GovernoratesCubit>().getGovernorates(country.id);
                                         });
                                       },
                                     );
@@ -161,10 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     BlocProvider.value(
                       value: context.read<GovernoratesCubit>(),
                       child: BlocBuilder<GovernoratesCubit, GovernoratesState>(
-                        builder: (
-                          BuildContext context,
-                          GovernoratesState state,
-                        ) {
+                        builder: (BuildContext context, GovernoratesState state) {
                           if (state is GovernoratesLoaded) {
                             return Column(
                               children: [
@@ -173,26 +182,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   margin: 0,
                                   hint: LocaleKeys.governorate.tr(),
                                   title: LocaleKeys.governorate.tr(),
-                                  suffixIC: Icon(
-                                    Icons.arrow_drop_down_rounded,
-                                    color: AppColors.primary,
-                                  ),
+                                  suffixIC: Icon(Icons.arrow_drop_down_rounded, color: AppColors.primary),
                                   readonly: true,
                                   onTap: () {
                                     showSelectionBottomSheet<Governorate>(
                                       context,
                                       items: state.governorates,
-                                      itemLabelBuilder:
-                                          (governorate) => governorate.name,
+                                      itemLabelBuilder: (governorate) => governorate.name,
                                       onSelect: (governorate) {
                                         setState(() {
                                           selectedCityId = null;
                                           _cityController.clear();
-                                          _governorateController.text =
-                                              governorate.name;
-                                          context.read<CitiesCubit>().getCities(
-                                            governorate.id,
-                                          );
+                                          _governorateController.text = governorate.name;
+                                          context.read<CitiesCubit>().getCities(governorate.id);
                                         });
                                       },
                                     );
@@ -219,10 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   margin: 0,
                                   hint: LocaleKeys.city.tr(),
                                   title: LocaleKeys.city.tr(),
-                                  suffixIC: Icon(
-                                    Icons.arrow_drop_down_rounded,
-                                    color: AppColors.primary,
-                                  ),
+                                  suffixIC: Icon(Icons.arrow_drop_down_rounded, color: AppColors.primary),
                                   readonly: true,
                                   onTap: () {
                                     showSelectionBottomSheet<City>(
@@ -278,10 +277,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (state is RegisterSuccess) {
                       context.go(
                         Routes.otpScreen,
-                        extra: {
-                          'phone': _phoneController.text,
-                          'flow': OtpFlow.registration,
-                        },
+                        extra: {'phone': _phoneController.text, 'flow': OtpFlow.registration},
                       );
                     }
                     if (state is AuthError) {
@@ -289,34 +285,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                   },
                   builder:
-                      (BuildContext context, AuthState state) =>
-                          CustomElevatedButton(
-                            heroTag: 'button',
-                            loading: state is AuthLoading,
-                            title: LocaleKeys.next.tr(),
-                            onPressed: () {
-                              if (selectedCityId == null) {
-                                showErrorToast(context, LocaleKeys.city.tr());
-                              }
-                              if (_formKey.currentState!.validate()) {
-                                AuthCubit.get(context).register(
-                                  RegisterParams(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    name: _userNameController.text,
-                                    phone: _phoneController.text,
-                                    passwordConfirmation:
-                                        _passwordController.text,
-                                    cityId: selectedCityId ?? 0,
+                      (BuildContext context, AuthState state) => CustomElevatedButton(
+                        heroTag: 'button',
+                        loading: state is AuthLoading,
+                        title: LocaleKeys.next.tr(),
+                        onPressed: () {
+                          if (selectedCityId == null) {
+                            showErrorToast(context, LocaleKeys.city.tr());
+                          }
+                          if (_formKey.currentState!.validate()) {
+                            AuthCubit.get(context).register(
+                              RegisterParams(
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                                name: _userNameController.text,
+                                phone: _phoneController.text,
+                                passwordConfirmation: _passwordController.text,
+                                cityId: selectedCityId ?? 0,
 
-                                    // address : _AddressController.text,
-                                  ),
-                                );
+                                // address : _AddressController.text,
+                              ),
+                            );
 
-                                // }
-                              }
-                            },
-                          ),
+                            // }
+                          }
+                        },
+                      ),
                 ),
               ),
             ],

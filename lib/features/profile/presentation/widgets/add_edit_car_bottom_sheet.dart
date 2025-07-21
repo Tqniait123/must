@@ -95,12 +95,37 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     }
   }
 
+  DateTime? _parseManualDate(String dateText) {
+    try {
+      List<String> formats = [
+        'dd/MM/yyyy', // 12/07/2025
+        'd/M/yyyy', // 12/7/2025
+        'MM/dd/yyyy', // 07/12/2025
+        'M/d/yyyy', // 7/12/2025
+        'yyyy-MM-dd', // 2025-07-12
+      ];
+
+      for (String format in formats) {
+        try {
+          return DateFormat(format).parseStrict(dateText);
+        } catch (e) {
+          continue;
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // دالتك المحدّثة
   Future<void> _selectExpiryDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedExpiryDate ?? DateTime.now().add(Duration(days: 365)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 365 * 10)),
+      onDatePickerModeChange: (value) {},
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -119,7 +144,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     if (picked != null) {
       setState(() {
         _selectedExpiryDate = picked;
-        _licenseExpiryDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        _licenseExpiryDateController.text = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }
@@ -352,20 +377,37 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
                   // License Expiry Date
                   GestureDetector(
                     onTap: _selectExpiryDate,
-                    child: AbsorbPointer(
-                      child: CustomTextFormField(
-                        controller: _licenseExpiryDateController,
-                        title: LocaleKeys.license_expiry_date.tr(),
-                        hint: LocaleKeys.select_expiry_date.tr(),
-                        margin: 0,
-                        suffixIC: Icon(Icons.calendar_today, color: AppColors.primary),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return LocaleKeys.please_select_expiry_date.tr();
+                    child: CustomTextFormField(
+                      onTap: _selectExpiryDate,
+                      controller: _licenseExpiryDateController,
+                      title: LocaleKeys.license_expiry_date.tr(),
+                      hint: LocaleKeys.select_expiry_date.tr(),
+                      margin: 0,
+                      readonly: true,
+                      suffixIC: Icon(Icons.calendar_today, color: AppColors.primary),
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          DateTime? parsed = _parseManualDate(value);
+                          if (parsed != null) {
+                            setState(() {
+                              _selectedExpiryDate = parsed;
+                              _licenseExpiryDateController.text = DateFormat('yyyy-MM-dd').format(parsed);
+                            });
                           }
-                          return null;
-                        },
-                      ),
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return LocaleKeys.please_select_expiry_date.tr();
+                        }
+
+                        DateTime? parsed = _parseManualDate(value);
+                        if (parsed == null) {
+                          return 'تنسيق التاريخ غير صحيح';
+                        }
+
+                        return null;
+                      },
                     ),
                   ),
                   const SizedBox(height: 24),

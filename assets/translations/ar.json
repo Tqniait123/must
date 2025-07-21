@@ -349,5 +349,7 @@
     "expires_soon": "تنتهي قريباً",
     "no_history_found": "لا يوجد سجل",
     "no_cars_found": "لا يوجد سيارات",
-    "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة"
+    "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة",
+    "please_enter_full_name": "يرجى إدخال اسمك الكامل",
+    "name_should_not_contain_special_characters": "يجب أن يحتوي الاسم على أحرف ومسافات فقط"
 }

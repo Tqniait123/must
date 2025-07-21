@@ -347,5 +347,7 @@
     "expires_soon": "Expires Soon",
     "no_history_found": "No history found",
     "no_cars_found": "No cars found",
-    "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points"
+    "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points",
+    "please_enter_full_name": "Please enter your full name",
+    "name_should_not_contain_special_characters": "Name should only contain letters and spaces"
 }

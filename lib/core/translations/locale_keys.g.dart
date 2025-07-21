@@ -344,5 +344,7 @@ abstract class  LocaleKeys {
   static const no_history_found = 'no_history_found';
   static const no_cars_found = 'no_cars_found';
   static const points_added_successfully = 'points_added_successfully';
+  static const please_enter_full_name = 'please_enter_full_name';
+  static const name_should_not_contain_special_characters = 'name_should_not_contain_special_characters';
 
 }
