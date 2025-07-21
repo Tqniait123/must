@@ -53,7 +53,7 @@
 //         if (state is LanguagesUpdated) {
 //           selectedLanguage = state.langCode;
 //         } else if (selectedLanguage.isEmpty) {
-//           selectedLanguage = sl<MustIvestPreferences>().getLang();
+//           selectedLanguage = sl<MustInvestPreferences>().getLang();
 //         }
 
 //         return Animate(

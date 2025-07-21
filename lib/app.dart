@@ -12,8 +12,8 @@ import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/languages_cubit/languages_cubit.dart';
 
-class MustIvest extends StatelessWidget {
-  MustIvest({super.key});
+class MustInvest extends StatelessWidget {
+  MustInvest({super.key});
   final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter
 
   @override

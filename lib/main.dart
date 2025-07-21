@@ -63,13 +63,12 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Change to your primary color
-      statusBarIconBrightness:
-          Brightness.light, // Light icons for dark background
+      statusBarIconBrightness: Brightness.light, // Light icons for dark background
     ),
   );
 
-  // Get the language code from MustIvestPreferences
-  // final codeLang = sl<MustIvestPreferences>().getLang();
+  // Get the language code from MustInvestPreferences
+  // final codeLang = sl<MustInvestPreferences>().getLang();
   runApp(
     EasyLocalization(
       path: 'assets/translations',
@@ -83,7 +82,7 @@ Future<void> main() async {
       fallbackLocale: Locales.arabic,
       useOnlyLangCode: true,
       assetLoader: const CodegenLoader(),
-      child: MustIvest(),
+      child: MustInvest(),
     ),
   );
 }
