@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' hide PermissionStatus;
+import 'package:must_invest/core/extensions/string_extensions.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -504,15 +504,15 @@ class _MapScreenState extends State<MapScreen> {
 
                 // Enhanced parking markers
                 ...parkings.map((parking) {
-                  final Random random = Random(parking.hashCode);
-                  final double lat = 30.0444 + (random.nextDouble() - 0.5) * 0.1;
-                  final double lng = 31.2357 + (random.nextDouble() - 0.5) * 0.1;
+                  // final Random random = Random(parking.hashCode);
+                  // final double lat = 30.0444 + (random.nextDouble() - 0.5) * 0.1;
+                  // final double lng = 31.2357 + (random.nextDouble() - 0.5) * 0.1;
 
                   return Marker(
                     rotate: false,
                     width: 120.0,
                     height: 120.0,
-                    point: LatLng(lat, lng),
+                    point: LatLng(parking.lat.toDouble(), parking.lng.toDouble()),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {

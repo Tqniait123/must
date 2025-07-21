@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:must_invest/core/extensions/string_extensions.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
@@ -25,8 +26,7 @@ class RoutingParkingScreen extends StatefulWidget {
   State<RoutingParkingScreen> createState() => _RoutingParkingScreenState();
 }
 
-class _RoutingParkingScreenState extends State<RoutingParkingScreen>
-    with TickerProviderStateMixin {
+class _RoutingParkingScreenState extends State<RoutingParkingScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   final Location _location = Location();
   LocationData? _currentLocation;
@@ -54,8 +54,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
   String _routeDuration = '';
 
   // OpenRouteService API Key - Get free from openrouteservice.org
-  static const String _apiKey =
-      '5b3ce3597851110001cf6248c4040779fe8e41d8ba6f918bf3b007b6';
+  static const String _apiKey = '5b3ce3597851110001cf6248c4040779fe8e41d8ba6f918bf3b007b6';
 
   @override
   void initState() {
@@ -201,60 +200,40 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
   }
 
   void _initializeAnimations() {
-    _routeAnimationController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
+    _routeAnimationController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
 
-    _pulseAnimationController = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    )..repeat(reverse: true);
+    _pulseAnimationController = AnimationController(duration: const Duration(seconds: 1), vsync: this)
+      ..repeat(reverse: true);
 
-    _markerAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    )..repeat(reverse: true);
+    _markerAnimationController = AnimationController(duration: const Duration(milliseconds: 2000), vsync: this)
+      ..repeat(reverse: true);
 
-    _cardAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
+    _cardAnimationController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
 
-    _routeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _routeAnimationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    _routeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _routeAnimationController, curve: Curves.easeOutCubic));
 
-    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.1).animate(
-      CurvedAnimation(
-        parent: _pulseAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1.1,
+    ).animate(CurvedAnimation(parent: _pulseAnimationController, curve: Curves.easeInOut));
 
-    _markerAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(
-        parent: _markerAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _markerAnimation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _markerAnimationController, curve: Curves.easeInOut));
 
     _cardSlideAnimation = Tween<Offset>(
       begin: const Offset(0, 1),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _cardAnimationController,
-        curve: Curves.elasticOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _cardAnimationController, curve: Curves.elasticOut));
 
-    _cardFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _cardAnimationController, curve: Curves.easeIn),
-    );
+    _cardFadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _cardAnimationController, curve: Curves.easeIn));
   }
 
   Future<void> _requestLocationPermission() async {
@@ -292,9 +271,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
   }
 
   void _startLocationTracking() {
-    _locationSubscription = _location.onLocationChanged.listen((
-      LocationData locationData,
-    ) {
+    _locationSubscription = _location.onLocationChanged.listen((LocationData locationData) {
       if (mounted) {
         setState(() {
           _currentLocation = locationData;
@@ -316,24 +293,18 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
       // Current location marker
       _markers.add(
         Marker(
-          point: LatLng(
-            _currentLocation!.latitude!,
-            _currentLocation!.longitude!,
-          ),
+          point: LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
           width: 120,
           height: 50,
-          child: CurrentLocationMarker(
-            animation: _markerAnimation,
-            isNavigating: _isNavigating,
-          ),
+          child: CurrentLocationMarker(animation: _markerAnimation, isNavigating: _isNavigating),
         ),
       );
 
       // Parking location marker
       _markers.add(
         Marker(
-          point: LatLng(0, 0),
-          // point: LatLng(widget.parking.lat, widget.parking.lng),
+          // point: LatLng(0, 0),
+          point: LatLng(widget.parking.lat.toDouble(), widget.parking.lng.toDouble()),
           width: 80,
           height: 80,
           child: ParkingLocationMarker(parking: widget.parking),
@@ -383,13 +354,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
 
       // Shadow polyline for depth
       if (animatedPoints.length > 1) {
-        _polylines.add(
-          Polyline(
-            points: animatedPoints,
-            color: Colors.black.withOpacity(0.2),
-            strokeWidth: 8.0,
-          ),
-        );
+        _polylines.add(Polyline(points: animatedPoints, color: Colors.black.withOpacity(0.2), strokeWidth: 8.0));
       }
 
       // Main route polyline - Changed to AppColors.primary
@@ -404,32 +369,20 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
       // Animated gradient effect for navigation mode
       if (_isNavigating && animatedPoints.length > 5) {
         _polylines.add(
-          Polyline(
-            points: animatedPoints.take(5).toList(),
-            color: Colors.white.withOpacity(0.8),
-            strokeWidth: 4.0,
-          ),
+          Polyline(points: animatedPoints.take(5).toList(), color: Colors.white.withOpacity(0.8), strokeWidth: 4.0),
         );
       }
     });
   }
 
-  double _calculateDistance(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
-  ) {
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const double earthRadius = 6371; // Earth's radius in kilometers
     double dLat = _degreesToRadians(lat2 - lat1);
     double dLon = _degreesToRadians(lon2 - lon1);
 
     double a =
         math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_degreesToRadians(lat1)) *
-            math.cos(_degreesToRadians(lat2)) *
-            math.sin(dLon / 2) *
-            math.sin(dLon / 2);
+        math.cos(_degreesToRadians(lat1)) * math.cos(_degreesToRadians(lat2)) * math.sin(dLon / 2) * math.sin(dLon / 2);
 
     double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return earthRadius * c;
@@ -458,12 +411,9 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
   void _centerMapOnRoute() {
     if (_currentLocation == null) return;
 
-    LatLng currentPos = LatLng(
-      _currentLocation!.latitude!,
-      _currentLocation!.longitude!,
-    );
-    // LatLng parkingPos = LatLng(widget.parking.lat, widget.parking.lng);
-    LatLng parkingPos = LatLng(0, 0);
+    LatLng currentPos = LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!);
+    LatLng parkingPos = LatLng(widget.parking.lat.toDouble(), widget.parking.lng.toDouble());
+    // LatLng parkingPos = LatLng();
 
     LatLngBounds bounds = LatLngBounds(
       LatLng(
@@ -481,10 +431,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
 
   void _centerOnCurrentLocation() {
     if (_currentLocation != null) {
-      _mapController.move(
-        LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-        16.0,
-      );
+      _mapController.move(LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!), 16.0);
     }
   }
 
@@ -519,10 +466,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
             options: MapOptions(
               initialCenter:
                   _currentLocation != null
-                      ? LatLng(
-                        _currentLocation!.latitude!,
-                        _currentLocation!.longitude!,
-                      )
+                      ? LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!)
                       // : LatLng(widget.parking.lat, widget.parking.lng),
                       : LatLng(0, 0),
               initialZoom: 15.0,
@@ -541,23 +485,12 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
               // Markers
               MarkerLayer(markers: _markers),
               // Attribution
-              const RichAttributionWidget(
-                attributions: [
-                  TextSourceAttribution('OpenStreetMap contributors'),
-                ],
-              ),
+              const RichAttributionWidget(attributions: [TextSourceAttribution('OpenStreetMap contributors')]),
             ],
           ),
 
           // Loading indicator
-          if (_isLoadingRoute)
-            Positioned(
-              top: 120,
-              left: 20,
-
-              right: 20,
-              child: RouteLoadingIndicator(),
-            ),
+          if (_isLoadingRoute) Positioned(top: 120, left: 20, right: 20, child: RouteLoadingIndicator()),
 
           // Enhanced Navigation Info Card
           if (_isNavigating && !_isLoadingRoute)
@@ -610,10 +543,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen>
                 children: [
                   CustomBackButton(),
                   Text(''),
-                  NotificationsButton(
-                    color: Color(0xffEAEAF3),
-                    iconColor: AppColors.primary,
-                  ),
+                  NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
                 ],
               ),
             ).paddingAll(20),
