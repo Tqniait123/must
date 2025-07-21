@@ -14,7 +14,7 @@ import 'package:must_invest/features/auth/presentation/languages_cubit/languages
 
 class MustInvest extends StatelessWidget {
   MustInvest({super.key});
-  final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter
+  // final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter
 
   @override
   Widget build(BuildContext context) {
@@ -78,3 +78,6 @@ class MustInvest extends StatelessWidget {
 
   // final GoRouter _router = GoRouter
 }
+
+
+  final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter

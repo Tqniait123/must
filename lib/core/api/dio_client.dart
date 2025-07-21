@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:must_invest/app.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/api/end_points.dart';
 import 'package:must_invest/core/api/response/response.dart';
 import 'package:must_invest/core/errors/app_error.dart';
@@ -45,27 +47,27 @@ class DioClient {
         maxWidth: 90,
       ),
     );
-    // _dio.interceptors.add(
-    //   InterceptorsWrapper(
-    //     onResponse: (response, handler) {
-    //       if (response.statusCode == 401 || response.statusCode == 403) {
-    //         _handleUnauthorized();
-    //       }
-    //       handler.next(response);
-    //     },
-    //     onError: (DioException e, handler) {
-    //       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
-    //         _handleUnauthorized();
-    //       }
-    //       handler.next(e);
-    //     },
-    //   ),
-    // );
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onResponse: (response, handler) {
+          if (response.statusCode == 401 || response.statusCode == 403) {
+            _handleUnauthorized();
+          }
+          handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+            _handleUnauthorized();
+          }
+          handler.next(e);
+        },
+      ),
+    );
   }
 
-  // void _handleUnauthorized() {
-  //   appRouter.router.go(Routes.login);
-  // }
+  void _handleUnauthorized() {
+    appRouter.router.go(Routes.login);
+  }
 
   Dio get dio => _dio;
 

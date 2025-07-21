@@ -379,7 +379,7 @@ class _CustomPhoneFormFieldState extends State<CustomPhoneFormField> {
       }
     }
 
-    widget.controller.text = '$_currentCountryCode$cleanedText';
+    widget.controller.text = cleanedText;
     widget.controller.selection = TextSelection.fromPosition(TextPosition(offset: widget.controller.text.length));
   }
 
