@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +29,7 @@ class ForgetPasswordScreen extends StatefulWidget {
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final phoneController = TextEditingController();
+  String _code = "+20";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +74,16 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                 title: LocaleKeys.phone_number.tr(),
                                 // keyboardType: TextInputType.phone,
                                 isRequired: true,
+                                includeCountryCodeInValue: true,
+                                onChanged: (phone) {
+                                  log('Phone number changed: $phone');
+                                },
+                                onChangedCountryCode: (code) {
+                                  setState(() {
+                                    _code = code;
+                                    log('Country code changed: $code');
+                                  });
+                                },
 
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -108,7 +121,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   showErrorToast(context, state.message);
                 }
                 if (state is ForgetPasswordSentOTP) {
-                  context.push(Routes.otpScreen, extra: {'phone': phoneController.text, 'flow': OtpFlow.passwordReset});
+                  context.push(
+                    Routes.otpScreen,
+                    extra: {'phone': "$_code${phoneController.text}", 'flow': OtpFlow.passwordReset},
+                  );
                 }
               },
               builder:
@@ -117,7 +133,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     title: LocaleKeys.send.tr(),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        AuthCubit.get(context).forgetPassword(phoneController.text);
+                        AuthCubit.get(context).forgetPassword("$_code${phoneController.text}");
                       }
                     },
                   ),

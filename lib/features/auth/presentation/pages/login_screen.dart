@@ -36,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final BiometricService2 _biometricService = BiometricService2(); // Updated service
   bool isRemembered = false;
+  String _code = '+20';
 
   // UI State variables
   BiometricStatus _biometricStatus = BiometricStatus.error;
@@ -140,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result.success) {
         // Use the saved credentials for login instead of form inputs
-        final loginPhone = result.phone ?? _phoneController.text;
+        final loginPhone = result.phone ?? "$_code${_phoneController.text}";
         final loginPassword = result.password ?? _passwordController.text;
 
         // Login successful with biometric - use saved credentials
@@ -210,7 +211,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _performRegularLogin() {
     if (_formKey.currentState!.validate()) {
       AuthCubit.get(context).login(
-        LoginParams(phone: _phoneController.text, password: _passwordController.text, isRemembered: isRemembered),
+        LoginParams(
+          phone: "$_code${_phoneController.text}",
+          password: _passwordController.text,
+          isRemembered: isRemembered,
+        ),
       );
     }
   }
@@ -569,7 +574,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 margin: 0,
                 hint: LocaleKeys.phone_number.tr(),
                 title: LocaleKeys.phone_number.tr(),
-                onChanged: (phone) {},
+                onChanged: (phone) {
+                  log('Phone number changed: $phone');
+                },
+                onChangedCountryCode: (code) {
+                  setState(() {
+                    _code = code;
+                    log('Country code changed: $code');
+                  });
+                },
 
                 // keyboardType: TextInputType.phone,
                 validator: (value) {

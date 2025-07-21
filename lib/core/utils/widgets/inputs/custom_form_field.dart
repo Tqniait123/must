@@ -387,14 +387,14 @@ class _CustomPhoneFormFieldState extends State<CustomPhoneFormField> {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 600), () {
       if (widget.onChanged != null) {
-        widget.onChanged!(widget.includeCountryCodeInValue ? value : _currentCountryCode + value);
+        widget.onChanged!(widget.includeCountryCodeInValue ? _currentCountryCode + value : value);
       }
     });
   }
 
   void _onChangedInstant(String value) {
     if (widget.onChanged != null) {
-      widget.onChanged!(widget.includeCountryCodeInValue ? value : _currentCountryCode + value);
+      widget.onChanged!(widget.includeCountryCodeInValue ? _currentCountryCode + value : value);
     }
   }
 
@@ -458,16 +458,23 @@ class _CustomPhoneFormFieldState extends State<CustomPhoneFormField> {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: (widget.isBordered ?? true) ? Colors.blue : Colors.transparent),
+                borderSide: BorderSide(
+                  width: 1,
+                  color: (widget.isBordered ?? true) ? AppColors.primary : Colors.transparent,
+                ),
                 borderRadius: BorderRadius.all(Radius.circular(widget.radius)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: (widget.isBordered ?? true) ? Colors.grey : Colors.transparent),
+                borderSide: BorderSide(
+                  width: 1,
+                  color: (widget.isBordered ?? true) ? AppColors.borderColor : Colors.transparent,
+                ),
                 borderRadius: BorderRadius.all(Radius.circular(widget.radius)),
               ),
               filled: true,
               fillColor:
-                  widget.backgroundColor ?? (widget.disabled ? const Color(0xff000000).withOpacity(0.2) : Colors.white),
+                  widget.backgroundColor ??
+                  (widget.disabled ? const Color(0xff000000).withOpacity(0.2) : AppColors.white),
               border: OutlineInputBorder(
                 borderSide: BorderSide(
                   width: 0.5,

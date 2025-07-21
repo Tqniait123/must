@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  String _code = "+20";
   int? selectedCityId;
 
   @override
@@ -116,6 +119,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       margin: 0,
                       hint: LocaleKeys.phone_number.tr(),
                       title: LocaleKeys.phone_number.tr(),
+                      includeCountryCodeInValue: true,
+                      onChanged: (phone) {
+                        log('Phone number changed: $phone');
+                      },
+                      onChangedCountryCode: (code) {
+                        setState(() {
+                          _code = code;
+                          log('Country code changed: $code');
+                        });
+                      },
 
                       // keyboardType: TextInputType.phone,
                       validator: (value) {
@@ -300,7 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 email: _emailController.text,
                                 password: _passwordController.text,
                                 name: _userNameController.text,
-                                phone: _phoneController.text,
+                                phone: "$_code${_phoneController.text}",
                                 passwordConfirmation: _passwordController.text,
                                 cityId: selectedCityId ?? 0,
 
