@@ -17,8 +17,7 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-enum MapType { satellite, streetMap, darkMode, terrain, artistic }
+import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -31,8 +30,6 @@ class _MapScreenState extends State<MapScreen> {
   Parking? _selectedParking;
   LatLng? _currentLocation;
   final Location _location = Location();
-  MapType _currentMapType = MapType.satellite; // Default to beautiful satellite view
-  bool _showMapTypeSelector = false;
 
   @override
   void initState() {
@@ -50,245 +47,17 @@ class _MapScreenState extends State<MapScreen> {
     _fetchParkingsData();
   }
 
-  // Map tile configurations for different beautiful map types
   Widget _getTileLayer() {
-    switch (_currentMapType) {
-      case MapType.satellite:
-        // ESRI World Imagery - Beautiful satellite view
-        return TileLayer(
-          urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          userAgentPackageName: 'com.mustinvest.app',
-          maxZoom: 18,
-          maxNativeZoom: 19,
-          retinaMode: true,
-        );
-
-      case MapType.streetMap:
-        // ESRI World Street Map - Clean, professional street map
-        return TileLayer(
-          urlTemplate:
-              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-          userAgentPackageName: 'com.mustinvest.app',
-          maxZoom: 18,
-          maxNativeZoom: 19,
-          retinaMode: true,
-        );
-
-      case MapType.darkMode:
-        // CartoDB Dark Matter - Sleek dark theme
-        return TileLayer(
-          urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-          subdomains: const ['a', 'b', 'c', 'd'],
-          userAgentPackageName: 'com.mustinvest.app',
-          maxZoom: 18,
-          maxNativeZoom: 19,
-          retinaMode: true,
-        );
-
-      case MapType.terrain:
-        // OpenTopoMap - Beautiful topographic view
-        return TileLayer(
-          urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-          subdomains: const ['a', 'b', 'c'],
-          userAgentPackageName: 'com.mustinvest.app',
-          maxZoom: 17,
-          maxNativeZoom: 17,
-          retinaMode: true,
-        );
-
-      case MapType.artistic:
-        // Stamen Watercolor - Artistic, unique style
-        return TileLayer(
-          urlTemplate: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
-          subdomains: const ['a', 'b', 'c', 'd'],
-          userAgentPackageName: 'com.mustinvest.app',
-          maxZoom: 16,
-          maxNativeZoom: 16,
-          retinaMode: true,
-        );
-    }
-  }
-
-  Widget _getAttributionWidget() {
-    switch (_currentMapType) {
-      case MapType.satellite:
-      case MapType.streetMap:
-        return RichAttributionWidget(
-          attributions: [
-            TextSourceAttribution('© Esri', onTap: () {}),
-            TextSourceAttribution('© World Imagery', onTap: () {}),
-          ],
-        );
-      case MapType.darkMode:
-        return RichAttributionWidget(
-          attributions: [
-            TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
-            TextSourceAttribution('© CartoDB', onTap: () {}),
-          ],
-        );
-      case MapType.terrain:
-        return RichAttributionWidget(
-          attributions: [
-            TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
-            TextSourceAttribution('© OpenTopoMap', onTap: () {}),
-          ],
-        );
-      case MapType.artistic:
-        return RichAttributionWidget(
-          attributions: [
-            TextSourceAttribution('© Stamen Design', onTap: () {}),
-            TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
-          ],
-        );
-    }
-  }
-
-  Color _getMarkerColor(bool isBusy) {
-    switch (_currentMapType) {
-      case MapType.satellite:
-        return isBusy ? const Color(0xffFF1744) : const Color(0xff00E676);
-      case MapType.darkMode:
-        return isBusy ? const Color(0xffFF5252) : const Color(0xff69F0AE);
-      case MapType.streetMap:
-        return isBusy ? const Color(0xffE60A0E) : const Color(0xff1DD76E);
-      case MapType.terrain:
-        return isBusy ? const Color(0xffD32F2F) : const Color(0xff388E3C);
-      case MapType.artistic:
-        return isBusy ? const Color(0xff8E24AA) : const Color(0xff43A047);
-    }
-  }
-
-  Color _getCurrentLocationMarkerColor() {
-    switch (_currentMapType) {
-      case MapType.satellite:
-        return const Color(0xff2196F3);
-      case MapType.darkMode:
-        return const Color(0xff64B5F6);
-      case MapType.streetMap:
-        return const Color(0xff1976D2);
-      case MapType.terrain:
-        return const Color(0xff0277BD);
-      case MapType.artistic:
-        return const Color(0xff7B1FA2);
-    }
-  }
-
-  Widget _buildMapTypeSelector() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.1), spreadRadius: 1, blurRadius: 10, offset: const Offset(0, 2)),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Map Style', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _showMapTypeSelector = false;
-                    });
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          ...MapType.values.map((mapType) {
-            final isSelected = _currentMapType == mapType;
-            return ListTile(
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
-                ),
-                child: ClipRRect(borderRadius: BorderRadius.circular(6), child: _getMapTypePreview(mapType)),
-              ),
-              title: Text(_getMapTypeName(mapType)),
-              subtitle: Text(_getMapTypeDescription(mapType)),
-              trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.blue) : null,
-              onTap: () {
-                setState(() {
-                  _currentMapType = mapType;
-                  _showMapTypeSelector = false;
-                });
-              },
-            );
-          }),
-          const SizedBox(height: 8),
-        ],
-      ),
+    return TileLayer(
+      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      userAgentPackageName: 'com.mustinvest.app',
+      maxZoom: 18,
+      maxNativeZoom: 19,
     );
   }
 
-  Widget _getMapTypePreview(MapType mapType) {
-    switch (mapType) {
-      case MapType.satellite:
-        return Container(
-          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff4CAF50), Color(0xff2196F3)])),
-          child: const Icon(Icons.satellite_alt, color: Colors.white, size: 20),
-        );
-      case MapType.streetMap:
-        return Container(color: const Color(0xffF5F5F5), child: const Icon(Icons.map, color: Colors.grey, size: 20));
-      case MapType.darkMode:
-        return Container(
-          color: const Color(0xff212121),
-          child: const Icon(Icons.dark_mode, color: Colors.white, size: 20),
-        );
-      case MapType.terrain:
-        return Container(
-          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff8BC34A), Color(0xff795548)])),
-          child: const Icon(Icons.terrain, color: Colors.white, size: 20),
-        );
-      case MapType.artistic:
-        return Container(
-          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xff9C27B0), Color(0xffE91E63)])),
-          child: const Icon(Icons.palette, color: Colors.white, size: 20),
-        );
-    }
-  }
-
-  String _getMapTypeName(MapType mapType) {
-    switch (mapType) {
-      case MapType.satellite:
-        return 'Satellite';
-      case MapType.streetMap:
-        return 'Street Map';
-      case MapType.darkMode:
-        return 'Dark Mode';
-      case MapType.terrain:
-        return 'Terrain';
-      case MapType.artistic:
-        return 'Artistic';
-    }
-  }
-
-  String _getMapTypeDescription(MapType mapType) {
-    switch (mapType) {
-      case MapType.satellite:
-        return 'High-resolution satellite imagery';
-      case MapType.streetMap:
-        return 'Clean street map with labels';
-      case MapType.darkMode:
-        return 'Sleek dark theme for night use';
-      case MapType.terrain:
-        return 'Topographic view with elevation';
-      case MapType.artistic:
-        return 'Watercolor artistic style';
-    }
+  Color _getMarkerColor(bool isBusy) {
+    return isBusy ? Colors.red : Colors.green;
   }
 
   Future<void> _checkPermissionsAndGetLocation() async {
@@ -448,20 +217,15 @@ class _MapScreenState extends State<MapScreen> {
           options: MapOptions(
             initialCenter: _currentLocation ?? LatLng(30.0444, 31.2357),
             initialZoom: 12.0,
-            keepAlive: true,
             maxZoom: 18.0,
             minZoom: 3.0,
           ),
           children: [
             _getTileLayer(),
-            _getAttributionWidget(),
             MarkerLayer(
-              rotate: false,
               markers: [
-                // Enhanced current location marker
                 if (_currentLocation != null)
                   Marker(
-                    rotate: false,
                     width: 120.0,
                     height: 120.0,
                     point: _currentLocation!,
@@ -471,7 +235,7 @@ class _MapScreenState extends State<MapScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
-                            color: _getCurrentLocationMarkerColor(),
+                            color: Colors.blue,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -482,34 +246,25 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                             ],
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.my_location, color: Colors.white, size: 18),
-                              const SizedBox(width: 4),
+                              Icon(Icons.my_location, color: Colors.white, size: 18),
+                              SizedBox(width: 4),
                               Text(
                                 'You',
-                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                         ),
-                        CustomPaint(
-                          size: const Size(16, 10),
-                          painter: _TrianglePainter(color: _getCurrentLocationMarkerColor()),
-                        ),
+                        CustomPaint(size: const Size(16, 10), painter: _TrianglePainter(color: Colors.blue)),
                       ],
                     ),
                   ),
 
-                // Enhanced parking markers
                 ...parkings.map((parking) {
-                  // final Random random = Random(parking.hashCode);
-                  // final double lat = 30.0444 + (random.nextDouble() - 0.5) * 0.1;
-                  // final double lng = 31.2357 + (random.nextDouble() - 0.5) * 0.1;
-
                   return Marker(
-                    rotate: false,
                     width: 120.0,
                     height: 120.0,
                     point: LatLng(parking.lat.toDouble(), parking.lng.toDouble()),
@@ -566,37 +321,16 @@ class _MapScreenState extends State<MapScreen> {
           ],
         ),
 
-        // Enhanced floating controls
         Positioned(
           top: 50,
           right: 16,
-          child: Column(
-            children: [
-              // Map type selector button
-              FloatingActionButton.small(
-                heroTag: "mapType",
-                onPressed: () {
-                  setState(() {
-                    _showMapTypeSelector = !_showMapTypeSelector;
-                  });
-                },
-                backgroundColor: Colors.white,
-                child: const Icon(Icons.layers, color: Colors.blue),
-              ),
-              const SizedBox(height: 8),
-              // Refresh button
-              FloatingActionButton.small(
-                heroTag: "refresh",
-                onPressed: _refreshData,
-                backgroundColor: Colors.white,
-                child: const Icon(Icons.refresh, color: Colors.blue),
-              ),
-            ],
+          child: FloatingActionButton.small(
+            heroTag: "refresh",
+            onPressed: _refreshData,
+            backgroundColor: Colors.white,
+            child: const Icon(Icons.refresh, color: Colors.blue),
           ),
         ),
-
-        // Map type selector overlay
-        if (_showMapTypeSelector) Positioned(top: 50, left: 16, right: 80, child: _buildMapTypeSelector()),
 
         if (_selectedParking != null)
           Positioned(bottom: 20, left: 16, right: 16, child: _buildParkingDetails(_selectedParking!)),
@@ -740,7 +474,7 @@ class _MapScreenState extends State<MapScreen> {
                     _selectedParking?.isBusy == true
                         ? null
                         : () {
-                          // Handle start parking action
+                          openGoogleMapsRoute(_selectedParking!.lat.toDouble(), _selectedParking!.lng.toDouble());
                         },
               ),
             ],
@@ -748,6 +482,17 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> openGoogleMapsRoute(double lat, double lng) async {
+    final Uri googleMapsUri = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving',
+    );
+
+    // جرب launchUrl باستخدام LaunchMode.externalApplication
+    if (!await launchUrl(googleMapsUri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch Google Maps');
+    }
   }
 }
 
