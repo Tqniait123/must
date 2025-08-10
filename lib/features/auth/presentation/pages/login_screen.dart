@@ -239,11 +239,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _enableBiometricAuthentication() async {
     try {
       final success = await BiometricService2.saveCredentials(
-        phone: _phoneController.text,
+        phone: "$_code${_phoneController.text}",
         password: _passwordController.text,
       );
 
-      if (success) {
+      if (success) {  
         setState(() {
           _isBiometricEnabled = true;
         });
