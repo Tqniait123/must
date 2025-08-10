@@ -47,17 +47,27 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     _nameController = TextEditingController(text: widget.car?.name ?? '');
     _plateNumberController = TextEditingController(text: widget.car?.metalPlate ?? '');
     _manufactureYearController = TextEditingController(text: widget.car?.manufactureYear ?? '');
-    _licenseExpiryDateController = TextEditingController(text: widget.car?.licenseExpiryDate ?? '');
     _colorController = TextEditingController(text: widget.car?.color ?? '');
 
-    // Parse existing expiry date if editing
+    // Initialize the license expiry date controller first
+    _licenseExpiryDateController = TextEditingController();
+
+    // Parse existing expiry date if editing and data exists
     if (widget.car?.licenseExpiryDate != null && widget.car!.licenseExpiryDate.isNotEmpty) {
       try {
-        _selectedExpiryDate = DateTime.parse(widget.car!.licenseExpiryDate);
+        // Parse the date (assuming it's already in YYYY-MM-DD format or can be parsed)
+        _selectedExpiryDate = _parseToDateTime(widget.car!.licenseExpiryDate);
+        if (_selectedExpiryDate != null) {
+          // Always display in user-friendly format but store as YYYY-MM-DD
+          _licenseExpiryDateController.text = DateFormat('dd/MM/yyyy').format(_selectedExpiryDate!);
+        }
       } catch (e) {
         _selectedExpiryDate = null;
+        _licenseExpiryDateController.text = '';
       }
     }
+    // If no existing date or if it's a new car, _selectedExpiryDate remains null
+    // and _licenseExpiryDateController.text remains empty
   }
 
   @override
@@ -95,14 +105,19 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     }
   }
 
-  DateTime? _parseManualDate(String dateText) {
+  // Updated method to parse various date formats and always return DateTime
+  DateTime? _parseToDateTime(String dateText) {
+    if (dateText.isEmpty) return null;
+
     try {
       List<String> formats = [
+        'yyyy-MM-dd', // 2025-07-12 (target format)
         'dd/MM/yyyy', // 12/07/2025
         'd/M/yyyy', // 12/7/2025
         'MM/dd/yyyy', // 07/12/2025
         'M/d/yyyy', // 7/12/2025
-        'yyyy-MM-dd', // 2025-07-12
+        'yyyy/MM/dd', // 2025/07/12
+        'dd-MM-yyyy', // 12-07-2025
       ];
 
       for (String format in formats) {
@@ -118,7 +133,16 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     }
   }
 
-  // دالتك المحدّثة
+  // Method to format DateTime to YYYY-MM-DD for storage
+  String _formatForStorage(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  // Method to format DateTime for user display
+  String _formatForDisplay(DateTime date) {
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
   Future<void> _selectExpiryDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -144,7 +168,8 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     if (picked != null) {
       setState(() {
         _selectedExpiryDate = picked;
-        _licenseExpiryDateController.text = DateFormat('dd/MM/yyyy').format(picked);
+        // Display in user-friendly format
+        _licenseExpiryDateController.text = _formatForDisplay(picked);
       });
     }
   }
@@ -153,13 +178,16 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     if (_formKey.currentState!.validate()) {
       final isEditing = widget.car != null;
 
+      // Always store date in YYYY-MM-DD format
+      final licenseExpiryDateForStorage = _selectedExpiryDate != null ? _formatForStorage(_selectedExpiryDate!) : '';
+
       if (isEditing) {
         // Update existing car
         final updateRequest = UpdateCarRequest(
           name: _nameController.text.trim(),
           metalPlate: _plateNumberController.text.trim(),
           manufactureYear: _manufactureYearController.text.trim(),
-          licenseExpiryDate: _licenseExpiryDateController.text.trim(),
+          licenseExpiryDate: licenseExpiryDateForStorage, // YYYY-MM-DD format
           color: _colorController.text.trim(),
           carPhoto: _carPhoto,
           frontLicense: _frontLicense,
@@ -183,7 +211,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
           backLicense: _backLicense!,
           metalPlate: _plateNumberController.text.trim(),
           manufactureYear: _manufactureYearController.text.trim(),
-          licenseExpiryDate: _licenseExpiryDateController.text.trim(),
+          licenseExpiryDate: licenseExpiryDateForStorage, // YYYY-MM-DD format
           color: _colorController.text.trim(),
         );
 
@@ -265,15 +293,9 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
           if (state is AddCarSuccess) {
             Navigator.pop(context);
             widget.onSuccess?.call();
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(content: Text(LocaleKeys.car_added_successfully.tr()), backgroundColor: Colors.green),
-            // );
           } else if (state is UpdateCarSuccess) {
             Navigator.pop(context);
             widget.onSuccess?.call();
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(content: Text(LocaleKeys.car_updated_successfully.tr()), backgroundColor: Colors.green),
-            // );
           } else if (state is AddCarError) {
             ScaffoldMessenger.of(
               context,
@@ -385,27 +407,10 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
                       margin: 0,
                       readonly: true,
                       suffixIC: Icon(Icons.calendar_today, color: AppColors.primary),
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          DateTime? parsed = _parseManualDate(value);
-                          if (parsed != null) {
-                            setState(() {
-                              _selectedExpiryDate = parsed;
-                              _licenseExpiryDateController.text = DateFormat('yyyy-MM-dd').format(parsed);
-                            });
-                          }
-                        }
-                      },
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
+                        if (_selectedExpiryDate == null) {
                           return LocaleKeys.please_select_expiry_date.tr();
                         }
-
-                        DateTime? parsed = _parseManualDate(value);
-                        if (parsed == null) {
-                          return 'تنسيق التاريخ غير صحيح';
-                        }
-
                         return null;
                       },
                     ),
