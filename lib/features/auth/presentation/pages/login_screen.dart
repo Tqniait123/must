@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result.success) {
         // Use the saved credentials for login instead of form inputs
-        final loginPhone = result.phone ?? "$_code${_phoneController.text}";
+        final loginPhone = "$_code${result.phone}" ?? "$_code${_phoneController.text}";
         final loginPassword = result.password ?? _passwordController.text;
 
         // Login successful with biometric - use saved credentials
@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
-      if (success) {  
+      if (success) {
         setState(() {
           _isBiometricEnabled = true;
         });
@@ -402,7 +402,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (result.phone != null && result.password != null) {
           AuthCubit.get(
             context,
-          ).login(LoginParams(phone: result.phone!, password: result.password!, isRemembered: true));
+          ).login(LoginParams(phone: "$_code${result.phone}", password: result.password!, isRemembered: true));
         }
 
         _showSuccess(LocaleKeys.device_authentication_success.tr());
