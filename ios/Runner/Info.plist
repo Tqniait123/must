@@ -55,5 +55,15 @@
 	<true/>
   <key>NSFaceIDUsageDescription</key>
 <string>This app uses Face ID for secure authentication</string>
+<!-- URL Schemes for phone, SMS, email, and WhatsApp -->
+<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>tel</string>
+    <string>sms</string>
+    <string>mailto</string>
+    <string>whatsapp</string>
+    <string>https</string>
+    <string>http</string>
+</array>
 </dict>
 </plist>

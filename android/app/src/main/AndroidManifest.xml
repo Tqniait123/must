@@ -47,5 +47,43 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
-    </queries>
+
+    <!-- Query intents for Android 11+ (API level 30+) -->
+
+    <!-- Phone app -->
+    <intent>
+        <action android:name="android.intent.action.CALL" />
+        <data android:scheme="tel" />
+    </intent>
+
+    <!-- SMS app -->
+    <intent>
+        <action android:name="android.intent.action.SENDTO" />
+        <data android:scheme="sms" />
+    </intent>
+
+    <!-- Email app -->
+    <intent>
+        <action android:name="android.intent.action.SENDTO" />
+        <data android:scheme="mailto" />
+    </intent>
+
+    <!-- WhatsApp -->
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" android:host="wa.me" />
+    </intent>
+
+    <!-- Browser for maps -->
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" />
+    </intent>
+
+    <!-- Contacts app -->
+    <intent>
+        <action android:name="android.intent.action.INSERT" />
+        <data android:mimeType="vnd.android.cursor.dir/contact" />
+    </intent>
+</queries>
 </manifest>
