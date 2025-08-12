@@ -42,6 +42,7 @@ class CustomTextFormField extends StatefulWidget {
     this.isRequired = false,
     this.textAlign = TextAlign.start,
     this.inputFormatters,
+    this.autofillHints,
   });
 
   final TextEditingController controller;
@@ -69,6 +70,7 @@ class CustomTextFormField extends StatefulWidget {
   final TextAlign textAlign;
   final bool isRequired;
   final String gender;
+  final Iterable<String>? autofillHints;
   final List<TextInputFormatter>? inputFormatters;
   final bool waitTyping; // New property to enable or disable debounce
 
@@ -150,6 +152,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             inputFormatters: widget.keyboardType == TextInputType.phone ? [FilteringTextInputFormatter.digitsOnly] : [],
             readOnly: widget.readonly,
             textAlign: widget.textAlign,
+            autofillHints: widget.autofillHints,
             textAlignVertical: TextAlignVertical.center,
             style: AppStyles.medium12black.copyWith(fontSize: 15.r),
             showCursor: !widget.readonly,
@@ -306,6 +309,7 @@ class CustomPhoneFormField extends StatefulWidget {
     this.isRequired = false,
     this.textAlign = TextAlign.start,
     this.includeCountryCodeInValue = false,
+    this.autofillHints,
   });
 
   final TextEditingController controller;
@@ -330,6 +334,7 @@ class CustomPhoneFormField extends StatefulWidget {
   final bool isRequired;
   final TextAlign textAlign;
   final bool includeCountryCodeInValue;
+  final Iterable<String>? autofillHints;
 
   @override
   State<CustomPhoneFormField> createState() => _CustomPhoneFormFieldState();
@@ -444,6 +449,7 @@ class _CustomPhoneFormFieldState extends State<CustomPhoneFormField> {
           margin: EdgeInsets.symmetric(horizontal: widget.margin),
           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(widget.radius))),
           child: TextFormField(
+            autofillHints: widget.autofillHints,
             controller: widget.controller,
             keyboardType: TextInputType.phone,
             readOnly: widget.readonly,

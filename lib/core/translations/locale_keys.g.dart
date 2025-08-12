@@ -346,5 +346,23 @@ abstract class  LocaleKeys {
   static const points_added_successfully = 'points_added_successfully';
   static const please_enter_full_name = 'please_enter_full_name';
   static const name_should_not_contain_special_characters = 'name_should_not_contain_special_characters';
+  static const biometric_not_supported = 'biometric_not_supported';
+  static const biometric_not_supported_message = 'biometric_not_supported_message';
+  static const biometric_setup_required = 'biometric_setup_required';
+  static const biometric_setup_required_message = 'biometric_setup_required_message';
+  static const enter_credentials = 'enter_credentials';
+  static const enter_credentials_message = 'enter_credentials_message';
+  static const success = 'success';
+  static const ok = 'ok';
+  static const biometric_update_failed = 'biometric_update_failed';
+  static const biometric_settings_open_failed = 'biometric_settings_open_failed';
+  static const biometric_enabled_success = 'biometric_enabled_success';
+  static const biometric_status_check_error = 'biometric_status_check_error';
+  static const biometric_enable_failed = 'biometric_enable_failed';
+  static const authenticate_to_enable_biometric = 'authenticate_to_enable_biometric';
+  static const credentials_save_failed = 'credentials_save_failed';
+  static const biometric_disabled_success = 'biometric_disabled_success';
+  static const biometric_disable_failed = 'biometric_disable_failed';
+  static const biometric_disable_error = 'biometric_disable_error';
 
 }

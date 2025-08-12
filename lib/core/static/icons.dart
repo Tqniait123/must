@@ -28,6 +28,7 @@ static const String qrCodeIc = '$_iconsPath/qr_code_ic.svg';
 static const String termsIc = '$_iconsPath/terms_ic.svg';
 static const String faqIc = '$_iconsPath/faq_ic.svg';
 static const String onBoarding2 = '$_iconsPath/on_boarding_2.svg';
+static const String languageIc = '$_iconsPath/language_ic.svg';
 static const String onBoarding1 = '$_iconsPath/on_boarding_1.svg';
 static const String eyeIc = '$_iconsPath/eye_ic.svg';
 static const String outlinedLocationIc = '$_iconsPath/outlined_location_ic.svg';

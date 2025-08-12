@@ -351,5 +351,27 @@
     "no_cars_found": "لا يوجد سيارات",
     "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة",
     "please_enter_full_name": "يرجى إدخال اسمك الكامل",
-    "name_should_not_contain_special_characters": "يجب أن يحتوي الاسم على أحرف ومسافات فقط"
+    "name_should_not_contain_special_characters": "يجب أن يحتوي الاسم على أحرف ومسافات فقط",
+
+  "biometric_not_supported": "المقاييس الحيوية غير مدعومة",
+  "biometric_not_supported_message": "جهازك لا يدعم المصادقة البيومترية أو أنها غير متوفرة.",
+  "biometric_setup_required": "إعداد المقاييس الحيوية مطلوب",
+  "biometric_setup_required_message": "المصادقة البيومترية متوفرة ولكنها غير معدة. هل تريد فتح الإعدادات لتسجيل بياناتك الحيوية؟",
+  "enter_credentials": "أدخل بيانات الاعتماد",
+  "enter_credentials_message": "يرجى إدخال بيانات تسجيل الدخول لتمكين المصادقة البيومترية.",
+
+  "success": "نجح",
+
+  "ok": "موافق",
+
+  "biometric_update_failed": "فشل في تحديث إعدادات المقاييس الحيوية",
+  "biometric_settings_open_failed": "فشل في فتح إعدادات المقاييس الحيوية. يرجى تمكين المقاييس الحيوية يدوياً في إعدادات الجهاز.",
+  "biometric_enabled_success": "تم تمكين المصادقة البيومترية بنجاح!",
+  "biometric_status_check_error": "خطأ في فحص حالة المقاييس الحيوية. يرجى المحاولة مرة أخرى.",
+  "biometric_enable_failed": "فشل في تمكين المصادقة البيومترية",
+  "authenticate_to_enable_biometric": "يرجى المصادقة لتمكين تسجيل الدخول البيومتري",
+  "credentials_save_failed": "فشل في حفظ بيانات الاعتماد بشكل آمن.",
+  "biometric_disabled_success": "تم تعطيل المصادقة البيومترية بنجاح!",
+  "biometric_disable_failed": "فشل في تعطيل المصادقة البيومترية.",
+  "biometric_disable_error": "خطأ في تعطيل المصادقة البيومترية"
 }

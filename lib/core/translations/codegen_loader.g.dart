@@ -360,7 +360,25 @@ class CodegenLoader extends AssetLoader{
   "no_cars_found": "No cars found",
   "points_added_successfully": "{newPoints} points added successfully, your balance is {allPoints} points",
   "please_enter_full_name": "Please enter your full name",
-  "name_should_not_contain_special_characters": "Name should only contain letters and spaces"
+  "name_should_not_contain_special_characters": "Name should only contain letters and spaces",
+  "biometric_not_supported": "Biometric Not Supported",
+  "biometric_not_supported_message": "Your device does not support biometric authentication or it is not available.",
+  "biometric_setup_required": "Biometric Setup Required",
+  "biometric_setup_required_message": "Biometric authentication is available but not set up. Would you like to open settings to enroll your biometrics?",
+  "enter_credentials": "Enter Your Credentials",
+  "enter_credentials_message": "Please enter your login credentials to enable biometric authentication.",
+  "success": "Success",
+  "ok": "OK",
+  "biometric_update_failed": "Failed to update biometric settings",
+  "biometric_settings_open_failed": "Failed to open biometric settings. Please enable biometrics manually in device settings.",
+  "biometric_enabled_success": "Biometric authentication enabled successfully!",
+  "biometric_status_check_error": "Error checking biometric status. Please try again.",
+  "biometric_enable_failed": "Failed to enable biometric authentication",
+  "authenticate_to_enable_biometric": "Please authenticate to enable biometric login",
+  "credentials_save_failed": "Failed to save credentials securely.",
+  "biometric_disabled_success": "Biometric authentication disabled successfully!",
+  "biometric_disable_failed": "Failed to disable biometric authentication.",
+  "biometric_disable_error": "Error disabling biometric authentication"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -708,7 +726,25 @@ static const Map<String,dynamic> _ar = {
   "no_cars_found": "لا يوجد سيارات",
   "points_added_successfully": "تمت إضافة {newPoints} نقطة بنجاح، رصيدك الحالي {allPoints} نقطة",
   "please_enter_full_name": "يرجى إدخال اسمك الكامل",
-  "name_should_not_contain_special_characters": "يجب أن يحتوي الاسم على أحرف ومسافات فقط"
+  "name_should_not_contain_special_characters": "يجب أن يحتوي الاسم على أحرف ومسافات فقط",
+  "biometric_not_supported": "المقاييس الحيوية غير مدعومة",
+  "biometric_not_supported_message": "جهازك لا يدعم المصادقة البيومترية أو أنها غير متوفرة.",
+  "biometric_setup_required": "إعداد المقاييس الحيوية مطلوب",
+  "biometric_setup_required_message": "المصادقة البيومترية متوفرة ولكنها غير معدة. هل تريد فتح الإعدادات لتسجيل بياناتك الحيوية؟",
+  "enter_credentials": "أدخل بيانات الاعتماد",
+  "enter_credentials_message": "يرجى إدخال بيانات تسجيل الدخول لتمكين المصادقة البيومترية.",
+  "success": "نجح",
+  "ok": "موافق",
+  "biometric_update_failed": "فشل في تحديث إعدادات المقاييس الحيوية",
+  "biometric_settings_open_failed": "فشل في فتح إعدادات المقاييس الحيوية. يرجى تمكين المقاييس الحيوية يدوياً في إعدادات الجهاز.",
+  "biometric_enabled_success": "تم تمكين المصادقة البيومترية بنجاح!",
+  "biometric_status_check_error": "خطأ في فحص حالة المقاييس الحيوية. يرجى المحاولة مرة أخرى.",
+  "biometric_enable_failed": "فشل في تمكين المصادقة البيومترية",
+  "authenticate_to_enable_biometric": "يرجى المصادقة لتمكين تسجيل الدخول البيومتري",
+  "credentials_save_failed": "فشل في حفظ بيانات الاعتماد بشكل آمن.",
+  "biometric_disabled_success": "تم تعطيل المصادقة البيومترية بنجاح!",
+  "biometric_disable_failed": "فشل في تعطيل المصادقة البيومترية.",
+  "biometric_disable_error": "خطأ في تعطيل المصادقة البيومترية"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

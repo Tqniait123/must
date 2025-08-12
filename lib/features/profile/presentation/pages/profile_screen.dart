@@ -379,17 +379,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
           // Biometric/Face ID Toggle with full logic
-          ProfileItemWidget(
-            title: LocaleKeys.face_id.tr(),
-            iconPath: AppIcons.faceIdIc,
-            trailing:
-                _isLoading
-                    ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : Switch.adaptive(
-                      value: _isBiometricEnabled && _isBiometricSupported,
-                      onChanged: _isBiometricSupported ? _handleBiometricToggle : null,
-                    ),
-          ),
+          // ProfileItemWidget(
+          //   title: LocaleKeys.face_id.tr(),
+          //   iconPath: AppIcons.faceIdIc,
+          //   trailing:
+          //       _isLoading
+          //           ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+          //           : Switch.adaptive(
+          //             value: _isBiometricEnabled && _isBiometricSupported,
+          //             onChanged: _isBiometricSupported ? _handleBiometricToggle : null,
+          //           ),
+          // ),
           ProfileItemWidget(
             title: LocaleKeys.my_cards.tr(),
             iconPath: AppIcons.cardIc,
@@ -433,7 +433,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context.push(Routes.aboutUs);
             },
           ),
-          ProfileItemWidget(title: LocaleKeys.settings.tr(), iconPath: AppIcons.settingsIc, onPressed: () {}),
+          ProfileItemWidget(
+            title: LocaleKeys.settings.tr(),
+            iconPath: AppIcons.settingsIc,
+            onPressed: () {
+              context.push(Routes.settings);
+            },
+          ),
           20.gap,
           CustomElevatedButton(
             icon: AppIcons.supportIc,

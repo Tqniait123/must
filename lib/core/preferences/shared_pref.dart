@@ -8,6 +8,7 @@ const String kToken = 'token';
 const String kTempToken = 'temp-token';
 const String kLang = 'Lang';
 const String kOnBoarding = 'onBoarding'; // Added for onboarding screen
+const String kRememberMe = 'rememberMe';
 
 class MustInvestPreferences {
   final SharedPreferences _preferences;
@@ -53,6 +54,14 @@ class MustInvestPreferences {
     return _preferences.getBool(kOnBoarding) ?? false;
   }
 
+  Future<bool> setRememberMe(bool remember) async {
+    return await _preferences.setBool(kRememberMe, remember);
+  }
+
+  bool isRememberedMe() {
+    return _preferences.getBool(kRememberMe) ?? false;
+  }
+
   setDarkMode(bool isDark) {
     _preferences.setBool(kIsDark, isDark);
     log("${isDark ? "Dark" : "Light"} Mode saved to shared preferences ");
@@ -70,10 +79,7 @@ class MustInvestPreferences {
 
   Future<bool> saveLastSeenNotificationsTime() async {
     try {
-      await _preferences.setString(
-        'last_seen_notifications_time',
-        DateTime.now().toUtc().toIso8601String(),
-      );
+      await _preferences.setString('last_seen_notifications_time', DateTime.now().toUtc().toIso8601String());
       return true;
     } catch (e) {
       log('Error saving last seen notifications time: $e');

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Added for TextInput and AutofillHints
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
@@ -9,7 +10,9 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/core/services/biometric_service_2.dart'; // Updated import
+import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -141,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result.success) {
         // Use the saved credentials for login instead of form inputs
-        final loginPhone = "$_code${result.phone}" ?? "$_code${_phoneController.text}";
+        final loginPhone = "${result.phone}" ?? "$_code${_phoneController.text}";
         final loginPassword = result.password ?? _passwordController.text;
 
         // Login successful with biometric - use saved credentials
@@ -206,10 +209,34 @@ class _LoginScreenState extends State<LoginScreen> {
       log('Error loading saved credentials: $e');
     }
   }
+
+  // ==================== AUTOFILL HELPERS ====================
+
+  void _enableAutofillContext() {
+    // Request focus to trigger autofill suggestions
+    if (_phoneController.text.isEmpty) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      });
+    }
+  }
+
+  void _disableAutofillContext() {
+    // Clear autofill context when remember me is disabled
+    TextInput.finishAutofillContext();
+  }
+
   // ==================== REGULAR LOGIN ====================
 
   void _performRegularLogin() {
     if (_formKey.currentState!.validate()) {
+      // If remember me is checked, commit autofill context
+      if (isRemembered) {
+        TextInput.finishAutofillContext(shouldSave: true);
+      } else {
+        TextInput.finishAutofillContext(shouldSave: false);
+      }
+
       AuthCubit.get(context).login(
         LoginParams(
           phone: "$_code${_phoneController.text}",
@@ -402,7 +429,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (result.phone != null && result.password != null) {
           AuthCubit.get(
             context,
-          ).login(LoginParams(phone: "$_code${result.phone}", password: result.password!, isRemembered: true));
+          ).login(LoginParams(phone: "${result.phone}", password: result.password!, isRemembered: true));
         }
 
         _showSuccess(LocaleKeys.device_authentication_success.tr());
@@ -560,92 +587,104 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginForm() {
-    return Form(
-      key: _formKey,
-      child: Hero(
-        tag: "form",
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              CustomPhoneFormField(
-                includeCountryCodeInValue: true,
-                controller: _phoneController,
-                margin: 0,
-                hint: LocaleKeys.phone_number.tr(),
-                title: LocaleKeys.phone_number.tr(),
-                onChanged: (phone) {
-                  log('Phone number changed: $phone');
-                },
-                onChangedCountryCode: (code) {
-                  setState(() {
-                    _code = code;
-                    log('Country code changed: $code');
-                  });
-                },
-
-                // keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return LocaleKeys.please_enter_phone_number.tr();
-                  }
-                  // Check if value contains only digits
-                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                    return LocaleKeys.please_enter_phone_number.tr();
-                  }
-                  return null;
-                },
-                selectedCode: '+20',
-              ),
-              16.gap,
-              CustomTextFormField(
-                margin: 0,
-                controller: _passwordController,
-                hint: LocaleKeys.password.tr(),
-                title: LocaleKeys.password.tr(),
-                obscureText: true,
-                isPassword: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return LocaleKeys.please_enter_password.tr();
-                  }
-                  return null;
-                },
-              ),
-              19.gap,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Checkbox(
-                          activeColor: AppColors.secondary,
-                          checkColor: AppColors.white,
-                          value: isRemembered,
-                          onChanged: (value) {
-                            setState(() {
-                              isRemembered = value ?? false;
-                            });
-                          },
+    return AutofillGroup(
+      child: Form(
+        key: _formKey,
+        child: Hero(
+          tag: "form",
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                CustomPhoneFormField(
+                  includeCountryCodeInValue: true,
+                  controller: _phoneController,
+                  margin: 0,
+                  hint: LocaleKeys.phone_number.tr(),
+                  title: LocaleKeys.phone_number.tr(),
+                  // Add autofill hints for phone number
+                  autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
+                  onChanged: (phone) {
+                    log('Phone number changed: $phone');
+                  },
+                  onChangedCountryCode: (code) {
+                    setState(() {
+                      _code = code;
+                      log('Country code changed: $code');
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return LocaleKeys.please_enter_phone_number.tr();
+                    }
+                    // Check if value contains only digits
+                    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                      return LocaleKeys.please_enter_phone_number.tr();
+                    }
+                    return null;
+                  },
+                  selectedCode: '+20',
+                ),
+                16.gap,
+                CustomTextFormField(
+                  margin: 0,
+                  controller: _passwordController,
+                  hint: LocaleKeys.password.tr(),
+                  title: LocaleKeys.password.tr(),
+                  obscureText: true,
+                  isPassword: true,
+                  // Add autofill hints for password
+                  // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.password] : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return LocaleKeys.please_enter_password.tr();
+                    }
+                    return null;
+                  },
+                ),
+                19.gap,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Checkbox(
+                            activeColor: AppColors.secondary,
+                            checkColor: AppColors.white,
+                            value: isRemembered,
+                            onChanged: (value) {
+                              setState(() {
+                                isRemembered = value ?? false;
+                                // Trigger autofill context update when remember me changes
+                                if (isRemembered) {
+                                  // Enable autofill context
+                                  _enableAutofillContext();
+                                } else {
+                                  // Disable autofill context
+                                  _disableAutofillContext();
+                                }
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                      8.gap,
-                      Text(LocaleKeys.remember_me.tr(), style: context.bodyMedium.s12.regular),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () => context.push(Routes.forgetPassword),
-                    child: Text(
-                      LocaleKeys.forgot_password.tr(),
-                      style: context.bodyMedium.s12.bold.copyWith(color: AppColors.primary),
+                        8.gap,
+                        Text(LocaleKeys.remember_me.tr(), style: context.bodyMedium.s12.regular),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    GestureDetector(
+                      onTap: () => context.push(Routes.forgetPassword),
+                      child: Text(
+                        LocaleKeys.forgot_password.tr(),
+                        style: context.bodyMedium.s12.bold.copyWith(color: AppColors.primary),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -659,11 +698,18 @@ class _LoginScreenState extends State<LoginScreen> {
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) async {
               if (state is AuthSuccess) {
+                // Commit autofill data on successful login if remember me is checked
+                if (isRemembered) {
+                  TextInput.finishAutofillContext(shouldSave: true);
+                }
+
                 // Handle post-login biometric setup
                 await _handlePostLoginBiometricSetup();
                 UserCubit.get(context).setCurrentUser(state.user);
                 context.go(Routes.homeUser);
               } else if (state is AuthError) {
+                // Don't save autofill data on failed login
+                TextInput.finishAutofillContext(shouldSave: false);
                 showErrorToast(context, state.message);
               }
             },
@@ -704,6 +750,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// ==================== BOTTOM SHEET WIDGETS ====================
 // ==================== BOTTOM SHEET WIDGETS ====================
 
 class _QuickLoginBottomSheet extends StatelessWidget {

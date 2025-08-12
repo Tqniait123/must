@@ -24,12 +24,8 @@ abstract class AuthRepo {
   Future<Either<void, AppError>> forgetPassword(String email);
   Future<Either<void, AppError>> resetPassword(ResetPasswordParams params);
   Future<Either<List<Country>, AppError>> getCountries(); // List<Country>
-  Future<Either<List<Governorate>, AppError>> getGovernorates(
-    int countryId,
-  ); // List<Governorate>
-  Future<Either<List<City>, AppError>> getCities(
-    int governorateId,
-  ); // List<City>
+  Future<Either<List<Governorate>, AppError>> getGovernorates(int countryId); // List<Governorate>
+  Future<Either<List<City>, AppError>> getCities(int governorateId); // List<City>
 }
 
 class AuthRepoImpl implements AuthRepo {
@@ -47,13 +43,7 @@ class AuthRepoImpl implements AuthRepo {
       if (response.isSuccess) {
         return Left(response.data!);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -66,18 +56,13 @@ class AuthRepoImpl implements AuthRepo {
       final response = await _remoteDataSource.login(params);
 
       if (response.isSuccess) {
-        if (params.isRemembered) {
-          _localDataSource.saveToken(response.data?.token ?? '');
-        }
+        _localDataSource.saveToken(response.data?.token ?? '');
+        _localDataSource.setRememberMe(params.isRemembered);
+        // if (params.isRemembered) {
+        // }
         return Left(response.data!);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -139,16 +124,10 @@ class AuthRepoImpl implements AuthRepo {
       final response = await _remoteDataSource.register(params);
 
       if (response.isSuccess) {
-        _localDataSource.saveToken(response.accessToken ?? '');
+        // _localDataSource.saveToken(response.accessToken ?? '');
         return Left(null);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -163,13 +142,7 @@ class AuthRepoImpl implements AuthRepo {
       if (response.isSuccess) {
         return const Left(null);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -177,22 +150,14 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<void, AppError>> resetPassword(
-    ResetPasswordParams params,
-  ) async {
+  Future<Either<void, AppError>> resetPassword(ResetPasswordParams params) async {
     try {
       final response = await _remoteDataSource.resetPassword(params);
 
       if (response.isSuccess) {
         return const Left(null);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -207,13 +172,7 @@ class AuthRepoImpl implements AuthRepo {
       if (response.isSuccess) {
         return Left(response.data!);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -228,13 +187,7 @@ class AuthRepoImpl implements AuthRepo {
       if (response.isSuccess) {
         return Left(response.data!);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -242,22 +195,14 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<List<Governorate>, AppError>> getGovernorates(
-    int countryId,
-  ) async {
+  Future<Either<List<Governorate>, AppError>> getGovernorates(int countryId) async {
     try {
       final response = await _remoteDataSource.getGovernorates(countryId);
 
       if (response.isSuccess) {
         return Left(response.data!);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -265,23 +210,17 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<AuthModel, AppError>> verifyRegistration(
-    VerifyParams params,
-  ) async {
+  Future<Either<AuthModel, AppError>> verifyRegistration(VerifyParams params) async {
     try {
       final response = await _remoteDataSource.verifyRegistration(params);
 
       if (response.isSuccess) {
         _localDataSource.saveToken(response.data?.token ?? '');
+        _localDataSource.setRememberMe(true);
+        // _localDataSource.saveToken(response.data?.token ?? '');
         return Left(response.data!);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -296,13 +235,7 @@ class AuthRepoImpl implements AuthRepo {
       if (response.isSuccess) {
         return const Left(null);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
@@ -310,22 +243,14 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<void, AppError>> verifyPasswordReset(
-    VerifyParams params,
-  ) async {
+  Future<Either<void, AppError>> verifyPasswordReset(VerifyParams params) async {
     try {
       final response = await _remoteDataSource.verifyPasswordReset(params);
 
       if (response.isSuccess) {
         return const Left(null);
       } else {
-        return Right(
-          AppError(
-            message: response.errorMessage,
-            apiResponse: response,
-            type: ErrorType.api,
-          ),
-        );
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }
     } catch (e) {
       return Right(AppError(message: e.toString(), type: ErrorType.unknown));
