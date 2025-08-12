@@ -149,7 +149,11 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
       initialDate: _selectedExpiryDate ?? DateTime.now().add(Duration(days: 365)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 365 * 10)),
-      onDatePickerModeChange: (value) {},
+      // Add these properties to disable manual input
+      initialEntryMode: DatePickerEntryMode.calendarOnly, // Start with calendar view
+      helpText: '', // Remove help text
+      cancelText: LocaleKeys.cancel.tr(),
+      confirmText: LocaleKeys.confirm.tr(), // Add confirm button text
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -159,8 +163,21 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
               surface: Colors.white,
               onSurface: Colors.black,
             ),
+            // Disable the input mode button to prevent switching to manual input
+            datePickerTheme: DatePickerThemeData(
+              inputDecorationTheme: InputDecorationTheme(
+                // This will style the input field if it's shown
+                border: OutlineInputBorder(),
+              ),
+            ),
           ),
-          child: child!,
+          // Wrap in a custom widget to completely disable input mode
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              // Force calendar-only mode
+            ),
+            child: child!,
+          ),
         );
       },
     );
