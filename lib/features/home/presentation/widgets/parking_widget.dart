@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
-import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
-import 'package:must_invest/features/explore/presentation/pages/parking_details_screen.dart';
 
 class ParkingCard extends StatelessWidget {
   final Parking parking;
@@ -95,11 +93,10 @@ class ParkingCard extends StatelessWidget {
                           //   title: parking.durationTime ?? '',
                           // ),
                           5.gap,
-                          CustomDetailsInfo(
-                            icon: AppIcons.outlinedPriceIc,
-                            title:
-                                "${parking.pricePerHour} ${LocaleKeys.EGP.tr()} = ${parking.points} ${LocaleKeys.points.tr()}",
-                          ),
+                          // CustomDetailsInfo(
+                          //   icon: AppIcons.outlinedPriceIc,
+                          //   title: "${parking.pricePerHour}  = ${parking.points} ${LocaleKeys.points.tr()}",
+                          // ),
                         ],
                       ),
                     ],
@@ -113,7 +110,7 @@ class ParkingCard extends StatelessWidget {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text: "${LocaleKeys.EGP.tr()} ${parking.pricePerHour}",
+                              text: parking.pricePerHour,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -127,11 +124,11 @@ class ParkingCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${parking.pricePerHour} ${LocaleKeys.EGP.tr()} = ${(parking.pricePerHour)} ${LocaleKeys.points.tr()}",
-                        style: TextStyle(fontSize: 12, color: Color(0xFF2B3085).withOpacity(0.7)),
-                      ),
+                      // const SizedBox(height: 4),
+                      // Text(
+                      //   "${parking.pricePerHour}  = ${(parking.pricePerHour)} ${LocaleKeys.points.tr()}",
+                      //   style: TextStyle(fontSize: 12, color: Color(0xFF2B3085).withOpacity(0.7)),
+                      // ),
                     ],
                   ),
                   // ],

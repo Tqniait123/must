@@ -241,7 +241,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         duration: const Duration(milliseconds: 200),
                         child: Text(
                           _getImageDisplayText(currentFile, existingImageUrl, subtitle),
-                          key: ValueKey('${isSelected}_${hasExistingImage}'),
+                          key: ValueKey('${isSelected}_$hasExistingImage'),
                           style: context.textTheme.bodySmall!.copyWith(
                             color: hasAnyImage ? AppColors.primary.withOpacity(0.7) : Colors.grey[600],
                             height: 1.3,
@@ -575,20 +575,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     12.gap,
 
-                    _buildImageUploadCard(
-                      title: 'Driving License Back',
-                      subtitle: 'Upload back side of your driving license',
-                      currentFile: drivingLicenseBack,
-                      existingImageUrl: context.user.drivingLicense?.back, // Add existing image
-                      icon: Icons.drive_eta,
-                      onTap:
-                          () => _pickFile((file) {
-                            setState(() {
-                              drivingLicenseBack = file;
-                            });
-                          }),
-                    ),
-                    24.gap,
+                    // _buildImageUploadCard(
+                    //   title: 'Driving License Back',
+                    //   subtitle: 'Upload back side of your driving license',
+                    //   currentFile: drivingLicenseBack,
+                    //   existingImageUrl: context.user.drivingLicense?.back, // Add existing image
+                    //   icon: Icons.drive_eta,
+                    //   onTap:
+                    //       () => _pickFile((file) {
+                    //         setState(() {
+                    //           drivingLicenseBack = file;
+                    //         });
+                    //       }),
+                    // ),
+                    // 24.gap,
                   ],
                 ),
               ),

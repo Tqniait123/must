@@ -295,7 +295,7 @@ class _MapScreenState extends State<MapScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '${parking.pricePerHour} EGP',
+                                  parking.pricePerHour,
                                   style: const TextStyle(
                                     fontSize: 13,
                                     color: Colors.white,

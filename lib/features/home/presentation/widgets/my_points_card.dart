@@ -76,25 +76,25 @@ class MyPointsCardGradient extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.trending_up, color: AppColors.primary, size: 16),
-                    4.gap,
-                    Text(
-                      "+15%",
-                      style: context.bodyMedium.s12.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              //   decoration: BoxDecoration(
+              //     color: AppColors.primary.withOpacity(0.2),
+              //     borderRadius: BorderRadius.circular(20),
+              //     border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+              //   ),
+              //   child: Row(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //       Icon(Icons.trending_up, color: AppColors.primary, size: 16),
+              //       4.gap,
+              //       Text(
+              //         "+15%",
+              //         style: context.bodyMedium.s12.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
           24.gap,
@@ -206,27 +206,27 @@ class MyPointsCardMinimal extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.arrow_upward, color: AppColors.primary, size: 14),
-                          2.gap,
-                          Text(
-                            "15%",
-                            style: context.bodyMedium.s12.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    //   decoration: BoxDecoration(
+                    //     color: AppColors.primary.withOpacity(0.1),
+                    //     borderRadius: BorderRadius.circular(12),
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       Icon(Icons.arrow_upward, color: AppColors.primary, size: 14),
+                    //       2.gap,
+                    //       Text(
+                    //         "15%",
+                    //         style: context.bodyMedium.s12.copyWith(
+                    //           color: AppColors.primary,
+                    //           fontWeight: FontWeight.w600,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
                 20.gap,
@@ -479,24 +479,24 @@ class MyPointsCardGlass extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.keyboard_arrow_up, color: AppColors.primary, size: 18),
-                        Text(
-                          "15%",
-                          style: context.bodyMedium.s12.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   padding: const EdgeInsets.all(8),
+                  //   decoration: BoxDecoration(
+                  //     color: AppColors.primary.withOpacity(0.1),
+                  //     borderRadius: BorderRadius.circular(12),
+                  //     border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  //   ),
+                  //   child: Row(
+                  //     mainAxisSize: MainAxisSize.min,
+                  //     children: [
+                  //       Icon(Icons.keyboard_arrow_up, color: AppColors.primary, size: 18),
+                  //       Text(
+                  //         "15%",
+                  //         style: context.bodyMedium.s12.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
               24.gap,

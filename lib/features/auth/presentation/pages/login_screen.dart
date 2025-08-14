@@ -1007,20 +1007,20 @@ class SocialMediaButtons extends StatelessWidget {
             onPressed: () {},
           ),
         ),
-        20.gap,
-        Expanded(
-          child: CustomElevatedButton(
-            heroTag: 'facebook',
-            height: 48,
-            isBordered: true,
-            icon: AppIcons.facebook,
-            iconColor: null,
-            textColor: AppColors.black,
-            backgroundColor: AppColors.white,
-            title: LocaleKeys.facebook.tr(),
-            onPressed: () {},
-          ),
-        ),
+        // 20.gap,
+        // Expanded(
+        //   child: CustomElevatedButton(
+        //     heroTag: 'facebook',
+        //     height: 48,
+        //     isBordered: true,
+        //     icon: AppIcons.facebook,
+        //     iconColor: null,
+        //     textColor: AppColors.black,
+        //     backgroundColor: AppColors.white,
+        //     title: LocaleKeys.facebook.tr(),
+        //     onPressed: () {},
+        //   ),
+        // ),
       ],
     );
   }
