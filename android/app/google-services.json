@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "292970330572",
+    "project_id": "must-94dc7",
+    "storage_bucket": "must-94dc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292970330572:android:a1900e02400b9eaa004569",
+        "android_client_info": {
+          "package_name": "com.tqniait.mustUser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiwDOvQUprV11NLdY3L2pDm3NOrFfRVO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

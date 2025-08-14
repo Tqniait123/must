@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:must_invest/core/observers/bloc_observer.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/locales.dart';
 import 'package:must_invest/core/translations/codegen_loader.g.dart';
+import 'package:must_invest/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -51,7 +53,7 @@ Future<void> main() async {
 
   // Initialize the dependency injection container
   await initLocator(sharedPreferences);
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize FCM
   // FcmService fcmService = FcmService(preferences: sl());
