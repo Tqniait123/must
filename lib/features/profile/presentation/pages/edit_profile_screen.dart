@@ -75,10 +75,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = context.user;
 
     // If user has a city, we need to load the complete hierarchy
-    if (user.city != null && user.city!.isNotEmpty) {
+    if (user.cityId != null) {
       try {
         // Set the city name directly if it's just a string
-        _cityController.text = user.city!;
+        _cityController.text = user.cityId.toString();
 
         // If you have a way to get city ID from the city name or user data
         // you might need to implement a search or lookup mechanism here

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 enum UserType { user, parkingMan }
 
 class AppUser {
@@ -10,11 +12,17 @@ class AppUser {
   final String linkId;
   final bool? isOnline;
   final bool? isActivated;
-
   final String? phoneNumber;
   final UserType type;
   final List<Car> cars;
   final int points;
+
+  // Added new fields
+  final int? countryId;
+  final int? governorateId;
+  final int? cityId;
+  final bool inParking;
+  final DateTime? inParkingFrom;
 
   const AppUser({
     required this.id,
@@ -24,13 +32,17 @@ class AppUser {
     this.hasSubscription = false,
     this.address,
     required this.linkId,
-
     this.isOnline = false,
     this.phoneNumber,
     required this.type,
     required this.cars,
     this.isActivated = false,
     this.points = 0,
+    this.countryId,
+    this.governorateId,
+    this.cityId,
+    this.inParking = false,
+    this.inParkingFrom,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -47,6 +59,11 @@ class AppUser {
       cars: (json['cars'] as List<dynamic>?)?.map((car) => Car.fromJson(car)).toList() ?? [],
       isActivated: json['is_activated'],
       points: json['points'],
+      countryId: json['country_id'],
+      governorateId: json['governorate_id'],
+      cityId: json['city_id'],
+      inParking: json['in_parking'] ?? false,
+      inParkingFrom: json['in_parking_from'] != null ? DateTime.parse(json['in_parking_from']) : null,
     );
   }
 }
@@ -130,22 +147,30 @@ class User {
   final String name;
   final String email;
   final String phone;
-  final String? city;
+  final int? countryId;
+  final int? governorateId;
+  final int? cityId;
   final String? image;
   final Document? nationalId;
   final Document? drivingLicense;
   final int points;
+  final bool inParking;
+  final DateTime? inParkingFrom;
 
   const User._({
     required this.id,
     required this.name,
     required this.email,
     required this.phone,
-    this.city,
+    this.countryId,
+    this.governorateId,
+    this.cityId,
     this.image,
     this.nationalId,
     this.drivingLicense,
     required this.points,
+    this.inParking = false,
+    this.inParkingFrom,
   });
 
   User copyWith({
@@ -153,23 +178,50 @@ class User {
     String? name,
     String? email,
     String? phone,
-    String? city,
+    int? countryId,
+    int? governorateId,
+    int? cityId,
     String? image,
     Document? nationalId,
     Document? drivingLicense,
     int? points,
+    bool? inParking,
+    DateTime? inParkingFrom,
   }) {
     return User._(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
-      city: city ?? this.city,
+      countryId: countryId ?? this.countryId,
+      governorateId: governorateId ?? this.governorateId,
+      cityId: cityId ?? this.cityId,
       image: image ?? this.image,
       nationalId: nationalId ?? this.nationalId,
       drivingLicense: drivingLicense ?? this.drivingLicense,
       points: points ?? this.points,
+      inParking: inParking ?? this.inParking,
+      inParkingFrom: inParkingFrom ?? this.inParkingFrom,
     );
+  }
+
+  /// Parse custom date format: "12-08-2025 08:48 AM"
+  static DateTime? _parseCustomDateTime(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return null;
+
+    try {
+      // Define the format that matches your API response
+      final formatter = DateFormat('dd-MM-yyyy hh:mm a');
+      return formatter.parse(dateString);
+    } catch (e) {
+      // Fallback to ISO format parsing if custom format fails
+      try {
+        return DateTime.parse(dateString);
+      } catch (e) {
+        print('Error parsing date: $dateString - $e');
+        return null;
+      }
+    }
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -178,11 +230,15 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      city: json['city'],
+      countryId: json['country_id'],
+      governorateId: json['governorate_id'],
+      cityId: json['city_id'],
       image: json['image'],
-      nationalId: Document.fromJson(json['national_id']),
-      drivingLicense: Document.fromJson(json['driving_license']),
+      nationalId: json['national_id'] != null ? Document.fromJson(json['national_id']) : null,
+      drivingLicense: json['driving_license'] != null ? Document.fromJson(json['driving_license']) : null,
       points: json['points'] ?? 0,
+      inParking: json['in_parking'] ?? false,
+      inParkingFrom: _parseCustomDateTime(json['in_parking_from']),
     );
   }
 
@@ -192,11 +248,15 @@ class User {
       'name': name,
       'email': email,
       'phone': phone,
-      'city': city,
+      'country_id': countryId,
+      'governorate_id': governorateId,
+      'city_id': cityId,
       'image': image,
       'national_id': nationalId?.toJson(),
       'driving_license': drivingLicense?.toJson(),
       'points': points,
+      'in_parking': inParking,
+      'in_parking_from': inParkingFrom?.toIso8601String(),
     };
   }
 }

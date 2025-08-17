@@ -10,33 +10,39 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 // Design 2: Minimalist Card with Accent (for Timer)
 class ParkingTimerCard extends StatefulWidget {
-  const ParkingTimerCard({super.key});
+  final DateTime startTime;
+
+  const ParkingTimerCard({super.key, required this.startTime});
 
   @override
   State<ParkingTimerCard> createState() => _ParkingTimerCardState();
 }
 
 class _ParkingTimerCardState extends State<ParkingTimerCard> {
-  late Stopwatch _stopwatch;
   late Timer _timer;
   String _elapsedTime = "00:00:00";
 
   @override
   void initState() {
     super.initState();
-    _stopwatch = Stopwatch()..start();
+    _updateElapsedTime();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _elapsedTime = _formatDuration(_stopwatch.elapsed);
-      });
+      _updateElapsedTime();
     });
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    _stopwatch.stop();
     super.dispose();
+  }
+
+  void _updateElapsedTime() {
+    final now = DateTime.now();
+    final elapsed = now.difference(widget.startTime);
+    setState(() {
+      _elapsedTime = _formatDuration(elapsed);
+    });
   }
 
   String _formatDuration(Duration duration) {
@@ -47,10 +53,16 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> {
     return "$hours:$minutes:$seconds";
   }
 
+  Duration _getElapsedDuration() {
+    final now = DateTime.now();
+    return now.difference(widget.startTime);
+  }
+
   void _showPaymentBottomSheet() {
-    final totalMinutes = _stopwatch.elapsed.inMinutes + 1;
+    final elapsed = _getElapsedDuration();
+    final totalMinutes = elapsed.inMinutes + 1;
     final points = totalMinutes * 5;
-    final parkingDuration = _formatDuration(_stopwatch.elapsed);
+    final parkingDuration = _formatDuration(elapsed);
 
     showModalBottomSheet(
       context: context,

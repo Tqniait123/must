@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
@@ -110,8 +111,11 @@ class _HomeUserState extends State<HomeUser> {
           Row(
             children: [
               Flexible(flex: 1, child: MyPointsCardMinimal()),
-              SizedBox(width: 16),
-              Flexible(flex: 1, child: ParkingTimerCard()),
+              if (context.user.inParking ?? false) ...[
+                SizedBox(width: 16),
+
+                Flexible(flex: 1, child: ParkingTimerCard(startTime: context.user.inParkingFrom ?? DateTime.now())),
+              ],
             ],
           ),
 
