@@ -7,10 +7,10 @@ class Parking {
   final String address;
   final String lat;
   final String lng;
-  final String pricePerHour;
+  final String pricePerHour; // Now in Points instead of EGP
   final String? aboutParking;
-  final String mostPopular;
-  final String mostWanted;
+  final bool mostPopular; // Changed from String to bool
+  final bool mostWanted; // Changed from String to bool
   final String status;
   final String mainImage;
   final Gallery gallery;
@@ -19,6 +19,7 @@ class Parking {
   final Floors floors;
   final String points;
   final bool isBusy;
+  final int userVisits; // Added user visits count
 
   Parking({
     required this.id,
@@ -41,6 +42,7 @@ class Parking {
     required this.floors,
     required this.points,
     this.isBusy = false,
+    required this.userVisits, // Required parameter
   });
 
   factory Parking.fromJson(Map<String, dynamic> json) {
@@ -53,10 +55,10 @@ class Parking {
       address: json['address'],
       lat: json['lat'],
       lng: json['lng'],
-      pricePerHour: json['price / hour'],
+      pricePerHour: json['price / hour'], // Now represents points
       aboutParking: json['about parking'],
-      mostPopular: json['most popular'],
-      mostWanted: json['most wanted'],
+      mostPopular: json['most popular'] ?? false, // Now bool with default false
+      mostWanted: json['most wanted'] ?? false, // Now bool with default false
       status: json['status'],
       mainImage: json['main image'],
       gallery: Gallery.fromJson(json['gallery']),
@@ -65,6 +67,7 @@ class Parking {
       floors: Floors.fromJson(json['floors']),
       points: json['points'],
       isBusy: json['is_busy'] ?? false,
+      userVisits: json['user_visits'] ?? 0, // Default to 0 if not provided
     );
   }
 
@@ -89,10 +92,10 @@ class Parking {
         address: "123 Main Street",
         lat: "40.7128",
         lng: "-74.0060",
-        pricePerHour: "5.00",
+        pricePerHour: "50", // Points instead of EGP
         aboutParking: "Modern parking facility in downtown",
-        mostPopular: "Yes",
-        mostWanted: "No",
+        mostPopular: true, // Changed to bool
+        mostWanted: false, // Changed to bool
         status: "Active",
         mainImage: "assets/images/parking1.jpg",
         gallery: Gallery(
@@ -135,12 +138,13 @@ class Parking {
         floors: Floors(
           floorsCount: 3,
           floors: [
-            Floor(name: "Ground Floor", totalSpaces: 50, busy: "25"),
-            Floor(name: "First Floor", totalSpaces: 40, busy: "20"),
-            Floor(name: "Second Floor", totalSpaces: 30, busy: "15"),
+            Floor(name: "Ground Floor", totalSpaces: 50, busy: true), // Changed to bool
+            Floor(name: "First Floor", totalSpaces: 40, busy: false), // Changed to bool
+            Floor(name: "Second Floor", totalSpaces: 30, busy: false), // Changed to bool
           ],
         ),
         points: "4.5",
+        userVisits: 25, // Added user visits
       ),
       Parking(
         id: 2,
@@ -158,10 +162,10 @@ class Parking {
         address: "456 Broadway Ave",
         lat: "34.0522",
         lng: "-118.2437",
-        pricePerHour: "6.50",
+        pricePerHour: "65", // Points instead of EGP
         aboutParking: "Secure parking in the heart of downtown",
-        mostPopular: "No",
-        mostWanted: "Yes",
+        mostPopular: false, // Changed to bool
+        mostWanted: true, // Changed to bool
         status: "Active",
         mainImage: "assets/images/parking2.jpg",
         gallery: Gallery(
@@ -201,11 +205,12 @@ class Parking {
         floors: Floors(
           floorsCount: 2,
           floors: [
-            Floor(name: "Level 1", totalSpaces: 60, busy: "30"),
-            Floor(name: "Level 2", totalSpaces: 40, busy: "25"),
+            Floor(name: "Level 1", totalSpaces: 60, busy: true), // Changed to bool
+            Floor(name: "Level 2", totalSpaces: 40, busy: false), // Changed to bool
           ],
         ),
         points: "4.2",
+        userVisits: 18, // Added user visits
       ),
     ];
   }
@@ -360,11 +365,15 @@ class Floors {
 class Floor {
   final String name;
   final int totalSpaces;
-  final String busy;
+  final bool busy; // Changed from String to bool
 
   Floor({required this.name, required this.totalSpaces, required this.busy});
 
   factory Floor.fromJson(Map<String, dynamic> json) {
-    return Floor(name: json['name'], totalSpaces: json['total spaces'], busy: json['busy']);
+    return Floor(
+      name: json['name'],
+      totalSpaces: json['total spaces'],
+      busy: json['busy'] ?? false, // Now bool with default false
+    );
   }
 }

@@ -199,11 +199,11 @@ class _MapScreenState extends State<MapScreen> {
 
   // Check if parking has tags
   bool _isMostPopular(Parking parking) {
-    return parking.mostPopular.toLowerCase() == 'yes';
+    return parking.mostPopular;
   }
 
   bool _isMostWanted(Parking parking) {
-    return parking.mostWanted.toLowerCase() == 'yes';
+    return parking.mostWanted;
   }
 
   Future<void> _checkPermissionsAndGetLocation() async {
