@@ -14,6 +14,7 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/dialogs/selection_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/inputs/image_picker_avatar.dart';
@@ -342,6 +343,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CustomBackButton(),
               Center(child: LogoWidget(type: LogoType.svg)),
               27.gap,
               Text(

@@ -407,7 +407,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           ProfileItemWidget(
             title: LocaleKeys.privacy_policy.tr(),
-            iconPath: AppIcons.termsIc,
+            iconPath: AppIcons.privacyPolicyIc,
             onPressed: () {
               context.push(Routes.privacyPolicy);
             },
@@ -428,7 +428,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           ProfileItemWidget(
             title: LocaleKeys.about_us.tr(),
-            iconPath: AppIcons.termsIc,
+            iconPath: AppIcons.aboutUsIc,
             onPressed: () {
               context.push(Routes.aboutUs);
             },

@@ -38,20 +38,36 @@ class UserHomeHeaderWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Column(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    LocaleKeys.hola_name.tr(namedArgs: {"name": context.user.name}),
-                    style: context.bodyMedium.s24.bold.copyWith(color: AppColors.white),
-                  ).withPressEffect(
-                    onTap: () {
+                  CustomIconButton(
+                    iconAsset: AppIcons.settingsIc,
+                    iconColor: AppColors.white,
+                    color: Color(0xff6468AC),
+                    onPressed: () {
                       context.push(Routes.profile);
                     },
                   ),
-                  10.gap,
-                  Text(
-                    LocaleKeys.find_an_easy_parking_spot.tr(),
-                    style: context.bodyMedium.s16.regular.copyWith(color: AppColors.white.withValues(alpha: 0.5)),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          LocaleKeys.hola_name.tr(namedArgs: {"name": context.user.name}),
+                          style: context.bodyMedium.s24.bold.copyWith(color: AppColors.white),
+                        ).withPressEffect(
+                          onTap: () {
+                            context.push(Routes.profile);
+                          },
+                        ),
+                        10.gap,
+                        Text(
+                          LocaleKeys.find_an_easy_parking_spot.tr(),
+                          style: context.bodyMedium.s16.regular.copyWith(color: AppColors.white.withValues(alpha: 0.5)),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

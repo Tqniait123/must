@@ -11,12 +11,7 @@ class LogoWidget extends StatelessWidget {
   final LogoType type;
   final Color? color;
 
-  const LogoWidget({
-    super.key,
-    this.size,
-    this.type = LogoType.png,
-    this.color,
-  });
+  const LogoWidget({super.key, this.size, this.type = LogoType.png, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +21,9 @@ class LogoWidget extends StatelessWidget {
   Widget _buildLogo() {
     switch (type) {
       case LogoType.svg:
-        return SvgPicture.asset(
-          AppIcons.splashLogo,
-          width: size,
-          colorFilter: color?.colorFilter,
-        );
+        return SvgPicture.asset(AppIcons.logo, width: size, colorFilter: color?.colorFilter);
       case LogoType.png:
-        return Image.asset(AppImages.wideLogo, width: size);
+        return Image.asset(AppImages.logo, width: size);
     }
   }
 }
