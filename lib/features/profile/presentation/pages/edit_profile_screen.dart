@@ -50,6 +50,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _countryController;
   late final TextEditingController _governorateController;
   late final TextEditingController _cityController;
+
+  // Selected IDs for tracking user selections
+  int? selectedCountryId;
+  int? selectedGovernorateId;
   int? selectedCityId;
 
   @override
@@ -64,56 +68,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _governorateController = TextEditingController();
     _cityController = TextEditingController();
 
+    // Set initial selected IDs from user data
+    selectedCountryId = user.countryId;
+    selectedGovernorateId = user.governorateId;
+    selectedCityId = user.cityId;
+
     // Load countries on init
     context.read<CountriesCubit>().getCountries();
 
-    // If user has city data, we need to load the hierarchy
+    // Load user location data if available
     _loadUserLocationData();
   }
 
   Future<void> _loadUserLocationData() async {
     final user = context.user;
 
-    // If user has a city, we need to load the complete hierarchy
-    if (user.cityId != null) {
-      try {
-        // Set the city name directly if it's just a string
-        _cityController.text = user.cityId.toString();
+    // If user has location data, load the complete hierarchy
+    if (user.countryId != null) {
+      // Load governorates for the user's country
+      context.read<GovernoratesCubit>().getGovernorates(user.countryId!);
 
-        // If you have a way to get city ID from the city name or user data
-        // you might need to implement a search or lookup mechanism here
-        // For example:
-        // final cityData = await _findCityByName(user.city!);
-        // if (cityData != null) {
-        //   selectedCityId = cityData.id;
-        //   // Load governorate and country data based on city
-        //   await _loadLocationHierarchy(cityData);
-        // }
-      } catch (e) {
-        log('Error loading user location data: $e');
+      if (user.governorateId != null) {
+        // Load cities for the user's governorate
+        context.read<CitiesCubit>().getCities(user.governorateId!);
       }
     }
   }
 
-  // Optional: Helper method to load the complete location hierarchy
-  // This would be useful if you have APIs to get parent locations
-  Future<void> _loadLocationHierarchy(City city) async {
-    try {
-      // Load governorate for this city
-      // final governorate = await _getGovernorateByCity(city.id);
-      // if (governorate != null) {
-      //   _governorateController.text = governorate.name;
-      //   context.read<CitiesCubit>().getCities(governorate.id);
-      //
-      //   // Load country for this governorate
-      //   final country = await _getCountryByGovernorate(governorate.id);
-      //   if (country != null) {
-      //     _countryController.text = country.name;
-      //     context.read<GovernoratesCubit>().getGovernorates(country.id);
-      //   }
-      // }
-    } catch (e) {
-      log('Error loading location hierarchy: $e');
+  // Method to set country name when countries are loaded
+  void _setCountryNameFromId(List<Country> countries) {
+    if (selectedCountryId != null) {
+      final country = countries.firstWhere((c) => c.id == selectedCountryId, orElse: () => countries.first);
+      _countryController.text = country.name;
+    }
+  }
+
+  // Method to set governorate name when governorates are loaded
+  void _setGovernorateNameFromId(List<Governorate> governorates) {
+    if (selectedGovernorateId != null) {
+      final governorate = governorates.firstWhere(
+        (g) => g.id == selectedGovernorateId,
+        orElse: () => governorates.first,
+      );
+      _governorateController.text = governorate.name;
+    }
+  }
+
+  // Method to set city name when cities are loaded
+  void _setCityNameFromId(List<City> cities) {
+    if (selectedCityId != null) {
+      final city = cities.firstWhere((c) => c.id == selectedCityId, orElse: () => cities.first);
+      _cityController.text = city.name;
     }
   }
 
@@ -132,7 +137,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required PlatformFile? currentFile,
     required VoidCallback onTap,
     required IconData icon,
-    String? existingImageUrl, // Add this parameter for existing images
+    String? existingImageUrl,
   }) {
     final isSelected = currentFile != null;
     final hasExistingImage = existingImageUrl != null && existingImageUrl.isNotEmpty;
@@ -402,6 +407,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: BlocBuilder<CountriesCubit, CountriesState>(
                         builder: (BuildContext context, CountriesState state) {
                           if (state is CountriesLoaded) {
+                            // Set initial country name if not already set
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_countryController.text.isEmpty && selectedCountryId != null) {
+                                _setCountryNameFromId(state.countries);
+                              }
+                            });
+
                             return Column(
                               children: [
                                 CustomTextFormField(
@@ -418,6 +430,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       itemLabelBuilder: (country) => country.name,
                                       onSelect: (country) {
                                         setState(() {
+                                          selectedCountryId = country.id;
+                                          selectedGovernorateId = null;
                                           selectedCityId = null;
                                           _cityController.clear();
                                           _governorateController.clear();
@@ -444,6 +458,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: BlocBuilder<GovernoratesCubit, GovernoratesState>(
                         builder: (BuildContext context, GovernoratesState state) {
                           if (state is GovernoratesLoaded) {
+                            // Set initial governorate name if not already set
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_governorateController.text.isEmpty && selectedGovernorateId != null) {
+                                _setGovernorateNameFromId(state.governorates);
+                              }
+                            });
+
                             return Column(
                               children: [
                                 CustomTextFormField(
@@ -460,6 +481,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       itemLabelBuilder: (governorate) => governorate.name,
                                       onSelect: (governorate) {
                                         setState(() {
+                                          selectedGovernorateId = governorate.id;
                                           selectedCityId = null;
                                           _cityController.clear();
                                           _governorateController.text = governorate.name;
@@ -484,6 +506,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: BlocBuilder<CitiesCubit, CitiesState>(
                         builder: (BuildContext context, CitiesState state) {
                           if (state is CitiesLoaded) {
+                            // Set initial city name if not already set
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_cityController.text.isEmpty && selectedCityId != null) {
+                                _setCityNameFromId(state.cities);
+                              }
+                            });
+
                             return Column(
                               children: [
                                 CustomTextFormField(
@@ -536,7 +565,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'National ID Front',
                       subtitle: 'Upload front side of your national ID',
                       currentFile: nationalIdFront,
-                      existingImageUrl: context.user.nationalId?.front, // Add existing image
+                      existingImageUrl: context.user.nationalId?.front,
                       icon: Icons.credit_card,
                       onTap:
                           () => _pickFile((file) {
@@ -551,7 +580,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'National ID Back',
                       subtitle: 'Upload back side of your national ID',
                       currentFile: nationalIdBack,
-                      existingImageUrl: context.user.nationalId?.back, // Add existing image
+                      existingImageUrl: context.user.nationalId?.back,
                       icon: Icons.credit_card,
                       onTap:
                           () => _pickFile((file) {
@@ -566,7 +595,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: 'Driving License Front',
                       subtitle: 'Upload front side of your driving license',
                       currentFile: drivingLicenseFront,
-                      existingImageUrl: context.user.drivingLicense?.front, // Add existing image
+                      existingImageUrl: context.user.drivingLicense?.front,
                       icon: Icons.drive_eta,
                       onTap:
                           () => _pickFile((file) {
@@ -576,21 +605,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           }),
                     ),
                     12.gap,
-
-                    // _buildImageUploadCard(
-                    //   title: 'Driving License Back',
-                    //   subtitle: 'Upload back side of your driving license',
-                    //   currentFile: drivingLicenseBack,
-                    //   existingImageUrl: context.user.drivingLicense?.back, // Add existing image
-                    //   icon: Icons.drive_eta,
-                    //   onTap:
-                    //       () => _pickFile((file) {
-                    //         setState(() {
-                    //           drivingLicenseBack = file;
-                    //         });
-                    //       }),
-                    // ),
-                    // 24.gap,
                   ],
                 ),
               ),
@@ -632,7 +646,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           heroTag: 'save',
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              // TODO: Implement API call with form data
                               _updateProfile(context.read<ProfileCubit>());
                             }
                           },
@@ -644,17 +657,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ],
           ),
           71.gap,
-          30.gap, // Add extra bottom padding
+          30.gap,
         ],
       ),
     );
   }
 
   void _updateProfile([ProfileCubit? profileCubit]) async {
-    // Use the passed cubit or try to get it from context
     final cubit = profileCubit ?? context.read<ProfileCubit>();
 
-    // Create UpdateProfileParams instance
     final params = UpdateProfileParams(
       name: _nameController.text.trim(),
       cityId: selectedCityId!,
@@ -665,32 +676,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       drivingLicenseBack: drivingLicenseBack,
     );
 
-    // Validate the params
     if (!params.isValid()) {
       final errors = params.getValidationErrors();
       print('Validation errors: ${errors.join(', ')}');
-      // Show error message to user
       return;
     }
 
     try {
-      // Convert to FormData
       final formData = await params.toFormData();
-
-      // Log the data being sent (for debugging)
       log('Update Profile Data: ${params.toMap()}');
       log('Files count: ${params.getFilesCount()}');
       log('Total files size: ${(params.getTotalFilesSize() / 1024).toStringAsFixed(1)} KB');
 
-      // TODO: Call your API with formData
-      // Example:
-      // final response = await apiClient.updateProfile(formData);
       await cubit.updateProfile(params);
-      // For now, just pop the screen
       context.pop();
     } catch (e) {
       log('Error creating form data: $e');
-      // Handle error
     }
   }
 }
