@@ -10,6 +10,7 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/languages_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/inputs/custom_phone_field.dart';
 import 'package:must_invest/features/profile/presentation/widgets/profile_item_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -276,20 +277,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 onChanged: (phone) {
                                   // Handle phone change
                                 },
-                                onChangedCountryCode: (code) {
+                                onChangedCountryCode: (code, countryCode) {
                                   setModalState(() {
                                     code = code;
                                   });
                                 },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return LocaleKeys.please_enter_phone_number.tr();
-                                  }
-                                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                                    return LocaleKeys.please_enter_phone_number.tr();
-                                  }
-                                  return null;
-                                },
+                                // validator: (value) {
+                                //   if (value == null || value.isEmpty) {
+                                //     return LocaleKeys.please_enter_phone_number.tr();
+                                //   }
+                                //   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                                //     return LocaleKeys.please_enter_phone_number.tr();
+                                //   }
+                                //   return null;
+                                // },
                                 selectedCode: code,
                               ),
                               16.gap,

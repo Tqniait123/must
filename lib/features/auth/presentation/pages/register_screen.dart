@@ -13,6 +13,7 @@ import 'package:must_invest/core/utils/dialogs/selection_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/inputs/custom_phone_field.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/city.dart';
 import 'package:must_invest/features/auth/data/models/country.dart';
@@ -123,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onChanged: (phone) {
                         log('Phone number changed: $phone');
                       },
-                      onChangedCountryCode: (code) {
+                      onChangedCountryCode: (code, countryCode) {
                         setState(() {
                           _code = code;
                           log('Country code changed: $code');
@@ -131,16 +132,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
 
                       // keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return LocaleKeys.please_enter_phone_number.tr();
-                        }
-                        // Check if value contains only digits
-                        if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                          return LocaleKeys.please_enter_phone_number.tr();
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return LocaleKeys.please_enter_phone_number.tr();
+                      //   }
+                      //   // Check if value contains only digits
+                      //   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                      //     return LocaleKeys.please_enter_phone_number.tr();
+                      //   }
+                      //   return null;
+                      // },
                       selectedCode: '+20',
                     ),
                     16.gap,

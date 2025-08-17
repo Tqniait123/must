@@ -10,9 +10,7 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/core/services/biometric_service_2.dart'; // Updated import
-import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -20,6 +18,7 @@ import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/inputs/custom_phone_field.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
@@ -603,26 +602,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   hint: LocaleKeys.phone_number.tr(),
                   title: LocaleKeys.phone_number.tr(),
                   // Add autofill hints for phone number
-                  autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
+                  // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
                   onChanged: (phone) {
                     log('Phone number changed: $phone');
                   },
-                  onChangedCountryCode: (code) {
+                  onChangedCountryCode: (code, countryCode) {
                     setState(() {
                       _code = code;
                       log('Country code changed: $code');
                     });
                   },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return LocaleKeys.please_enter_phone_number.tr();
-                    }
-                    // Check if value contains only digits
-                    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                      return LocaleKeys.please_enter_phone_number.tr();
-                    }
-                    return null;
-                  },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return LocaleKeys.please_enter_phone_number.tr();
+                  //   }
+                  //   // Check if value contains only digits
+                  //   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                  //     return LocaleKeys.please_enter_phone_number.tr();
+                  //   }
+                  //   return null;
+                  // },
                   selectedCode: '+20',
                 ),
                 16.gap,

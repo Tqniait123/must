@@ -15,7 +15,7 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
-import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/inputs/custom_phone_field.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/pages/otp_screen.dart';
 
@@ -78,23 +78,23 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                 onChanged: (phone) {
                                   log('Phone number changed: $phone');
                                 },
-                                onChangedCountryCode: (code) {
+                                onChangedCountryCode: (code, countryCode) {
                                   setState(() {
                                     _code = code;
                                     log('Country code changed: $code');
                                   });
                                 },
 
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return LocaleKeys.please_enter_phone_number.tr();
-                                  }
-                                  // Check if value contains only digits
-                                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                                    return LocaleKeys.please_enter_phone_number.tr();
-                                  }
-                                  return null;
-                                },
+                                // validator: (value) {
+                                //   if (value == null || value.isEmpty) {
+                                //     return LocaleKeys.please_enter_phone_number.tr();
+                                //   }
+                                //   // Check if value contains only digits
+                                //   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                                //     return LocaleKeys.please_enter_phone_number.tr();
+                                //   }
+                                //   return null;
+                                // },
                                 selectedCode: '+20',
                               ),
                               48.gap,
