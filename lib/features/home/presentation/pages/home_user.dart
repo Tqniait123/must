@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +21,7 @@ import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.da
 import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 import 'package:must_invest/features/home/presentation/widgets/my_points_card.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
+import 'package:must_invest/features/home/presentation/widgets/timer_widget.dart';
 
 class HomeUser extends StatefulWidget {
   const HomeUser({super.key});
@@ -103,7 +106,15 @@ class _HomeUserState extends State<HomeUser> {
         backgroundPatternAssetPath: AppImages.homePattern,
         children: [
           30.gap,
-          MyPointsCardMinimal(),
+          // Alternatively, if you want them to take equal space:
+          Row(
+            children: [
+              Flexible(flex: 1, child: MyPointsCardMinimal()),
+              SizedBox(width: 16),
+              Flexible(flex: 1, child: ParkingTimerCard()),
+            ],
+          ),
+
           32.gap,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

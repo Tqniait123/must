@@ -1161,7 +1161,14 @@
   "phone_format_bouvet_island": "XX XXXXXX",
   "phone_format_south_georgia_south_sandwich": "X XXXX",
   "phone_format_us_minor_outlying_islands": "XXX XXX XXXX",
-  "phone_format_saint_pierre_miquelon": "XX XXXX"
+  "phone_format_saint_pierre_miquelon": "XX XXXX",
+  "active_parking": "موقف نشط",
+  "parking_duration": "مدة الوقوف",
+  "points_to_pay": "النقاط المطلوبة للدفع",
+  "points_unit": "نقطة",
+  "points_rate_info": "5 نقاط لكل دقيقة",
+  "continue_parking": "متابعة الوقوف",
+  "check_payment": "عرض الدفع"
 
 
 }

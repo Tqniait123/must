@@ -1119,5 +1119,12 @@ abstract class  LocaleKeys {
   static const phone_format_south_georgia_south_sandwich = 'phone_format_south_georgia_south_sandwich';
   static const phone_format_us_minor_outlying_islands = 'phone_format_us_minor_outlying_islands';
   static const phone_format_saint_pierre_miquelon = 'phone_format_saint_pierre_miquelon';
+  static const active_parking = 'active_parking';
+  static const parking_duration = 'parking_duration';
+  static const points_to_pay = 'points_to_pay';
+  static const points_unit = 'points_unit';
+  static const points_rate_info = 'points_rate_info';
+  static const continue_parking = 'continue_parking';
+  static const check_payment = 'check_payment';
 
 }

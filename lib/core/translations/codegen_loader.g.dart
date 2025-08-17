@@ -1133,7 +1133,14 @@ class CodegenLoader extends AssetLoader{
   "phone_format_bouvet_island": "XX XXXXXX",
   "phone_format_south_georgia_south_sandwich": "X XXXX",
   "phone_format_us_minor_outlying_islands": "XXX XXX XXXX",
-  "phone_format_saint_pierre_miquelon": "XX XXXX"
+  "phone_format_saint_pierre_miquelon": "XX XXXX",
+  "active_parking": "Active Parking",
+  "parking_duration": "Parking Duration",
+  "points_to_pay": "Points to Pay",
+  "points_unit": "pts",
+  "points_rate_info": "5 points per minute",
+  "continue_parking": "Continue Parking",
+  "check_payment": "Check Payment"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2254,7 +2261,14 @@ static const Map<String,dynamic> _ar = {
   "phone_format_bouvet_island": "XX XXXXXX",
   "phone_format_south_georgia_south_sandwich": "X XXXX",
   "phone_format_us_minor_outlying_islands": "XXX XXX XXXX",
-  "phone_format_saint_pierre_miquelon": "XX XXXX"
+  "phone_format_saint_pierre_miquelon": "XX XXXX",
+  "active_parking": "موقف نشط",
+  "parking_duration": "مدة الوقوف",
+  "points_to_pay": "النقاط المطلوبة للدفع",
+  "points_unit": "نقطة",
+  "points_rate_info": "5 نقاط لكل دقيقة",
+  "continue_parking": "متابعة الوقوف",
+  "check_payment": "عرض الدفع"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
