@@ -1140,7 +1140,15 @@ class CodegenLoader extends AssetLoader{
   "points_unit": "pts",
   "points_rate_info": "5 points per minute",
   "continue_parking": "Continue Parking",
-  "check_payment": "Check Payment"
+  "check_payment": "Check Payment",
+  "mostPopular": "Popular",
+  "mostWanted": "Wanted",
+  "parkingDetails": "Parking Details",
+  "pointsPerHour": "Points/hr",
+  "visitsByYou": "visits by you",
+  "distanceTimeNotAvailable": "Distance & Time data not available in current model",
+  "aboutThisParking": "About This Parking",
+  "of": "of"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2268,7 +2276,15 @@ static const Map<String,dynamic> _ar = {
   "points_unit": "نقطة",
   "points_rate_info": "5 نقاط لكل دقيقة",
   "continue_parking": "متابعة الوقوف",
-  "check_payment": "عرض الدفع"
+  "check_payment": "عرض الدفع",
+  "mostPopular": "شائع",
+  "mostWanted": "مرغوب",
+  "parkingDetails": "تفاصيل الموقف",
+  "pointsPerHour": "نقطة/ساعة",
+  "visitsByYou": "زيارة منك",
+  "distanceTimeNotAvailable": "بيانات المسافة والوقت غير متاحة في النموذج الحالي",
+  "aboutThisParking": "عن هذا الموقف",
+  "of": "من"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

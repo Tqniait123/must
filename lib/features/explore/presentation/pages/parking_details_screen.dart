@@ -6,7 +6,6 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -25,55 +24,66 @@ class ParkingDetailsScreen extends StatefulWidget {
 }
 
 class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
-  String _currentMainImage = ''; // Track the current main image
+  String _currentMainImage = '';
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _currentMainImage =
-        widget
-            .parking
-            .gallery
-            .gallery
-            .first
-            .image; // Initialize with the parking image
+    _currentMainImage = widget.parking.gallery.gallery.first.image;
   }
 
-  Future<void> _selectImageFromParkingGallery(String image) async {
+  Future<void> _selectImageFromParkingGallery(String image, int index) async {
     setState(() {
       _currentMainImage = image;
+      _currentImageIndex = index;
     });
+  }
+
+  void _showImageGallery() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (context) => FullScreenGallery(
+              images: widget.parking.gallery.gallery.map((e) => e.image).toList(),
+              initialIndex: _currentImageIndex,
+            ),
+      ),
+    );
+  }
+
+  String get _parkingName {
+    return context.locale.languageCode == 'ar' ? widget.parking.nameAr : widget.parking.nameEn;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomBackButton(),
-                  Text(
-                    LocaleKeys.details.tr(),
-                    style: context.titleLarge.copyWith(),
-                  ),
-                  NotificationsButton(
-                    color: Color(0xffEAEAF3),
-                    iconColor: AppColors.primary,
-                  ),
+                  Text(LocaleKeys.details.tr(), style: context.titleLarge.copyWith()),
+                  NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
                 ],
               ),
-              SingleChildScrollView(
+            ),
+
+            Expanded(
+              child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     22.gap,
 
-                    // Rounded Parking image
+                    // Main Image with Gallery Button
                     Stack(
                       clipBehavior: Clip.none,
                       alignment: Alignment.bottomCenter,
@@ -82,38 +92,62 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                           duration: const Duration(milliseconds: 500),
                           switchInCurve: Curves.easeInOut,
                           switchOutCurve: Curves.easeInOut,
-                          transitionBuilder: (
-                            Widget child,
-                            Animation<double> animation,
-                          ) {
+                          transitionBuilder: (Widget child, Animation<double> animation) {
                             return FadeTransition(
                               opacity: animation,
                               child: ScaleTransition(
                                 scale: Tween<double>(
                                   begin: 0.95,
                                   end: 1.0,
-                                ).animate(
-                                  CurvedAnimation(
-                                    parent: animation,
-                                    curve: Curves.easeOut,
-                                  ),
-                                ),
+                                ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
                                 child: child,
                               ),
                             );
                           },
-                          child: Hero(
-                            key: ValueKey<String>(
-                              _currentMainImage,
-                            ), // Important for AnimatedSwitcher
-                            tag: '${widget.parking.id}-$_currentMainImage',
-                            child: ClipPath(
-                              clipper: CurveCustomClipper(),
-                              child: Image.network(
-                                _currentMainImage,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: 250,
+                          child: GestureDetector(
+                            onTap: _showImageGallery,
+                            child: Hero(
+                              key: ValueKey<String>(_currentMainImage),
+                              tag: '${widget.parking.id}-$_currentMainImage',
+                              child: ClipPath(
+                                clipper: CurveCustomClipper(),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 250,
+                                  child: Stack(
+                                    children: [
+                                      Image.network(
+                                        _currentMainImage,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: 250,
+                                      ),
+                                      // Gallery indicator
+                                      Positioned(
+                                        top: 16,
+                                        right: 16,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black54,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.photo_library, color: Colors.white, size: 16),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                '${_currentImageIndex + 1}/${widget.parking.gallery.gallery.length}',
+                                                style: TextStyle(color: Colors.white, fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -122,118 +156,390 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                           bottom: -20,
                           child: FloatingActionButton(
                             onPressed: () {
-                              context.push(
-                                Routes.routing,
-                                extra: widget.parking,
-                              );
+                              context.push(Routes.routing, extra: widget.parking);
                             },
                             backgroundColor: AppColors.primary,
-                            child: Icon(
-                              Icons.my_location_rounded,
-                              color: AppColors.white,
-                            ),
+                            child: Icon(Icons.my_location_rounded, color: AppColors.white),
                           ),
                         ),
                       ],
                     ),
-                    30.gap,
-                    SizedBox(
-                      height: 80,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: widget.parking.gallery.gallery.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
-                        itemBuilder: (context, index) {
-                          final image =
-                              widget.parking.gallery.gallery[index].image;
 
-                          return AnimatedOpacity(
-                            opacity: _currentMainImage == image ? 1 : 0.7,
-                            duration: const Duration(milliseconds: 300),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                image,
-                                width: 129,
-                                height: 80,
-                                fit: BoxFit.cover,
+                    30.gap,
+
+                    // Thumbnail Gallery
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: SizedBox(
+                        height: 80,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: widget.parking.gallery.gallery.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          itemBuilder: (context, index) {
+                            final image = widget.parking.gallery.gallery[index].image;
+                            final isSelected = _currentMainImage == image;
+
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: isSelected ? Border.all(color: AppColors.primary, width: 2) : null,
                               ),
-                            ).withPressEffect(
-                              onTap:
-                                  () => _selectImageFromParkingGallery(image),
-                            ),
-                          );
-                        },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: AnimatedOpacity(
+                                  opacity: isSelected ? 1 : 0.7,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Image.network(image, width: 129, height: 80, fit: BoxFit.cover),
+                                ),
+                              ).withPressEffect(onTap: () => _selectImageFromParkingGallery(image, index)),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                    30.gap,
-                    // Parking Name
-                    Text(
-                      widget.parking.nameEn,
-                      style: context.titleLarge.copyWith(),
-                    ),
-                    // Parking Address
-                    10.gap,
-                    Text(
-                      widget.parking.address,
-                      style: context.bodyMedium.s12.regular.copyWith(
-                        color: AppColors.primary.withValues(alpha: 0.5),
-                      ),
-                    ),
-                    30.gap,
-                    // Parking Details
-                    Column(
-                      children: [
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     if (widget.parking.durationTime == null)
-                        //       CustomDetailsInfo(
-                        //         title: '500 m away',
-                        //         icon: AppIcons.outlinedLocationIc,
-                        //       ),
-                        //     32.gap,
-                        //     if (widget.parking.durationTime != null)
-                        //       CustomDetailsInfo(
-                        //         title: '7 mins',
-                        //         icon: AppIcons.outlinedClockIc,
-                        //       ),
-                        //   ],
-                        // ),
-                        15.gap,
-                        // if (widget.parking.durationTime != null)
-                        //   Row(
-                        //     mainAxisAlignment: MainAxisAlignment.center,
-                        //     children: [
-                        //       CustomDetailsInfo(
-                        //         title: '200 \$',
-                        //         icon: AppIcons.outlinedPriceIc,
-                        //       ),
-                        //       32.gap,
 
-                        //       CustomDetailsInfo(
-                        //         title:
-                        //             '${widget.parking.points} ${LocaleKeys.points.tr()}',
-                        //         icon: AppIcons.outlinedPriceIc,
-                        //       ),
-                        //     ],
-                        //   ),
-                      ],
-                    ),
-                    // Parking Description
                     30.gap,
-                    Text(
-                      widget.parking.nameAr,
-                      style: context.bodyMedium.s12.regular.copyWith(
-                        color: AppColors.black,
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Parking Name & Tags
+                          Row(
+                            children: [
+                              Expanded(child: Text(_parkingName, style: context.titleLarge.copyWith())),
+                              // Tags
+                              Row(
+                                children: [
+                                  if (widget.parking.mostPopular)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      margin: EdgeInsets.only(left: 4),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.star, color: AppColors.primary, size: 12),
+                                          SizedBox(width: 2),
+                                          Text(
+                                            LocaleKeys.mostPopular.tr(),
+                                            style: TextStyle(
+                                              color: AppColors.primary,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  if (widget.parking.mostWanted)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      margin: EdgeInsets.only(left: 4),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.favorite, color: AppColors.primary, size: 12),
+                                          SizedBox(width: 2),
+                                          Text(
+                                            LocaleKeys.mostWanted.tr(),
+                                            style: TextStyle(
+                                              color: AppColors.primary,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          10.gap,
+
+                          // Address
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                color: AppColors.primary.withValues(alpha: 0.7),
+                                size: 16,
+                              ),
+                              SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  widget.parking.address,
+                                  style: context.bodyMedium.s12.regular.copyWith(
+                                    color: AppColors.primary.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          20.gap,
+
+                          // Parking Details Grid
+                          Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  LocaleKeys.parkingDetails.tr(),
+                                  style: context.titleMedium.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                16.gap,
+
+                                // Available Details Row
+                                Row(
+                                  children: [
+                                    // Price
+                                    Expanded(
+                                      child: CustomDetailsInfo(
+                                        title: '${widget.parking.pricePerHour} ${LocaleKeys.pointsPerHour.tr()}',
+                                        icon: AppIcons.outlinedPriceIc,
+                                      ),
+                                    ),
+
+                                    12.gap,
+
+                                    // Rating
+                                    Expanded(child: CustomDetailsInfo(title: '${widget.parking.points} ⭐', icon: null)),
+                                  ],
+                                ),
+
+                                12.gap,
+
+                                // User Visits
+                                CustomDetailsInfo(
+                                  title: '${widget.parking.userVisits} ${LocaleKeys.visitsByYou.tr()}',
+                                  icon: AppIcons.outlinedClockIc,
+                                  fullWidth: true,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Missing Data Notice
+                          20.gap,
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.info_outline, color: AppColors.primary, size: 16),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    LocaleKeys.distanceTimeNotAvailable.tr(),
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          20.gap,
+
+                          // Description
+                          if (widget.parking.aboutParking != null) ...[
+                            Text(
+                              LocaleKeys.aboutThisParking.tr(),
+                              style: context.titleMedium.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            8.gap,
+                            Text(
+                              widget.parking.aboutParking!,
+                              style: context.bodyMedium.s14.regular.copyWith(
+                                color: AppColors.black.withValues(alpha: 0.7),
+                                height: 1.5,
+                              ),
+                            ),
+                            20.gap,
+                          ],
+                        ],
                       ),
                     ),
+
+                    30.gap, // Bottom padding
                   ],
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FullScreenGallery extends StatefulWidget {
+  final List<String> images;
+  final int initialIndex;
+
+  const FullScreenGallery({super.key, required this.images, required this.initialIndex});
+
+  @override
+  State<FullScreenGallery> createState() => _FullScreenGalleryState();
+}
+
+class _FullScreenGalleryState extends State<FullScreenGallery> {
+  late PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Image Gallery
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Center(
+                  child: Hero(
+                    tag: 'gallery-${widget.images[index]}',
+                    child: Image.network(
+                      widget.images[index],
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
-        ).paddingHorizontal(20),
+
+          // Top Bar
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Back Button
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
+                      child: Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                    ),
+                  ),
+
+                  // Image Counter
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
+                    child: Text(
+                      '${_currentIndex + 1} ${LocaleKeys.of.tr()} ${widget.images.length}',
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Bottom Thumbnail Bar
+          if (widget.images.length > 1)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 20,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 80,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: widget.images.length,
+                  separatorBuilder: (_, __) => SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final isSelected = index == _currentIndex;
+
+                    return GestureDetector(
+                      onTap: () {
+                        _pageController.animateToPage(
+                          index,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: isSelected ? Border.all(color: Colors.white, width: 2) : null,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: AnimatedOpacity(
+                            opacity: isSelected ? 1.0 : 0.6,
+                            duration: Duration(milliseconds: 300),
+                            child: Image.network(widget.images[index], width: 60, height: 80, fit: BoxFit.cover),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -242,34 +548,31 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
 class CustomDetailsInfo extends StatelessWidget {
   final String title;
   final String? icon;
-  const CustomDetailsInfo({super.key, required this.title, this.icon});
+  final bool fullWidth;
+
+  const CustomDetailsInfo({super.key, required this.title, this.icon, this.fullWidth = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(
-        minWidth: 100,
-        maxWidth: 200,
-      ), // Limit max width
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+      width: fullWidth ? double.infinity : null,
+      constraints: fullWidth ? null : const BoxConstraints(minWidth: 100, maxWidth: 200),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E4FF),
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
         children: [
-          if (icon != null) ...[icon!.icon(), const SizedBox(width: 5)],
+          if (icon != null) ...[icon!.icon(color: AppColors.primary, height: 16), const SizedBox(width: 6)],
           Flexible(
             child: Text(
               title,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2B3085),
-              ),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
             ),
           ),
         ],

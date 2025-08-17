@@ -1126,5 +1126,13 @@ abstract class  LocaleKeys {
   static const points_rate_info = 'points_rate_info';
   static const continue_parking = 'continue_parking';
   static const check_payment = 'check_payment';
+  static const mostPopular = 'mostPopular';
+  static const mostWanted = 'mostWanted';
+  static const parkingDetails = 'parkingDetails';
+  static const pointsPerHour = 'pointsPerHour';
+  static const visitsByYou = 'visitsByYou';
+  static const distanceTimeNotAvailable = 'distanceTimeNotAvailable';
+  static const aboutThisParking = 'aboutThisParking';
+  static const of = 'of';
 
 }

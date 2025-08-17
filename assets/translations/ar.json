@@ -1168,7 +1168,16 @@
   "points_unit": "نقطة",
   "points_rate_info": "5 نقاط لكل دقيقة",
   "continue_parking": "متابعة الوقوف",
-  "check_payment": "عرض الدفع"
+  "check_payment": "عرض الدفع",
+   "details": "التفاصيل",
+  "mostPopular": "شائع",
+  "mostWanted": "مرغوب",
+  "parkingDetails": "تفاصيل الموقف",
+  "pointsPerHour": "نقطة/ساعة",
+  "visitsByYou": "زيارة منك",
+  "distanceTimeNotAvailable": "بيانات المسافة والوقت غير متاحة في النموذج الحالي",
+  "aboutThisParking": "عن هذا الموقف",
+  "of": "من"
 
 
 }

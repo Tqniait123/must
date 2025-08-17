@@ -1165,5 +1165,15 @@
   "points_unit": "pts",
   "points_rate_info": "5 points per minute",
   "continue_parking": "Continue Parking",
-  "check_payment": "Check Payment"
+  "check_payment": "Check Payment",
+   "details": "Details",
+  "mostPopular": "Popular",
+  "mostWanted": "Wanted",
+  "parkingDetails": "Parking Details",
+  "pointsPerHour": "Points/hr",
+  "visitsByYou": "visits by you",
+  "distanceTimeNotAvailable": "Distance & Time data not available in current model",
+  "aboutThisParking": "About This Parking",
+  "of": "of"
+
 }
