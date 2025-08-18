@@ -6,12 +6,13 @@ class AppImages {
   static const String sun = '$_assetsPath/sun.png';
   static const String pattern = '$_assetsPath/pattern.png';
   static const String homePattern = '$_assetsPath/home_pattern.png';
+  static const String wanted = '$_assetsPath/wanted.png';
+  static const String popular = '$_assetsPath/popular.png';
 }
 
 class AppAnimations {
   static const String _animationsPath = 'assets/images/animations';
 
   static const String splashAnimation = '$_animationsPath/splash.gif';
-  static const String congratulationsAnimation =
-      '$_animationsPath/congratulations.gif';
+  static const String congratulationsAnimation = '$_animationsPath/congratulations.gif';
 }

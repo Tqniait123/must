@@ -14,6 +14,7 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_extensions.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -459,34 +460,20 @@ class _MapScreenState extends State<MapScreen> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: Colors.orange,
+                                        color: Colors.transparent,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Text(
-                                        LocaleKeys.map_tag_popular.tr(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 8,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                      child: AppImages.popular.toImage(),
                                     ),
                                   if (_isMostPopular(parking) && _isMostWanted(parking)) const SizedBox(width: 4),
                                   if (_isMostWanted(parking))
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: Colors.purple,
+                                        color: Colors.transparent,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Text(
-                                        LocaleKeys.map_tag_wanted.tr(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 8,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                      child: AppImages.wanted.toImage(),
                                     ),
                                 ],
                               ),
@@ -622,33 +609,40 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<ExploreCubit, ExploreState>(
-        listener: (context, state) {
-          if (state is ParkingsError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${LocaleKeys.common_error.tr()}: ${state.message}'),
-                backgroundColor: Colors.red,
-                action: SnackBarAction(
-                  label: LocaleKeys.common_retry.tr(),
-                  textColor: Colors.white,
-                  onPressed: _refreshData,
-                ),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is ParkingsLoading) {
-            return _buildLoadingWidget();
-          } else if (state is ParkingsError) {
-            return _buildErrorWidget(state.message);
-          } else if (state is ParkingsSuccess) {
-            return _buildMapWidget(state.parkings);
-          } else {
-            return _buildLoadingWidget();
-          }
-        },
+      body: Stack(
+        children: [
+          BlocConsumer<ExploreCubit, ExploreState>(
+            listener: (context, state) {
+              if (state is ParkingsError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${LocaleKeys.common_error.tr()}: ${state.message}'),
+                    backgroundColor: Colors.red,
+                    action: SnackBarAction(
+                      label: LocaleKeys.common_retry.tr(),
+                      textColor: Colors.white,
+                      onPressed: _refreshData,
+                    ),
+                  ),
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is ParkingsLoading) {
+                return _buildLoadingWidget();
+              } else if (state is ParkingsError) {
+                return _buildErrorWidget(state.message);
+              } else if (state is ParkingsSuccess) {
+                return _buildMapWidget(state.parkings);
+              } else {
+                return _buildLoadingWidget();
+              }
+            },
+          ),
+
+          // Navigation back button at top of screen
+          PositionedDirectional(top: 60, start: 16, child: CustomBackButton()),
+        ],
       ),
     );
   }
@@ -662,11 +656,20 @@ class _MapScreenState extends State<MapScreen> {
 
     return Column(
       children: [
-        // Original style navigation buttons
+        // Close details button and current location button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CustomBackButton(),
+            CustomIconButton(
+              color: Colors.white,
+              iconAsset: AppIcons.closeIc,
+              onPressed: () {
+                setState(() {
+                  _selectedParking = null;
+                  _clearRoute();
+                });
+              },
+            ),
             CustomIconButton(
               color: const Color(0xffEAEAF3),
               iconAsset: AppIcons.currentLocationIc,
@@ -750,13 +753,16 @@ class _MapScreenState extends State<MapScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [Colors.orange.shade400, Colors.orange.shade600]),
+                          gradient: LinearGradient(
+                            colors: [Colors.orange.shade400, Colors.orange.shade600.withValues(alpha: 0.2)],
+                          ),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star, color: Colors.white, size: 16),
+                            AppImages.popular.toImage(),
+                            // const Icon(Icons.star, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               LocaleKeys.map_tag_most_popular.tr(),
@@ -770,13 +776,16 @@ class _MapScreenState extends State<MapScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [Colors.purple.shade400, Colors.purple.shade600]),
+                          gradient: LinearGradient(
+                            colors: [Colors.purple.shade400, Colors.purple.shade600.withValues(alpha: 0.2)],
+                          ),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.favorite, color: Colors.white, size: 16),
+                            AppImages.wanted.toImage(),
+                            // const Icon(Icons.favorite, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               LocaleKeys.map_tag_most_wanted.tr(),

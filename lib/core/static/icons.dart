@@ -9,8 +9,10 @@ static const String supportIc = '$_iconsPath/support_ic.svg';
 static const String checkMailIllu = '$_iconsPath/check_mail_illu.svg';
 static const String changeIc = '$_iconsPath/change_ic.svg';
 static const String historyIc = '$_iconsPath/history_ic.svg';
+static const String closeIc = '$_iconsPath/close_ic.svg';
 static const String removeIc = '$_iconsPath/remove_ic.svg';
 static const String settingsIc = '$_iconsPath/settings_ic.svg';
+static const String popularIc = '$_iconsPath/popular_ic.svg';
 static const String outlinedClockIc = '$_iconsPath/outlined_clock_ic.svg';
 static const String currentLocationIc = '$_iconsPath/current_location_ic.svg';
 static const String deleteIc = '$_iconsPath/delete_ic.svg';
@@ -40,5 +42,6 @@ static const String faceIdIc = '$_iconsPath/face_id_ic.svg';
 static const String carIc = '$_iconsPath/car_ic.svg';
 static const String notificationLabelIc = '$_iconsPath/notification_label_ic.svg';
 static const String logo = '$_iconsPath/logo.svg';
+static const String wantedIc = '$_iconsPath/wanted_ic.svg';
 static const String notificationsIc = '$_iconsPath/notifications_ic.svg';
 }
