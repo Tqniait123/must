@@ -119,6 +119,7 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
 
   Widget _buildCarsList(List<Car> cars) {
     return ListView.builder(
+      clipBehavior: Clip.none,
       padding: const EdgeInsets.symmetric(vertical: 20),
       itemCount: cars.length,
       itemBuilder: (context, index) {

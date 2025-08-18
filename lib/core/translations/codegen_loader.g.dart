@@ -1148,7 +1148,9 @@ class CodegenLoader extends AssetLoader{
   "visitsByYou": "visits by you",
   "distanceTimeNotAvailable": "Distance & Time data not available in current model",
   "aboutThisParking": "About This Parking",
-  "of": "of"
+  "of": "of",
+  "select": "Select",
+  "selected": "Selected"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2284,7 +2286,9 @@ static const Map<String,dynamic> _ar = {
   "visitsByYou": "زيارة منك",
   "distanceTimeNotAvailable": "بيانات المسافة والوقت غير متاحة في النموذج الحالي",
   "aboutThisParking": "عن هذا الموقف",
-  "of": "من"
+  "of": "من",
+  "select": "اختيار",
+  "selected": "تم الاختيار"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

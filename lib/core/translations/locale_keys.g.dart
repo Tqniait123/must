@@ -1134,5 +1134,7 @@ abstract class  LocaleKeys {
   static const distanceTimeNotAvailable = 'distanceTimeNotAvailable';
   static const aboutThisParking = 'aboutThisParking';
   static const of = 'of';
+  static const select = 'select';
+  static const selected = 'selected';
 
 }

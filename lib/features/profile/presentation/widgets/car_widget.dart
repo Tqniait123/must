@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -73,399 +74,213 @@ class CarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isDetailed) {
-      return _buildDetailedView(context);
-    } else {
-      return _buildCompactView(context);
-    }
-  }
-
-  Widget _buildCompactView(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: isSelectable && isSelect ? Border.all(color: AppColors.primary, width: 2) : null,
-        boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 8, offset: const Offset(0, 2)),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child:
-                  car.carPhoto != null && car.carPhoto!.isNotEmpty
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          car.carPhoto!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.directions_car, color: AppColors.primary, size: 30);
-                          },
-                        ),
-                      )
-                      : Icon(Icons.directions_car, color: AppColors.primary, size: 30),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    car.name,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        car.metalPlate,
-                        style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
-                      ),
-                      if (car.color != null && car.color!.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          car.color!,
-                          style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    car.manufactureYear,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-            ),
-            // 🧠 Use trailing if provided
-            trailing ??
-                (isSelectable
-                    ? Checkbox(value: isSelect, onChanged: onSelectChanged, activeColor: AppColors.primary)
-                    : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CustomIconButton(
-                          onPressed: onEdit ?? () {},
-                          height: 30,
-                          width: 30,
-                          color: AppColors.primary.withOpacity(0.1),
-                          iconColor: AppColors.primary,
-                          iconAsset: AppIcons.editIc,
-                        ),
-                        const SizedBox(width: 12),
-                        CustomIconButton(
-                          onPressed: onDelete ?? () {},
-                          height: 30,
-                          width: 30,
-                          color: AppColors.redD2.withOpacity(0.1),
-                          iconColor: AppColors.redD2,
-                          iconAsset: AppIcons.removeIc,
-                        ),
-                      ],
-                    )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailedView(BuildContext context) {
-    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 10, offset: const Offset(0, 3)),
+          BoxShadow(color: Colors.black.withOpacity(0.08), spreadRadius: 0, blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Car Image Section
-          _buildCarImageSection(),
+          // Car Image Section with floating buttons
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20), child: _buildCarImageSection()),
 
           // Car Information Section
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with name and actions
-                _buildHeaderSection(),
-                const SizedBox(height: 16),
+          _buildCarInfoSection(),
 
-                // Car Details Grid
-                _buildDetailsGrid(),
-                const SizedBox(height: 16),
-
-                // License Images Section
-                _buildLicenseImagesSection(),
-              ],
-            ),
-          ),
+          // Select Button Section
+          // _buildSelectButtonSection(),
         ],
       ),
     );
   }
 
   Widget _buildCarImageSection() {
-    return GestureDetector(
-      onTap: onImageTap,
-      child: Container(
-        height: 200,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          color: Colors.grey[100],
-        ),
-        child:
-            car.carPhoto != null && car.carPhoto!.isNotEmpty
-                ? ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.network(
-                    car.carPhoto!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return _buildImagePlaceholder();
-                    },
-                  ),
-                )
-                : _buildImagePlaceholder(),
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          // Car Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: GestureDetector(
+              onTap: onImageTap,
+              child: SizedBox(
+                height: 200,
+                width: double.infinity,
+                child:
+                    car.carPhoto != null && car.carPhoto!.isNotEmpty
+                        ? Image.network(
+                          car.carPhoto!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _buildImagePlaceholder();
+                          },
+                        )
+                        : _buildImagePlaceholder(),
+              ),
+            ),
+          ),
+
+          // Floating Action Buttons
+          if (onEdit != null || onDelete != null)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (onEdit != null) ...[
+                    CustomIconButton(
+                      width: 37,
+                      height: 37,
+                      color: AppColors.primary,
+                      iconAsset: AppIcons.updateIc,
+                      onPressed: onEdit!,
+                    ),
+
+                    5.gap,
+                  ],
+                  if (onDelete != null) ...[
+                    CustomIconButton(
+                      width: 37,
+                      height: 37,
+                      color: Color(0xffE41F2D),
+                      iconAsset: AppIcons.deleteIc,
+                      onPressed: onDelete!,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
 
   Widget _buildImagePlaceholder() {
     return Container(
+      height: 200,
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        color: Colors.grey[100],
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.directions_car, size: 60, color: AppColors.primary.withOpacity(0.5)),
+            Icon(Icons.directions_car, size: 60, color: Colors.grey[400]),
             const SizedBox(height: 8),
-            Text(
-              LocaleKeys.no_image_available.tr(),
-              style: TextStyle(color: AppColors.primary.withOpacity(0.7), fontSize: 14),
-            ),
+            Text(LocaleKeys.no_image_available.tr(), style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(car.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87)),
-              const SizedBox(height: 4),
-              Text(
-                car.metalPlate,
-                style: TextStyle(fontSize: 16, color: AppColors.primary, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ),
-        if (onEdit != null || onDelete != null)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (onEdit != null)
-                CustomIconButton(
-                  onPressed: onEdit!,
-                  height: 40,
-                  width: 40,
-                  color: AppColors.primary.withOpacity(0.1),
-                  iconColor: AppColors.primary,
-                  iconAsset: AppIcons.editIc,
-                ),
-              if (onEdit != null && onDelete != null) const SizedBox(width: 8),
-              if (onDelete != null)
-                CustomIconButton(
-                  onPressed: onDelete!,
-                  height: 40,
-                  width: 40,
-                  color: AppColors.redD2.withOpacity(0.1),
-                  iconColor: AppColors.redD2,
-                  iconAsset: AppIcons.removeIc,
-                ),
-            ],
-          ),
-      ],
-    );
-  }
-
-  Widget _buildDetailsGrid() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildDetailItem(
-                icon: Icons.calendar_today,
-                title: LocaleKeys.manufacture_year.tr(),
-                value: car.manufactureYear,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildDetailItem(
-                icon: Icons.palette,
-                title: LocaleKeys.car_color.tr(),
-                value: car.color ?? LocaleKeys.not_specified.tr(),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildDetailItem(
-          icon: Icons.event_note,
-          title: LocaleKeys.license_expiry_date.tr(),
-          value: _formatExpiryDate(car.licenseExpiryDate),
-          isFullWidth: true,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetailItem({
-    required IconData icon,
-    required String title,
-    required String value,
-    bool isFullWidth = false,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: AppColors.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
-                const SizedBox(height: 2),
-                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLicenseImagesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          LocaleKeys.license_documents.tr(),
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: _buildLicenseImage(title: LocaleKeys.front_license.tr(), imageUrl: car.frontLicense)),
-            const SizedBox(width: 12),
-            Expanded(child: _buildLicenseImage(title: LocaleKeys.back_license.tr(), imageUrl: car.backLicense)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLicenseImage({required String title, String? imageUrl}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 6),
-        Container(
-          height: 80,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
-            color: Colors.grey[50],
-          ),
-          child:
-              imageUrl != null && imageUrl.isNotEmpty
-                  ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildLicenseImagePlaceholder();
-                      },
-                    ),
-                  )
-                  : _buildLicenseImagePlaceholder(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLicenseImagePlaceholder() {
-    return Center(
+  Widget _buildCarInfoSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.image_not_supported, size: 24, color: Colors.grey[400]),
-          const SizedBox(height: 4),
-          Text(LocaleKeys.no_image.tr(), style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+          // Car Name
+          Text(car.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87)),
+
+          const SizedBox(height: 8),
+
+          // // Car Address/Location
+          // Text(
+          //   car.metalPlate, // Assuming this contains address info like "123 Dhaka Street"
+          //   style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w400),
+          // ),
+
+          // const SizedBox(height: 12),
+
+          // Car Details Row
+          Row(
+            children: [
+              // License Plate
+              CarDetailsWidget(title: car.metalPlate),
+              // CarDetailsWidget(car: car),
+
+              // _buildDetailChip(
+              //   text: car.metalPlate.split(' ').last, // Extract plate number
+              //   backgroundColor: const Color(0xFFE8E5FF),
+              //   textColor: const Color(0xFF4F46E5),
+              // ),
+              const SizedBox(width: 12),
+
+              CarDetailsWidget(title: car.manufactureYear),
+
+              // // Manufacture Year
+              // _buildDetailChip(
+              //   text: car.manufactureYear,
+              //   backgroundColor: Colors.grey[100]!,
+              //   textColor: Colors.grey[700]!,
+              // ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  String _formatExpiryDate(String date) {
-    try {
-      final parsedDate = DateTime.parse(date);
-      final now = DateTime.now();
-      final difference = parsedDate.difference(now).inDays;
+  Widget _buildDetailChip({required String text, required Color backgroundColor, required Color textColor}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(8)),
+      child: Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: textColor)),
+    );
+  }
 
-      final formattedDate = DateFormat('MMM dd, yyyy').format(parsedDate);
+  Widget _buildSelectButtonSection() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      child: SizedBox(
+        width: double.infinity,
+        height: 44,
+        child: OutlinedButton(
+          onPressed:
+              isSelectable && onSelectChanged != null
+                  ? () => onSelectChanged!(true)
+                  : () {}, // Default action or callback
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: isSelect ? const Color(0xFF4F46E5) : Colors.grey[300]!, width: 1.5),
+            backgroundColor: isSelect ? const Color(0xFF4F46E5).withOpacity(0.1) : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          child: Text(
+            isSelect ? LocaleKeys.selected.tr() : LocaleKeys.select.tr(),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: isSelect ? const Color(0xFF4F46E5) : Colors.grey[700],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-      if (difference < 0) {
-        return '$formattedDate (${LocaleKeys.expired.tr()})';
-      } else if (difference <= 30) {
-        return '$formattedDate (${LocaleKeys.expires_soon.tr()})';
-      } else {
-        return formattedDate;
-      }
-    } catch (e) {
-      return date;
-    }
+class CarDetailsWidget extends StatelessWidget {
+  const CarDetailsWidget({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+      decoration: BoxDecoration(color: const Color(0xFFE2E4FF), borderRadius: BorderRadius.circular(10)),
+      child: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2B3085))),
+    );
   }
 }

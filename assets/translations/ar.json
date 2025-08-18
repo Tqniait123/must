@@ -1177,7 +1177,9 @@
   "visitsByYou": "زيارة منك",
   "distanceTimeNotAvailable": "بيانات المسافة والوقت غير متاحة في النموذج الحالي",
   "aboutThisParking": "عن هذا الموقف",
-  "of": "من"
+  "of": "من",
+  "select": "اختيار",
+  "selected": "تم الاختيار"
 
 
 }
