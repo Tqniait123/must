@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,10 +10,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' hide PermissionStatus, LocationAccuracy;
+import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_extensions.dart';
+import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
@@ -182,18 +186,18 @@ class _MapScreenState extends State<MapScreen> {
 
   String _formatDistance(double distance) {
     if (distance < 1) {
-      return '${(distance * 1000).toInt()}m';
+      return '${(distance * 1000).toInt()}${LocaleKeys.map_unit_meters.tr()}';
     } else {
-      return '${distance.toStringAsFixed(1)}km';
+      return '${distance.toStringAsFixed(1)}${LocaleKeys.map_unit_kilometers.tr()}';
     }
   }
 
   String _formatDuration(double minutes) {
     if (minutes < 60) {
-      return '${minutes.toInt()}min';
+      return '${minutes.toInt()}${LocaleKeys.map_unit_minutes.tr()}';
     } else {
       final hours = minutes / 60;
-      return '${hours.toStringAsFixed(1)}h';
+      return '${hours.toStringAsFixed(1)}${LocaleKeys.map_unit_hours.tr()}';
     }
   }
 
@@ -236,16 +240,16 @@ class _MapScreenState extends State<MapScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Location Service Disabled'),
-            content: const Text('Please enable location services on your device.'),
+            title: Text(LocaleKeys.map_dialog_location_disabled_title.tr()),
+            content: Text(LocaleKeys.map_dialog_location_disabled_content.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(LocaleKeys.common_cancel.tr())),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   Geolocator.openLocationSettings();
                 },
-                child: const Text('Open Settings'),
+                child: Text(LocaleKeys.common_open_settings.tr()),
               ),
             ],
           ),
@@ -262,7 +266,7 @@ class _MapScreenState extends State<MapScreen> {
     } catch (e) {
       debugPrint('Error getting location: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not get current location')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.map_error_location_failed.tr())));
       }
     }
   }
@@ -273,16 +277,16 @@ class _MapScreenState extends State<MapScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Location Permission Required'),
-            content: const Text('This app needs location permission to show your current position on the map.'),
+            title: Text(LocaleKeys.map_dialog_permission_required_title.tr()),
+            content: Text(LocaleKeys.map_dialog_permission_required_content.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(LocaleKeys.common_cancel.tr())),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   _checkPermissionsAndGetLocation();
                 },
-                child: const Text('Retry'),
+                child: Text(LocaleKeys.common_retry.tr()),
               ),
             ],
           ),
@@ -295,18 +299,16 @@ class _MapScreenState extends State<MapScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Location Permission Required'),
-            content: const Text(
-              'Location permission has been permanently denied. Please enable it in app settings to use this feature.',
-            ),
+            title: Text(LocaleKeys.map_dialog_permission_required_title.tr()),
+            content: Text(LocaleKeys.map_dialog_permission_permanently_denied_content.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(LocaleKeys.common_cancel.tr())),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   openAppSettings();
                 },
-                child: const Text('Open Settings'),
+                child: Text(LocaleKeys.common_open_settings.tr()),
               ),
             ],
           ),
@@ -321,26 +323,30 @@ class _MapScreenState extends State<MapScreen> {
           Icon(Icons.error_outline, size: 64, color: Colors.red.shade400),
           const SizedBox(height: 16),
           Text(
-            'Error loading parkings',
+            LocaleKeys.map_error_loading_parkings.tr(),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
           ),
           const SizedBox(height: 8),
           Text(error, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
           const SizedBox(height: 24),
-          ElevatedButton.icon(onPressed: _refreshData, icon: const Icon(Icons.refresh), label: const Text('Retry')),
+          ElevatedButton.icon(
+            onPressed: _refreshData,
+            icon: const Icon(Icons.refresh),
+            label: Text(LocaleKeys.common_retry.tr()),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildLoadingWidget() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('Loading parkings...', style: TextStyle(fontSize: 16, color: Colors.grey)),
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text(LocaleKeys.map_loading_parkings.tr(), style: const TextStyle(fontSize: 16, color: Colors.grey)),
         ],
       ),
     );
@@ -366,7 +372,7 @@ class _MapScreenState extends State<MapScreen> {
                   Polyline(
                     points: _routePoints,
                     strokeWidth: 4.0,
-                    color: Colors.blue,
+                    color: AppColors.primary,
                     borderStrokeWidth: 2.0,
                     borderColor: Colors.white,
                   ),
@@ -378,7 +384,7 @@ class _MapScreenState extends State<MapScreen> {
                 // Current location marker
                 if (_currentLocation != null)
                   Marker(
-                    width: 120.0,
+                    width: 200.0,
                     height: 120.0,
                     point: _currentLocation!,
                     child: Column(
@@ -387,7 +393,7 @@ class _MapScreenState extends State<MapScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -398,19 +404,26 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                             ],
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.my_location, color: Colors.white, size: 18),
-                              SizedBox(width: 4),
                               Text(
-                                'You',
-                                style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                'My Car',
+                                style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: AppIcons.carIc.icon(width: 10),
                               ),
                             ],
                           ),
                         ),
-                        CustomPaint(size: const Size(16, 10), painter: _TrianglePainter(color: Colors.blue)),
+                        CustomPaint(size: const Size(16, 10), painter: _TrianglePainter(color: Colors.white)),
                       ],
                     ),
                   ),
@@ -422,8 +435,8 @@ class _MapScreenState extends State<MapScreen> {
                       _currentLocation != null ? _calculateDistance(_currentLocation!, parkingLocation) : 0.0;
 
                   return Marker(
-                    width: 140.0,
-                    height: 140.0,
+                    width: 150.0,
+                    height: 150.0,
                     point: parkingLocation,
                     child: GestureDetector(
                       onTap: () {
@@ -449,9 +462,13 @@ class _MapScreenState extends State<MapScreen> {
                                         color: Colors.orange,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Text(
-                                        'Popular',
-                                        style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                                      child: Text(
+                                        LocaleKeys.map_tag_popular.tr(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 8,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   if (_isMostPopular(parking) && _isMostWanted(parking)) const SizedBox(width: 4),
@@ -462,58 +479,105 @@ class _MapScreenState extends State<MapScreen> {
                                         color: Colors.purple,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Text(
-                                        'Wanted',
-                                        style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                                      child: Text(
+                                        LocaleKeys.map_tag_wanted.tr(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 8,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                 ],
                               ),
                             ),
 
-                          // Main marker
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: _getMarkerColor(parking.isBusy),
-                              borderRadius: BorderRadius.circular(12),
-                              border:
-                                  _selectedParking?.id == parking.id ? Border.all(color: Colors.white, width: 3) : null,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  spreadRadius: 1,
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
+                          // Main marker with selection container
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+
+                            curve: Curves.easeInOut,
+                            // padding: _selectedParking?.id == parking.id ? const EdgeInsets.all(4) : EdgeInsets.zero,
+                            // decoration:
+                            //     _selectedParking?.id == parking.id
+                            //         ? BoxDecoration(
+                            //           color: const Color(0xFFE2E4FF),
+                            //           borderRadius: BorderRadius.circular(16),
+                            //         )
+                            //         : null,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  parking.pricePerHour,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                // Car icon when selected
+
+                                // Price container
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.easeInOut,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: _selectedParking?.id == parking.id ? 9 : 9,
+                                    vertical: _selectedParking?.id == parking.id ? 12 : 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _getMarkerColor(parking.isBusy),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        spreadRadius: _selectedParking?.id == parking.id ? 2 : 1,
+                                        blurRadius: _selectedParking?.id == parking.id ? 8 : 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (_selectedParking?.id == parking.id)
+                                            Container(
+                                              padding: const EdgeInsets.all(4),
+                                              margin: const EdgeInsets.only(bottom: 4),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFE2E4FF),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: AppIcons.carIc.icon(color: AppColors.primary, width: 16),
+                                            ),
+                                          5.gap,
+                                          AnimatedDefaultTextStyle(
+                                            duration: const Duration(milliseconds: 200),
+                                            style: TextStyle(
+                                              fontSize: _selectedParking?.id == parking.id ? 14 : 12,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            child: Text(parking.pricePerHour),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                if (_currentLocation != null) ...[
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _formatDistance(distance),
-                                    style: const TextStyle(fontSize: 10, color: Colors.white),
-                                  ),
-                                ],
-                                const SizedBox(height: 2),
-                                Icon(parking.isBusy ? Icons.block : Icons.local_parking, color: Colors.white, size: 16),
                               ],
                             ),
                           ),
-                          CustomPaint(
-                            size: const Size(16, 10),
-                            painter: _TrianglePainter(color: _getMarkerColor(parking.isBusy)),
+
+                          // Triangle pointer
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeInOut,
+                            height: _selectedParking?.id == parking.id ? 14 : 10,
+                            width: _selectedParking?.id == parking.id ? 20 : 16,
+                            child: CustomPaint(
+                              size: Size(
+                                _selectedParking?.id == parking.id ? 20 : 16,
+                                _selectedParking?.id == parking.id ? 14 : 10,
+                              ),
+                              painter: _TrianglePainter(color: _getMarkerColor(parking.isBusy)),
+                            ),
                           ),
                         ],
                       ),
@@ -522,35 +586,35 @@ class _MapScreenState extends State<MapScreen> {
                 }),
               ],
             ),
-          ],
-        ),
 
-        // Route loading indicator
-        if (_isRouteLoading)
-          const Positioned(
-            top: 120,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                      SizedBox(width: 12),
-                      Text('Calculating route...'),
-                    ],
+            // Route loading indicator
+            if (_isRouteLoading)
+              Positioned(
+                top: 120,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                          const SizedBox(width: 12),
+                          Text(LocaleKeys.map_calculating_route.tr()),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
 
-        // Parking details panel (using original design)
-        if (_selectedParking != null)
-          Positioned(bottom: 20, left: 16, right: 16, child: _buildParkingDetails(_selectedParking!)),
+            // Parking details panel (using original design)
+            if (_selectedParking != null)
+              Positioned(bottom: 20, left: 16, right: 16, child: _buildParkingDetails(_selectedParking!)),
+          ],
+        ),
       ],
     );
   }
@@ -563,9 +627,13 @@ class _MapScreenState extends State<MapScreen> {
           if (state is ParkingsError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Error: ${state.message}'),
+                content: Text('${LocaleKeys.common_error.tr()}: ${state.message}'),
                 backgroundColor: Colors.red,
-                action: SnackBarAction(label: 'Retry', textColor: Colors.white, onPressed: _refreshData),
+                action: SnackBarAction(
+                  label: LocaleKeys.common_retry.tr(),
+                  textColor: Colors.white,
+                  onPressed: _refreshData,
+                ),
               ),
             );
           }
@@ -643,7 +711,7 @@ class _MapScreenState extends State<MapScreen> {
                         if (_currentLocation != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                            '📍 ${_formatDistance(distance)} away',
+                            '📍 ${_formatDistance(distance)} ${LocaleKeys.map_away.tr()}',
                             style: TextStyle(
                               fontSize: 14,
                               color: AppColors.primary.withValues(alpha: 0.7),
@@ -666,7 +734,7 @@ class _MapScreenState extends State<MapScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      parking.isBusy ? 'FULL' : 'AVAILABLE',
+                      parking.isBusy ? LocaleKeys.map_status_full.tr() : LocaleKeys.map_status_available.tr(),
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
@@ -685,14 +753,14 @@ class _MapScreenState extends State<MapScreen> {
                           gradient: LinearGradient(colors: [Colors.orange.shade400, Colors.orange.shade600]),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star, color: Colors.white, size: 16),
-                            SizedBox(width: 4),
+                            const Icon(Icons.star, color: Colors.white, size: 16),
+                            const SizedBox(width: 4),
                             Text(
-                              'Most Popular',
-                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              LocaleKeys.map_tag_most_popular.tr(),
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -705,14 +773,14 @@ class _MapScreenState extends State<MapScreen> {
                           gradient: LinearGradient(colors: [Colors.purple.shade400, Colors.purple.shade600]),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.favorite, color: Colors.white, size: 16),
-                            SizedBox(width: 4),
+                            const Icon(Icons.favorite, color: Colors.white, size: 16),
+                            const SizedBox(width: 4),
                             Text(
-                              'Most Wanted',
-                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              LocaleKeys.map_tag_most_wanted.tr(),
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -728,19 +796,23 @@ class _MapScreenState extends State<MapScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
+                    color: AppColors.primary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.blue.shade200),
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 1),
                   ),
                   child: Column(
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.route, color: Colors.blue.shade700),
+                          Icon(Icons.route, color: AppColors.primary.withValues(alpha: 0.7), size: 20),
                           const SizedBox(width: 8),
                           Text(
-                            'Route Information',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue.shade700),
+                            LocaleKeys.map_route_information.tr(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary.withValues(alpha: 0.7),
+                            ),
                           ),
                         ],
                       ),
@@ -748,12 +820,20 @@ class _MapScreenState extends State<MapScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildInfoItem(Icons.straighten, _formatDistance(_currentRouteInfo!.distance), 'Distance'),
-                          _buildInfoItem(Icons.access_time, _formatDuration(_currentRouteInfo!.duration), 'Duration'),
+                          _buildInfoItem(
+                            Icons.straighten,
+                            _formatDistance(_currentRouteInfo!.distance),
+                            LocaleKeys.map_route_distance.tr(),
+                          ),
+                          _buildInfoItem(
+                            Icons.access_time,
+                            _formatDuration(_currentRouteInfo!.duration),
+                            LocaleKeys.map_route_duration.tr(),
+                          ),
                           _buildInfoItem(
                             Icons.monetization_on,
-                            '${_currentRouteInfo!.estimatedCost.toInt()}pts',
-                            'Est. Cost',
+                            '${_currentRouteInfo!.estimatedCost.toInt()}${LocaleKeys.map_unit_points.tr()}',
+                            LocaleKeys.map_route_estimated_cost.tr(),
                           ),
                         ],
                       ),
@@ -806,14 +886,14 @@ class _MapScreenState extends State<MapScreen> {
                   children: [
                     Expanded(
                       child: CustomElevatedButton(
-                        title: 'Show Route',
+                        title: LocaleKeys.map_button_show_route.tr(),
                         onPressed: _currentLocation != null ? _showRouteToParking : null,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: CustomElevatedButton(
-                        title: 'Details',
+                        title: LocaleKeys.map_button_details.tr(),
                         onPressed: () {
                           // Navigate to parking details screen
                           // Navigator.push(context, MaterialPageRoute(builder: (context) => ParkingDetailsScreen(parking: parking)));
@@ -829,7 +909,10 @@ class _MapScreenState extends State<MapScreen> {
                     Expanded(
                       child: CustomElevatedButton(
                         isDisabled: parking.isBusy,
-                        title: parking.isBusy ? 'Parking Full' : 'Start Navigation',
+                        title:
+                            parking.isBusy
+                                ? LocaleKeys.map_button_parking_full.tr()
+                                : LocaleKeys.map_button_start_navigation.tr(),
                         onPressed:
                             parking.isBusy
                                 ? null
@@ -837,7 +920,12 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: CustomElevatedButton(title: 'Clear Route', onPressed: _clearRoute)),
+                    Expanded(
+                      child: CustomElevatedButton(
+                        title: LocaleKeys.map_button_clear_route.tr(),
+                        onPressed: _clearRoute,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -851,10 +939,13 @@ class _MapScreenState extends State<MapScreen> {
   Widget _buildInfoItem(IconData icon, String value, String label) {
     return Column(
       children: [
-        Icon(icon, color: Colors.blue.shade600, size: 20),
+        Icon(icon, color: AppColors.primary.withValues(alpha: 0.7), size: 20),
         const SizedBox(height: 4),
-        Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue.shade700)),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.blue.shade600)),
+        Text(
+          value,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary.withValues(alpha: 0.7)),
+        ),
+        Text(label, style: TextStyle(fontSize: 12, color: AppColors.primary.withValues(alpha: 0.7))),
       ],
     );
   }
@@ -973,7 +1064,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: Colors.grey.shade800,
-                        child: const Center(child: Icon(Icons.image_not_supported, color: Colors.white, size: 64)),
+                        child: Center(child: Icon(Icons.image_not_supported, color: Colors.white, size: 64)),
                       );
                     },
                     loadingBuilder: (context, child, loadingProgress) {

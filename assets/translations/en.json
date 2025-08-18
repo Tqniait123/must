@@ -1176,6 +1176,47 @@
   "aboutThisParking": "About This Parking",
   "of": "of",
   "select": "Select",
-  "selected": "Selected"
+  "selected": "Selected",
+  "common": {
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "error": "Error",
+    "open_settings": "Open Settings"
+  },
+  "map": {
+    "unit_meters": "m",
+    "unit_kilometers": "km",
+    "unit_minutes": "min",
+    "unit_hours": "h",
+    "unit_points": "pts",
+    "marker_you": "You",
+    "tag_popular": "Popular",
+    "tag_wanted": "Wanted",
+    "tag_most_popular": "Most Popular",
+    "tag_most_wanted": "Most Wanted",
+    "away": "away",
+    "status_full": "FULL",
+    "status_available": "AVAILABLE",
+    "calculating_route": "Calculating route...",
+    "loading_parkings": "Loading parkings...",
+    "error_loading_parkings": "Error loading parkings",
+    "error_location_failed": "Could not get current location",
+    "route_information": "Route Information",
+    "route_distance": "Distance",
+    "route_duration": "Duration",
+    "route_estimated_cost": "Est. Cost",
+    "button_show_route": "Show Route",
+    "button_details": "Details",
+    "button_start_navigation": "Start Navigation",
+    "button_parking_full": "Parking Full",
+    "button_clear_route": "Clear Route",
+    "dialog": {
+      "location_disabled_title": "Location Service Disabled",
+      "location_disabled_content": "Please enable location services on your device.",
+      "permission_required_title": "Location Permission Required",
+      "permission_required_content": "This app needs location permission to show your current position on the map.",
+      "permission_permanently_denied_content": "Location permission has been permanently denied. Please enable it in app settings to use this feature."
+    }
+  }
 
 }

@@ -1150,7 +1150,48 @@ class CodegenLoader extends AssetLoader{
   "aboutThisParking": "About This Parking",
   "of": "of",
   "select": "Select",
-  "selected": "Selected"
+  "selected": "Selected",
+  "common": {
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "error": "Error",
+    "open_settings": "Open Settings"
+  },
+  "map": {
+    "unit_meters": "m",
+    "unit_kilometers": "km",
+    "unit_minutes": "min",
+    "unit_hours": "h",
+    "unit_points": "pts",
+    "marker_you": "You",
+    "tag_popular": "Popular",
+    "tag_wanted": "Wanted",
+    "tag_most_popular": "Most Popular",
+    "tag_most_wanted": "Most Wanted",
+    "away": "away",
+    "status_full": "FULL",
+    "status_available": "AVAILABLE",
+    "calculating_route": "Calculating route...",
+    "loading_parkings": "Loading parkings...",
+    "error_loading_parkings": "Error loading parkings",
+    "error_location_failed": "Could not get current location",
+    "route_information": "Route Information",
+    "route_distance": "Distance",
+    "route_duration": "Duration",
+    "route_estimated_cost": "Est. Cost",
+    "button_show_route": "Show Route",
+    "button_details": "Details",
+    "button_start_navigation": "Start Navigation",
+    "button_parking_full": "Parking Full",
+    "button_clear_route": "Clear Route",
+    "dialog": {
+      "location_disabled_title": "Location Service Disabled",
+      "location_disabled_content": "Please enable location services on your device.",
+      "permission_required_title": "Location Permission Required",
+      "permission_required_content": "This app needs location permission to show your current position on the map.",
+      "permission_permanently_denied_content": "Location permission has been permanently denied. Please enable it in app settings to use this feature."
+    }
+  }
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2288,7 +2329,48 @@ static const Map<String,dynamic> _ar = {
   "aboutThisParking": "عن هذا الموقف",
   "of": "من",
   "select": "اختيار",
-  "selected": "تم الاختيار"
+  "selected": "تم الاختيار",
+  "common": {
+    "cancel": "إلغاء",
+    "retry": "إعادة المحاولة",
+    "error": "خطأ",
+    "open_settings": "فتح الإعدادات"
+  },
+  "map": {
+    "unit_meters": "م",
+    "unit_kilometers": "كم",
+    "unit_minutes": "دق",
+    "unit_hours": "س",
+    "unit_points": "نقطة",
+    "marker_you": "أنت",
+    "tag_popular": "شائع",
+    "tag_wanted": "مطلوب",
+    "tag_most_popular": "الأكثر شعبية",
+    "tag_most_wanted": "الأكثر طلباً",
+    "away": "بعيداً",
+    "status_full": "ممتلئ",
+    "status_available": "متاح",
+    "calculating_route": "جاري حساب المسار...",
+    "loading_parkings": "جاري تحميل مواقف السيارات...",
+    "error_loading_parkings": "خطأ في تحميل مواقف السيارات",
+    "error_location_failed": "لا يمكن الحصول على الموقع الحالي",
+    "route_information": "معلومات المسار",
+    "route_distance": "المسافة",
+    "route_duration": "المدة",
+    "route_estimated_cost": "التكلفة المتوقعة",
+    "button_show_route": "إظهار المسار",
+    "button_details": "التفاصيل",
+    "button_start_navigation": "بدء التنقل",
+    "button_parking_full": "الموقف ممتلئ",
+    "button_clear_route": "مسح المسار",
+    "dialog": {
+      "location_disabled_title": "خدمة الموقع معطلة",
+      "location_disabled_content": "يرجى تفعيل خدمات الموقع على جهازك.",
+      "permission_required_title": "إذن الموقع مطلوب",
+      "permission_required_content": "يحتاج هذا التطبيق إلى إذن الموقع لإظهار موقعك الحالي على الخريطة.",
+      "permission_permanently_denied_content": "تم رفض إذن الموقع نهائياً. يرجى تفعيله في إعدادات التطبيق لاستخدام هذه الميزة."
+    }
+  }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

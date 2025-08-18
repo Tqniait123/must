@@ -1179,7 +1179,48 @@
   "aboutThisParking": "عن هذا الموقف",
   "of": "من",
   "select": "اختيار",
-  "selected": "تم الاختيار"
+  "selected": "تم الاختيار",
+  "common": {
+    "cancel": "إلغاء",
+    "retry": "إعادة المحاولة",
+    "error": "خطأ",
+    "open_settings": "فتح الإعدادات"
+  },
+  "map": {
+    "unit_meters": "م",
+    "unit_kilometers": "كم",
+    "unit_minutes": "دق",
+    "unit_hours": "س",
+    "unit_points": "نقطة",
+    "marker_you": "أنت",
+    "tag_popular": "شائع",
+    "tag_wanted": "مطلوب",
+    "tag_most_popular": "الأكثر شعبية",
+    "tag_most_wanted": "الأكثر طلباً",
+    "away": "بعيداً",
+    "status_full": "ممتلئ",
+    "status_available": "متاح",
+    "calculating_route": "جاري حساب المسار...",
+    "loading_parkings": "جاري تحميل مواقف السيارات...",
+    "error_loading_parkings": "خطأ في تحميل مواقف السيارات",
+    "error_location_failed": "لا يمكن الحصول على الموقع الحالي",
+    "route_information": "معلومات المسار",
+    "route_distance": "المسافة",
+    "route_duration": "المدة",
+    "route_estimated_cost": "التكلفة المتوقعة",
+    "button_show_route": "إظهار المسار",
+    "button_details": "التفاصيل",
+    "button_start_navigation": "بدء التنقل",
+    "button_parking_full": "الموقف ممتلئ",
+    "button_clear_route": "مسح المسار",
+    "dialog": {
+      "location_disabled_title": "خدمة الموقع معطلة",
+      "location_disabled_content": "يرجى تفعيل خدمات الموقع على جهازك.",
+      "permission_required_title": "إذن الموقع مطلوب",
+      "permission_required_content": "يحتاج هذا التطبيق إلى إذن الموقع لإظهار موقعك الحالي على الخريطة.",
+      "permission_permanently_denied_content": "تم رفض إذن الموقع نهائياً. يرجى تفعيله في إعدادات التطبيق لاستخدام هذه الميزة."
+    }
+  }
 
 
 }
