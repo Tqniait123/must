@@ -170,7 +170,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Car Selection Widget
-                  CarWidget.custom(
+                  CarWidget.compact(
                     car: selectedCar,
                     trailing: CustomIconButton(
                       height: 30,
