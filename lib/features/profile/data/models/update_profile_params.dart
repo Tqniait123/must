@@ -61,6 +61,7 @@ class UpdateProfileParams {
 
     return FormData.fromMap(fields);
   }
+  
 
   /// Helper method to create MultipartFile from PlatformFile using path
   Future<MultipartFile> _createMultipartFile(PlatformFile file, String fieldName) async {
