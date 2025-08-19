@@ -17,6 +17,7 @@ import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dar
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
+import 'package:must_invest/core/utils/widgets/inputs/custom_phone_field.dart';
 import 'package:must_invest/core/utils/widgets/inputs/image_picker_avatar.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/auth/data/models/city.dart';
@@ -45,6 +46,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   PlatformFile? drivingLicenseFront;
   PlatformFile? drivingLicenseBack;
 
+  String _code = '+20';
+  final TextEditingController _phoneController = TextEditingController();
+
   // Text editing controllers
   late final TextEditingController _nameController;
   late final TextEditingController _countryController;
@@ -67,6 +71,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _countryController = TextEditingController();
     _governorateController = TextEditingController();
     _cityController = TextEditingController();
+
+    // Set initial phone number
+    _phoneController.text = user.phone;
+    log("Phone: ${_phoneController.text}");
 
     // Set initial selected IDs from user data
     selectedCountryId = user.countryId;
@@ -398,6 +406,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         }
                         return null;
                       },
+                    ),
+                    16.gap,
+                    Row(
+                      children: [
+                        TextButton(onPressed: () {}, child: Text('Send OTP')),
+                        10.gap,
+                        Expanded(
+                          child: CustomPhoneFormField(
+                            includeCountryCodeInValue: true,
+                            controller: _phoneController,
+                            margin: 0,
+                            hint: LocaleKeys.phone_number.tr(),
+                            title: LocaleKeys.phone_number.tr(),
+
+                            // Add autofill hints for phone number
+                            // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
+                            onChanged: (phone) {
+                              log('Phone number changed: $phone');
+                            },
+                            onChangedCountryCode: (code, countryCode) {
+                              setState(() {
+                                _code = code;
+                                log('Country code changed: $code');
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     16.gap,
 

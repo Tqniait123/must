@@ -34,11 +34,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  String _code = '+20';
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final BiometricService2 _biometricService = BiometricService2(); // Updated service
   bool isRemembered = false;
-  String _code = '+20';
 
   // UI State variables
   BiometricStatus _biometricStatus = BiometricStatus.error;

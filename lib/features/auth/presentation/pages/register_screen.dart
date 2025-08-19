@@ -45,6 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   String _code = "+20";
+  String _countryCode = 'EG';
   int? selectedCityId;
 
   @override
@@ -126,8 +127,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                       onChangedCountryCode: (code, countryCode) {
                         setState(() {
+                          _countryCode = countryCode;
                           _code = code;
-                          log('Country code changed: $code');
+                          log('Country code changed: $code , countryCode: $countryCode');
                         });
                       },
 
@@ -142,7 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       //   }
                       //   return null;
                       // },
-                      selectedCode: '+20',
+                      selectedCode: _code,
                     ),
                     16.gap,
                     BlocProvider.value(
@@ -317,6 +319,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 phone: "$_code${_phoneController.text}",
                                 passwordConfirmation: _passwordController.text,
                                 cityId: selectedCityId ?? 0,
+                                phoneCode: _countryCode,
 
                                 // address : _AddressController.text,
                               ),
