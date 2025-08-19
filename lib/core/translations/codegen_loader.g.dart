@@ -1191,7 +1191,8 @@ class CodegenLoader extends AssetLoader{
       "permission_required_content": "This app needs location permission to show your current position on the map.",
       "permission_permanently_denied_content": "Location permission has been permanently denied. Please enable it in app settings to use this feature."
     }
-  }
+  },
+  "select_car_for_navigation": "Select Car for Navigation"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2370,7 +2371,8 @@ static const Map<String,dynamic> _ar = {
       "permission_required_content": "يحتاج هذا التطبيق إلى إذن الموقع لإظهار موقعك الحالي على الخريطة.",
       "permission_permanently_denied_content": "تم رفض إذن الموقع نهائياً. يرجى تفعيله في إعدادات التطبيق لاستخدام هذه الميزة."
     }
-  }
+  },
+  "select_car_for_navigation": "اختر السيارة للتنقل"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

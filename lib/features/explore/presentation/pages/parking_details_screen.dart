@@ -30,7 +30,11 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _currentMainImage = widget.parking.gallery.gallery.first.image;
+    if (widget.parking.gallery.gallery.isNotEmpty) {
+      _currentMainImage = widget.parking.gallery.gallery.first.image;
+    } else {
+      _currentMainImage = ''; // Set default empty state
+    }
   }
 
   Future<void> _selectImageFromParkingGallery(String image, int index) async {
@@ -84,86 +88,87 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                     22.gap,
 
                     // Main Image with Gallery Button
-                    Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          switchInCurve: Curves.easeInOut,
-                          switchOutCurve: Curves.easeInOut,
-                          transitionBuilder: (Widget child, Animation<double> animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: ScaleTransition(
-                                scale: Tween<double>(
-                                  begin: 0.95,
-                                  end: 1.0,
-                                ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
-                                child: child,
-                              ),
-                            );
-                          },
-                          child: GestureDetector(
-                            onTap: _showImageGallery,
-                            child: Hero(
-                              key: ValueKey<String>(_currentMainImage),
-                              tag: '${widget.parking.id}-$_currentMainImage',
-                              child: ClipPath(
-                                clipper: CurveCustomClipper(),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 250,
-                                  child: Stack(
-                                    children: [
-                                      Image.network(
-                                        _currentMainImage,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        height: 250,
-                                      ),
-                                      // Gallery indicator
-                                      Positioned(
-                                        top: 16,
-                                        right: 16,
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black54,
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(Icons.photo_library, color: Colors.white, size: 16),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                '${_currentImageIndex + 1}/${widget.parking.gallery.gallery.length}',
-                                                style: TextStyle(color: Colors.white, fontSize: 12),
-                                              ),
-                                            ],
+                    if (widget.parking.gallery.gallery.isNotEmpty)
+                      Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            switchInCurve: Curves.easeInOut,
+                            switchOutCurve: Curves.easeInOut,
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: ScaleTransition(
+                                  scale: Tween<double>(
+                                    begin: 0.95,
+                                    end: 1.0,
+                                  ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: GestureDetector(
+                              onTap: _showImageGallery,
+                              child: Hero(
+                                key: ValueKey<String>(_currentMainImage),
+                                tag: '${widget.parking.id}-$_currentMainImage',
+                                child: ClipPath(
+                                  clipper: CurveCustomClipper(),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 250,
+                                    child: Stack(
+                                      children: [
+                                        Image.network(
+                                          _currentMainImage,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: 250,
+                                        ),
+                                        // Gallery indicator
+                                        Positioned(
+                                          top: 16,
+                                          right: 16,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.black54,
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.photo_library, color: Colors.white, size: 16),
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  '${_currentImageIndex + 1}/${widget.parking.gallery.gallery.length}',
+                                                  style: TextStyle(color: Colors.white, fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          bottom: -20,
-                          child: FloatingActionButton(
-                            onPressed: () {
-                              context.push(Routes.routing, extra: widget.parking);
-                            },
-                            backgroundColor: AppColors.primary,
-                            child: Icon(Icons.my_location_rounded, color: AppColors.white),
+                          Positioned(
+                            bottom: -20,
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                context.push(Routes.routing, extra: widget.parking);
+                              },
+                              backgroundColor: AppColors.primary,
+                              child: Icon(Icons.my_location_rounded, color: AppColors.white),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
 
                     30.gap,
 

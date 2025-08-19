@@ -22,8 +22,10 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_icon_button.dart';
+import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/explore/data/models/parking.dart';
 import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.dart';
+import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -497,7 +499,7 @@ class _MapScreenState extends State<MapScreen> {
                                     vertical: _selectedParking?.id == parking.id ? 14 : 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: _getMarkerColor(parking.isBusy),
+                                    color: parking.isBusy ? Colors.red : Colors.green,
                                     borderRadius: BorderRadius.circular(18),
                                     // border:
                                     //     _selectedParking?.id == parking.id
@@ -544,7 +546,7 @@ class _MapScreenState extends State<MapScreen> {
                                             ),
                                           ],
                                         ),
-                                        child: Text(parking.pricePerHour),
+                                        child: Text(parking.nameEn),
                                       ),
                                     ],
                                   ),
@@ -565,7 +567,7 @@ class _MapScreenState extends State<MapScreen> {
                                 _selectedParking?.id == parking.id ? 16 : 12,
                               ),
                               painter: _TrianglePainter(
-                                color: _getMarkerColor(parking.isBusy),
+                                color: parking.isBusy ? Colors.red : Colors.green,
                                 // hasBorder: _selectedParking?.id == parking.id,
                               ),
                             ),
@@ -931,7 +933,13 @@ class _MapScreenState extends State<MapScreen> {
                         onPressed:
                             parking.isBusy
                                 ? null
-                                : () => openGoogleMapsRoute(parking.lat.toDouble(), parking.lng.toDouble()),
+                                : () {
+                                  _showCarSelectionForNavigation();
+                                  openGoogleMapsRoute(
+                                    _selectedParking!.lat.toDouble(),
+                                    _selectedParking!.lng.toDouble(),
+                                  );
+                                },
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -986,6 +994,24 @@ class _MapScreenState extends State<MapScreen> {
     if (!await launchUrl(googleMapsUri, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch Google Maps');
     }
+  }
+
+  void _showCarSelectionForNavigation() {
+    showAllCarsBottomSheet(
+      context,
+      title: LocaleKeys.select_car_for_navigation.tr(), // You might need to add this translation key
+      onChooseCar: (Car selectedCar) {
+        // Navigate to Google Maps
+        // openGoogleMapsRoute(_selectedParking!.lat.toDouble(), _selectedParking!.lng.toDouble());
+
+        // After navigation, show QR code for the selected car
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            context.push(Routes.myQrCode, extra: selectedCar);
+          }
+        });
+      },
+    );
   }
 
   // Helper method to build enhanced tags

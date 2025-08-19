@@ -214,14 +214,14 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
               isBordered: false,
             ),
           ),
-          16.gap,
-          Expanded(
-            child: CustomElevatedButton(
-              loading: _isRegenerating,
-              onPressed: _isRegenerating ? null : _regenerateQrCode,
-              title: _isRegenerating ? LocaleKeys.generating.tr() : LocaleKeys.re_generate.tr(),
-            ),
-          ),
+          // 16.gap,
+          // Expanded(
+          //   child: CustomElevatedButton(
+          //     loading: _isRegenerating,
+          //     onPressed: _isRegenerating ? null : _regenerateQrCode,
+          //     title: _isRegenerating ? LocaleKeys.generating.tr() : LocaleKeys.re_generate.tr(),
+          //   ),
+          // ),
         ],
       ).paddingAll(30),
     );

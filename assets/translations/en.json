@@ -1217,6 +1217,7 @@
       "permission_required_content": "This app needs location permission to show your current position on the map.",
       "permission_permanently_denied_content": "Location permission has been permanently denied. Please enable it in app settings to use this feature."
     }
-  }
+  },
+  "select_car_for_navigation": "Select Car for Navigation"
 
 }

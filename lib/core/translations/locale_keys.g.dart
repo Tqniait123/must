@@ -1174,5 +1174,6 @@ abstract class  LocaleKeys {
   static const map_dialog_permission_permanently_denied_content = 'map.dialog.permission_permanently_denied_content';
   static const map_dialog = 'map.dialog';
   static const map = 'map';
+  static const select_car_for_navigation = 'select_car_for_navigation';
 
 }

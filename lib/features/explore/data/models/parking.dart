@@ -66,7 +66,7 @@ class Parking {
       employers: Employers.fromJson(json['employers']),
       floors: Floors.fromJson(json['floors']),
       points: json['points'],
-      isBusy: json['is_busy'] ?? false,
+      isBusy: json['busy'] ?? false,
       userVisits: json['user_visits'] ?? 0, // Default to 0 if not provided
     );
   }

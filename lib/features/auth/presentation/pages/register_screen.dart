@@ -292,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (state is RegisterSuccess) {
                       context.go(
                         Routes.otpScreen,
-                        extra: {'phone': _phoneController.text, 'flow': OtpFlow.registration},
+                        extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
                       );
                     }
                     if (state is AuthError) {
