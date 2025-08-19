@@ -4,6 +4,8 @@ import 'package:http_parser/http_parser.dart';
 
 class UpdateProfileParams {
   final String name;
+  final String? phone;
+  final String? countryCode;
   final int cityId;
   final PlatformFile? image;
   final PlatformFile? nationalIdFront;
@@ -14,6 +16,8 @@ class UpdateProfileParams {
   UpdateProfileParams({
     required this.name,
     required this.cityId,
+    this.phone,
+    this.countryCode,
     this.image,
     this.nationalIdFront,
     this.nationalIdBack,
@@ -28,7 +32,12 @@ class UpdateProfileParams {
     // Add required text fields
     fields['name'] = name;
     fields['city_id'] = cityId.toString();
-
+    if (phone != null) {
+      fields['phone'] = phone;
+    }
+    if (countryCode != null) {
+      fields['phone_code'] = countryCode;
+    }
     // Add optional file fields
     if (image != null) {
       fields['image'] = await _createMultipartFile(image!, 'image');
@@ -107,6 +116,8 @@ class UpdateProfileParams {
   /// Copy with method for creating modified instances
   UpdateProfileParams copyWith({
     String? name,
+    String? phone,
+    String? countryCode,
     int? cityId,
     PlatformFile? image,
     PlatformFile? nationalIdFront,
@@ -127,6 +138,8 @@ class UpdateProfileParams {
       nationalIdBack: clearNationalIdBack ? null : (nationalIdBack ?? this.nationalIdBack),
       drivingLicenseFront: clearDrivingLicenseFront ? null : (drivingLicenseFront ?? this.drivingLicenseFront),
       drivingLicenseBack: clearDrivingLicenseBack ? null : (drivingLicenseBack ?? this.drivingLicenseBack),
+      phone: phone ?? this.phone,
+      countryCode: countryCode ?? this.countryCode,
     );
   }
 
@@ -134,6 +147,8 @@ class UpdateProfileParams {
   factory UpdateProfileParams.fromForm({
     required String name,
     required int cityId,
+    String? phone,
+    String? countryCode,
     PlatformFile? image,
     PlatformFile? nationalIdFront,
     PlatformFile? nationalIdBack,
@@ -141,6 +156,8 @@ class UpdateProfileParams {
     PlatformFile? drivingLicenseBack,
   }) {
     return UpdateProfileParams(
+      phone: phone,
+      countryCode: countryCode,
       name: name,
       cityId: cityId,
       image: image,

@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
@@ -26,6 +27,7 @@ import 'package:must_invest/features/auth/data/models/governorate.dart';
 import 'package:must_invest/features/auth/presentation/cubit/cities_cubit/cities_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/countires_cubit/countries_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/governorates_cubit/governorates_cubit.dart';
+import 'package:must_invest/features/auth/presentation/pages/otp_screen.dart';
 import 'package:must_invest/features/profile/data/models/update_profile_params.dart';
 import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
 
@@ -47,6 +49,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   PlatformFile? drivingLicenseBack;
 
   String _code = '+20';
+  String _countryCode = 'EG';
   final TextEditingController _phoneController = TextEditingController();
 
   // Text editing controllers
@@ -408,32 +411,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                     ),
                     16.gap,
-                    Row(
-                      children: [
-                        TextButton(onPressed: () {}, child: Text('Send OTP')),
-                        10.gap,
-                        Expanded(
-                          child: CustomPhoneFormField(
-                            includeCountryCodeInValue: true,
-                            controller: _phoneController,
-                            margin: 0,
-                            hint: LocaleKeys.phone_number.tr(),
-                            title: LocaleKeys.phone_number.tr(),
+                    CustomPhoneFormField(
+                      includeCountryCodeInValue: true,
+                      controller: _phoneController,
+                      margin: 0,
+                      hint: LocaleKeys.phone_number.tr(),
+                      title: LocaleKeys.phone_number.tr(),
 
-                            // Add autofill hints for phone number
-                            // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
-                            onChanged: (phone) {
-                              log('Phone number changed: $phone');
-                            },
-                            onChangedCountryCode: (code, countryCode) {
-                              setState(() {
-                                _code = code;
-                                log('Country code changed: $code');
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                      // Add autofill hints for phone number
+                      // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
+                      onChanged: (phone) {
+                        log('Phone number changed: $phone');
+                      },
+                      onChangedCountryCode: (code, countryCode) {
+                        setState(() {
+                          _code = code;
+                          _countryCode = countryCode;
+                          log('Country code changed: $code');
+                        });
+                      },
                     ),
                     16.gap,
 
@@ -670,8 +666,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: BlocConsumer<ProfileCubit, ProfileState>(
                     listener: (BuildContext context, ProfileState state) {
                       if (state is ProfileSuccess) {
-                        context.setCurrentUser(state.user);
-                        showSuccessToast(context, LocaleKeys.profile_updated_successfully.tr());
+                        if (state.user.approved) {
+                          context.setCurrentUser(state.user);
+                          showSuccessToast(context, LocaleKeys.profile_updated_successfully.tr());
+                        } else {
+                          context.go(
+                            Routes.otpScreen,
+                            extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
+                          );
+                        }
                       }
                       if (state is ProfileError) {
                         showErrorToast(context, state.message);
@@ -710,6 +713,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       nationalIdBack: nationalIdBack,
       drivingLicenseFront: drivingLicenseFront,
       drivingLicenseBack: drivingLicenseBack,
+      // Only update phone if controller value differs from current user phone
+      phone:
+          _phoneController.text.isNotEmpty && "$_code${_phoneController.text.trim()}" != context.user.phone
+              ? "$_code${_phoneController.text.trim()}"
+              : null,
+
+      // Only update country code if phone is being updated
+      countryCode:
+          _phoneController.text.isNotEmpty && "$_code${_phoneController.text.trim()}" != context.user.phone
+              ? _countryCode
+              : null,
     );
 
     if (!params.isValid()) {
