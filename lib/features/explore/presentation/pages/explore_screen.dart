@@ -39,9 +39,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
   String _searchQuery = '';
 
   final List<Map<String, dynamic>> _filters = [
-    {'sortBy': SortBy.nearest, 'title': LocaleKeys.nearst.tr()},
     {'sortBy': SortBy.mostPopular, 'title': LocaleKeys.most_popular.tr()},
     {'sortBy': SortBy.mostWanted, 'title': LocaleKeys.most_wanted.tr()},
+    {'sortBy': SortBy.nearest, 'title': LocaleKeys.nearst.tr  ()},
   ];
 
   @override

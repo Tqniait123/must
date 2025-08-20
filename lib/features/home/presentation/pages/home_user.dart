@@ -59,8 +59,8 @@ class _HomeUserState extends State<HomeUser> {
       // Check if location services are enabled and permissions granted
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        // Fallback to byUserCity only (no sorting)
-        _exploreCubit.getAllParkings(filter: FilterModel.byUserCity());
+        // Fallback to mostPopular only (no sorting)
+        _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
         return;
       }
 
@@ -68,8 +68,8 @@ class _HomeUserState extends State<HomeUser> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-          // Fallback to byUserCity only (no sorting)
-          _exploreCubit.getAllParkings(filter: FilterModel.byUserCity());
+          // Fallback to mostPopular only (no sorting)
+          _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
           return;
         }
       }
@@ -85,12 +85,10 @@ class _HomeUserState extends State<HomeUser> {
       });
 
       // Load nearest parkings with actual location
-      _exploreCubit.getAllParkings(
-        filter: FilterModel.nearest(lat: position.latitude, lng: position.longitude, byUserCity: true),
-      );
+      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
     } catch (e) {
-      // Fallback to byUserCity only (no sorting) if location fails
-      _exploreCubit.getAllParkings(filter: FilterModel.byUserCity());
+      // Fallback to mostPopular only (no sorting) if location fails
+      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
     }
   }
 
@@ -123,10 +121,7 @@ class _HomeUserState extends State<HomeUser> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                LocaleKeys.nearst_parking_spaces.tr(),
-                style: context.bodyMedium.bold.s16.copyWith(color: AppColors.primary),
-              ),
+              Text(LocaleKeys.most_popular.tr(), style: context.bodyMedium.bold.s16.copyWith(color: AppColors.primary)),
               // see more text button
               Text(
                 LocaleKeys.see_more.tr(),
