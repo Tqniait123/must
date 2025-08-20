@@ -18,8 +18,10 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/loading/loading_widget.dart';
+import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
 import 'package:must_invest/features/explore/data/models/filter_model.dart';
 import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.dart';
+import 'package:must_invest/features/explore/presentation/widgets/ai_filter_widget.dart';
 import 'package:must_invest/features/explore/presentation/widgets/filter_option_widget.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
 
@@ -41,7 +43,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final List<Map<String, dynamic>> _filters = [
     {'sortBy': SortBy.mostPopular, 'title': LocaleKeys.most_popular.tr()},
     {'sortBy': SortBy.mostWanted, 'title': LocaleKeys.most_wanted.tr()},
-    {'sortBy': SortBy.nearest, 'title': LocaleKeys.nearst.tr  ()},
+    {'sortBy': SortBy.nearest, 'title': LocaleKeys.nearst.tr()},
   ];
 
   @override
@@ -126,6 +128,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return true;
   }
 
+  // Also update the _getCurrentLocation method to add realistic AI thinking time:
+
   Future<void> _getCurrentLocation() async {
     setState(() {
       _isGettingLocation = true;
@@ -136,30 +140,33 @@ class _ExploreScreenState extends State<ExploreScreen> {
       if (!hasPermission) {
         setState(() {
           _isGettingLocation = false;
-          // Fallback to most popular if location fails
           _selectedSortBy = SortBy.mostPopular;
         });
         _applyFilters();
         return;
       }
 
+      // Add AI thinking simulation delay
+      await Future.delayed(const Duration(milliseconds: 2500)); // AI thinking time
+
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
+
+      // Add additional processing delay for AI effect
+      await Future.delayed(const Duration(milliseconds: 1500)); // AI processing time
 
       setState(() {
         _currentPosition = position;
         _isGettingLocation = false;
       });
 
-      // Apply filters with new location
       _applyFilters();
     } catch (e) {
       setState(() {
         log(e.toString());
         _isGettingLocation = false;
-        // Fallback to most popular if location fails
         _selectedSortBy = SortBy.mostPopular;
       });
 
@@ -267,45 +274,37 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   separatorBuilder: (context, index) => 10.gap,
                   itemBuilder: (context, index) {
                     final filter = _filters[index];
+                    bool isNearestSelected = _selectedSortBy == SortBy.nearest;
                     final isNearest = filter['sortBy'] == SortBy.nearest;
                     final isSelected = _selectedSortBy == filter['sortBy'];
+                    final isAIThinking = isNearest && isSelected && _isGettingLocation;
 
-                    return GestureDetector(
-                      onTap: () {
-                        _onFilterChanged(filter['sortBy']);
-                      },
-                      child: Stack(
-                        children: [
-                          FilterOptionWidget(
-                            title: filter['title'],
-                            id: filter['sortBy'].index,
-                            isSelected: isSelected,
-                          ),
-                          if (isNearest && isSelected && _isGettingLocation)
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black26,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
+                    return isNearestSelected
+                        ? AIFilterOptionWidget(
+                          title: filter['title'],
+                          id: filter['sortBy'].index,
+                          isSelected: isSelected,
+                          isAIThinking: isAIThinking,
+                          onTap: () {
+                            _onFilterChanged(filter['sortBy']);
+                          },
+                        )
+                        : FilterOptionWidget(
+                          title: filter['title'],
+                          id: filter['sortBy'].index,
+                          isSelected: isSelected,
+                          // onTap: () {
+                          //   _onFilterChanged(filter['sortBy']);
+                          // },
+                        ).withPressEffect(
+                          onTap: () {
+                            _onFilterChanged(filter['sortBy']);
+                          },
+                        );
                   },
                 ),
               ),
+
               // Show search indicator when searching
               if (_searchQuery.isNotEmpty) ...[
                 10.gap,
