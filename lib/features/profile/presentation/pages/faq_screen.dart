@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/profile/data/models/faq_model.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_state.dart';
@@ -110,7 +111,8 @@ class _FAQScreenState extends State<FAQScreen> with TickerProviderStateMixin {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                  child: const Icon(Icons.help_center_rounded, size: 40, color: Colors.white),
+                  child: LogoWidget(size: 60),
+                  // child: const Icon(Icons.privacy_tip_rounded, size: 40, color: Colors.white),
                 ),
                 const SizedBox(height: 16),
                 Text(

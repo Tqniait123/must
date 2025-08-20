@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/profile/data/models/about_us_model.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_state.dart';
@@ -114,7 +115,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> with TickerProviderStateM
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                  child: const Icon(Icons.info_rounded, size: 40, color: Colors.white),
+                  child: LogoWidget(size: 60),
+                  // child: const Icon(Icons.privacy_tip_rounded, size: 40, color: Colors.white),
                 ),
                 const SizedBox(height: 16),
                 Text(
