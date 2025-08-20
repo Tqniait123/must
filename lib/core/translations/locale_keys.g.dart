@@ -1175,5 +1175,15 @@ abstract class  LocaleKeys {
   static const map_dialog = 'map.dialog';
   static const map = 'map';
   static const select_car_for_navigation = 'select_car_for_navigation';
+  static const location_error = 'location_error';
+  static const searching_for = 'searching_for';
+  static const no_parking_found_for = 'no_parking_found_for';
+  static const no_parking_available = 'no_parking_available';
+  static const clear_search = 'clear_search';
+  static const error_loading_parkings = 'error_loading_parkings';
+  static const location_services_disabled = 'location_services_disabled';
+  static const location_permissions_denied = 'location_permissions_denied';
+  static const location_permissions_permanently_denied = 'location_permissions_permanently_denied';
+  static const failed_to_get_location = 'failed_to_get_location';
 
 }

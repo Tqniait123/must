@@ -36,6 +36,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   late ExploreCubit _exploreCubit;
   Position? _currentPosition;
   bool _isGettingLocation = false;
+  String _searchQuery = '';
 
   final List<Map<String, dynamic>> _filters = [
     {'sortBy': SortBy.nearest, 'title': LocaleKeys.nearst.tr()},
@@ -56,6 +57,47 @@ class _ExploreScreenState extends State<ExploreScreen> {
     _exploreCubit.getAllParkings(filter: initialFilter);
   }
 
+  // Create filter with current search query
+  FilterModel _createFilterWithSearch() {
+    final baseFilter = _createCurrentFilter();
+
+    // If there's a search query, add it to the filter
+    if (_searchQuery.isNotEmpty) {
+      return FilterModel(
+        sortBy: baseFilter.sortBy,
+        lat: baseFilter.lat,
+        lng: baseFilter.lng,
+        byUserCity: baseFilter.byUserCity,
+        name: _searchQuery, // Add search query as name filter
+      );
+    }
+
+    return baseFilter;
+  }
+
+  // Create filter based on current sort selection
+  FilterModel _createCurrentFilter() {
+    switch (_selectedSortBy) {
+      case SortBy.nearest:
+        if (_currentPosition != null) {
+          return FilterModel.nearest(lat: _currentPosition!.latitude, lng: _currentPosition!.longitude);
+        } else {
+          // Fallback to most popular if no location
+          return FilterModel.mostPopular();
+        }
+      case SortBy.mostPopular:
+        return FilterModel.mostPopular();
+      case SortBy.mostWanted:
+        return FilterModel.mostWanted();
+    }
+  }
+
+  // Apply current filter and search
+  void _applyFilters() {
+    final filter = _createFilterWithSearch();
+    _exploreCubit.getAllParkings(filter: filter);
+  }
+
   Future<bool> _checkLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -63,7 +105,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      _showLocationDialog('Location services are disabled. Please enable location services.');
+      _showLocationDialog(LocaleKeys.location_services_disabled.tr());
       return false;
     }
 
@@ -71,13 +113,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        _showLocationDialog('Location permissions are denied. Please grant location access.');
+        _showLocationDialog(LocaleKeys.location_permissions_denied.tr());
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      _showLocationDialog('Location permissions are permanently denied. Please enable them in settings.');
+      _showLocationDialog(LocaleKeys.location_permissions_permanently_denied.tr());
       return false;
     }
 
@@ -97,7 +139,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           // Fallback to most popular if location fails
           _selectedSortBy = SortBy.mostPopular;
         });
-        _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
+        _applyFilters();
         return;
       }
 
@@ -111,10 +153,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
         _isGettingLocation = false;
       });
 
-      // Create filter with actual user location
-      final filter = FilterModel.nearest(lat: position.latitude, lng: position.longitude);
-
-      _exploreCubit.getAllParkings(filter: filter);
+      // Apply filters with new location
+      _applyFilters();
     } catch (e) {
       setState(() {
         log(e.toString());
@@ -123,8 +163,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
         _selectedSortBy = SortBy.mostPopular;
       });
 
-      _showLocationDialog('Failed to get location: ${e.toString()}');
-      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
+      _showLocationDialog(LocaleKeys.failed_to_get_location.tr(args: [e.toString()]));
+      _applyFilters();
     }
   }
 
@@ -133,9 +173,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Location Error'),
+            title: Text(LocaleKeys.location_error.tr()),
             content: Text(message),
-            actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('OK'))],
+            actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.ok.tr()))],
           ),
     );
   }
@@ -145,17 +185,28 @@ class _ExploreScreenState extends State<ExploreScreen> {
       _selectedSortBy = newSortBy;
     });
 
-    switch (newSortBy) {
-      case SortBy.nearest:
-        _getCurrentLocation();
-        break;
-      case SortBy.mostPopular:
-        _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
-        break;
-      case SortBy.mostWanted:
-        _exploreCubit.getAllParkings(filter: FilterModel.mostWanted());
-        break;
+    if (newSortBy == SortBy.nearest) {
+      _getCurrentLocation();
+    } else {
+      _applyFilters();
     }
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchQuery = value.trim();
+    });
+
+    // Apply filters with new search query
+    _applyFilters();
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+    });
+    _applyFilters();
   }
 
   @override
@@ -196,11 +247,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 isBordered: false,
                 margin: 0,
                 prefixIC: AppIcons.searchIc.icon(color: AppColors.primary.withValues(alpha: 0.4)),
+                suffixIC:
+                    _searchQuery.isNotEmpty
+                        ? GestureDetector(
+                          onTap: _clearSearch,
+                          child: Icon(Icons.clear, color: AppColors.primary.withValues(alpha: 0.6)),
+                        )
+                        : null,
                 hint: LocaleKeys.search.tr(),
-                onChanged: (value) {
-                  // TODO: Implement search functionality
-                  // You can add debouncing here and call the API with search term
-                },
+                waitTyping: true,
+                onChanged: _onSearchChanged,
               ),
               20.gap,
               SizedBox(
@@ -225,31 +281,53 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             id: filter['sortBy'].index,
                             isSelected: isSelected,
                           ),
-                          // if (isNearest && isSelected && _isGettingLocation)
-                          //   Positioned.fill(
-                          //     child: Container(
-                          //       decoration: BoxDecoration(
-                          //         color: Colors.black26,
-                          //         borderRadius: BorderRadius.circular(8),
-                          //       ),
-                          //       child: Center(
-                          //         child: SizedBox(
-                          //           width: 20,
-                          //           height: 20,
-                          //           child: CircularProgressIndicator(
-                          //             strokeWidth: 2,
-                          //             valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
+                          if (isNearest && isSelected && _isGettingLocation)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black26,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     );
                   },
                 ),
               ),
+              // Show search indicator when searching
+              if (_searchQuery.isNotEmpty) ...[
+                10.gap,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.search, size: 16, color: AppColors.primary),
+                      4.gap,
+                      Text(
+                        LocaleKeys.searching_for.tr(args: [_searchQuery]),
+                        style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               Expanded(
                 child: BlocProvider.value(
                   value: _exploreCubit,
@@ -258,6 +336,29 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       if (state is ParkingsLoading) {
                         return LoadingWidget();
                       } else if (state is ParkingsSuccess) {
+                        if (state.parkings.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.search_off, size: 64, color: AppColors.primary.withValues(alpha: 0.3)),
+                                16.gap,
+                                Text(
+                                  _searchQuery.isNotEmpty
+                                      ? LocaleKeys.no_parking_found_for.tr(args: [_searchQuery])
+                                      : LocaleKeys.no_parking_available.tr(),
+                                  style: context.bodyLarge.copyWith(color: AppColors.primary.withValues(alpha: 0.6)),
+                                  textAlign: TextAlign.center,
+                                ),
+                                if (_searchQuery.isNotEmpty) ...[
+                                  8.gap,
+                                  TextButton(onPressed: _clearSearch, child: Text(LocaleKeys.clear_search.tr())),
+                                ],
+                              ],
+                            ),
+                          );
+                        }
+
                         return ListView.separated(
                           physics: const BouncingScrollPhysics(),
                           shrinkWrap: false,
@@ -267,6 +368,22 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           itemBuilder: (context, index) {
                             return ParkingCard(parking: state.parkings[index]);
                           },
+                        );
+                      } else if (state is ParkingsError) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error_outline, size: 64, color: Colors.red.withValues(alpha: 0.3)),
+                              16.gap,
+                              Text(
+                                LocaleKeys.error_loading_parkings.tr(),
+                                style: context.bodyLarge.copyWith(color: Colors.red.withValues(alpha: 0.6)),
+                              ),
+                              8.gap,
+                              TextButton(onPressed: _applyFilters, child: Text(LocaleKeys.retry.tr())),
+                            ],
+                          ),
                         );
                       } else {
                         return SizedBox.shrink();

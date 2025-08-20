@@ -1222,7 +1222,19 @@
     }
   },
 
-  "select_car_for_navigation": "اختر السيارة للتنقل"
+  "select_car_for_navigation": "اختر السيارة للتنقل",
+  "location_error": "خطأ في الموقع",
+  "ok": "موافق",
+  "searching_for": "البحث عن: \"{}\"",
+  "no_parking_found_for": "لم يتم العثور على مواقف سيارات لـ \"{}\"",
+  "no_parking_available": "لا توجد مواقف سيارات متاحة",
+  "clear_search": "مسح البحث",
+  "error_loading_parkings": "خطأ في تحميل مواقف السيارات",
+  "retry": "إعادة المحاولة",
+  "location_services_disabled": "خدمات الموقع معطلة. يرجى تفعيل خدمات الموقع.",
+  "location_permissions_denied": "تم رفض أذونات الموقع. يرجى منح الوصول للموقع.",
+  "location_permissions_permanently_denied": "تم رفض أذونات الموقع نهائياً. يرجى تفعيلها في الإعدادات.",
+  "failed_to_get_location": "فشل في الحصول على الموقع: {}"
 
 
 

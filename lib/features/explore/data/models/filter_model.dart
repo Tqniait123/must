@@ -32,8 +32,9 @@ class FilterModel {
   final double? lat;
   final double? lng;
   final bool byUserCity;
+  final String? name;
 
-  FilterModel({this.sortBy, this.lat, this.lng, this.byUserCity = false})
+  FilterModel({this.sortBy, this.lat, this.lng, this.byUserCity = false, this.name})
     : assert(
         sortBy != SortBy.nearest || (lat != null && lng != null),
         'lat and lng must be provided when sortBy is nearest',
@@ -60,6 +61,8 @@ class FilterModel {
 
     if (lat != null) result['lat'] = lat;
     if (lng != null) result['lng'] = lng;
+
+    if (name != null) result['parking_name'] = name;
 
     return result;
   }

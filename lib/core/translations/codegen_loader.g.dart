@@ -1192,7 +1192,17 @@ class CodegenLoader extends AssetLoader{
       "permission_permanently_denied_content": "Location permission has been permanently denied. Please enable it in app settings to use this feature."
     }
   },
-  "select_car_for_navigation": "Select Car for Navigation"
+  "select_car_for_navigation": "Select Car for Navigation",
+  "location_error": "Location Error",
+  "searching_for": "Searching: \"{}\"",
+  "no_parking_found_for": "No parking found for \"{}\"",
+  "no_parking_available": "No parking available",
+  "clear_search": "Clear search",
+  "error_loading_parkings": "Error loading parkings",
+  "location_services_disabled": "Location services are disabled. Please enable location services.",
+  "location_permissions_denied": "Location permissions are denied. Please grant location access.",
+  "location_permissions_permanently_denied": "Location permissions are permanently denied. Please enable them in settings.",
+  "failed_to_get_location": "Failed to get location: {}"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -1450,7 +1460,7 @@ static const Map<String,dynamic> _ar = {
   "device_authentication_failed": "فشل التحقق من الجهاز. يرجى المحاولة مرة أخرى.",
   "device_password_description": "استخدم رقم التعريف الشخصي أو كلمة المرور أو النمط الخاص بجهازك لتفعيل المصادقة البيومترية",
   "no_notification_yet": "لا توجد إشعارات حتى الآن",
-  "retry": "اعادة المحاولة",
+  "retry": "إعادة المحاولة",
   "frequently_asked_questions": "الأسئلة الشائعة",
   "find_answers_to_common_questions": "ابحث عن إجابات للأسئلة الشائعة",
   "search_faqs": "البحث في الأسئلة الشائعة...",
@@ -2372,7 +2382,17 @@ static const Map<String,dynamic> _ar = {
       "permission_permanently_denied_content": "تم رفض إذن الموقع نهائياً. يرجى تفعيله في إعدادات التطبيق لاستخدام هذه الميزة."
     }
   },
-  "select_car_for_navigation": "اختر السيارة للتنقل"
+  "select_car_for_navigation": "اختر السيارة للتنقل",
+  "location_error": "خطأ في الموقع",
+  "searching_for": "البحث عن: \"{}\"",
+  "no_parking_found_for": "لم يتم العثور على مواقف سيارات لـ \"{}\"",
+  "no_parking_available": "لا توجد مواقف سيارات متاحة",
+  "clear_search": "مسح البحث",
+  "error_loading_parkings": "خطأ في تحميل مواقف السيارات",
+  "location_services_disabled": "خدمات الموقع معطلة. يرجى تفعيل خدمات الموقع.",
+  "location_permissions_denied": "تم رفض أذونات الموقع. يرجى منح الوصول للموقع.",
+  "location_permissions_permanently_denied": "تم رفض أذونات الموقع نهائياً. يرجى تفعيلها في الإعدادات.",
+  "failed_to_get_location": "فشل في الحصول على الموقع: {}"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

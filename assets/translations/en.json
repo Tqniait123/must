@@ -1218,6 +1218,18 @@
       "permission_permanently_denied_content": "Location permission has been permanently denied. Please enable it in app settings to use this feature."
     }
   },
-  "select_car_for_navigation": "Select Car for Navigation"
+  "select_car_for_navigation": "Select Car for Navigation",
+  "location_error": "Location Error",
+  "ok": "OK",
+  "searching_for": "Searching: \"{}\"",
+  "no_parking_found_for": "No parking found for \"{}\"",
+  "no_parking_available": "No parking available",
+  "clear_search": "Clear search",
+  "error_loading_parkings": "Error loading parkings",
+  "retry": "Retry",
+  "location_services_disabled": "Location services are disabled. Please enable location services.",
+  "location_permissions_denied": "Location permissions are denied. Please grant location access.",
+  "location_permissions_permanently_denied": "Location permissions are permanently denied. Please enable them in settings.",
+  "failed_to_get_location": "Failed to get location: {}"
 
 }
