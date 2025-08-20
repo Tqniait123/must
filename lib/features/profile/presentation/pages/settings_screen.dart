@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
@@ -7,10 +8,14 @@ import 'package:must_invest/core/services/biometric_service_2.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/dialogs/languages_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_phone_field.dart';
+import 'package:must_invest/features/auth/data/models/login_params.dart';
+import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/profile/presentation/widgets/profile_item_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -332,25 +337,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             16.gap,
                             Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (formKey.currentState!.validate()) {
+                              child: BlocConsumer<AuthCubit, AuthState>(
+                                listener: (BuildContext context, AuthState state) {
+                                  if (state is AuthSuccess) {
                                     Navigator.pop(context, {
                                       'phone':
                                           "$code${phoneController.text}", // Use the selected country code andphoneController.text",
                                       'password': passwordController.text,
                                     });
                                   }
+                                  if (state is AuthError) {
+                                    showErrorToast(context, state.message);
+                                  }
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                ),
-                                child: Text(
-                                  LocaleKeys.save.tr(),
-                                  style: context.titleMedium.copyWith(color: Colors.white),
-                                ),
+                                builder:
+                                    (BuildContext context, AuthState state) => CustomElevatedButton(
+                                      onPressed: () {
+                                        if (formKey.currentState!.validate()) {
+                                          AuthCubit.get(context).login(
+                                            LoginParams(
+                                              phone: "$code${phoneController.text}",
+                                              password: passwordController.text,
+                                              isRemembered: true,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      loading: state is AuthLoading,
+                                      title: LocaleKeys.save.tr(),
+                                    ),
                               ),
                             ),
                           ],
