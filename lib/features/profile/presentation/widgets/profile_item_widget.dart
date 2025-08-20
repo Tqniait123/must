@@ -11,34 +11,41 @@ class ProfileItemWidget extends StatelessWidget {
   final String iconPath;
   final void Function()? onPressed;
   final Widget? trailing;
+  final Color? color; // New parameter for custom color
+
   const ProfileItemWidget({
     super.key,
     required this.title,
     required this.iconPath,
     this.onPressed,
     this.trailing,
+    this.color, // Optional color parameter
   });
 
   @override
   Widget build(BuildContext context) {
+    final itemColor = color ?? AppColors.primary; // Use custom color or default to primary
+
     return Container(
       color: AppColors.white,
       margin: const EdgeInsets.only(bottom: 38),
       child: Row(
         children: [
-          iconPath.icon(color: AppColors.primary),
+          iconPath.icon(color: itemColor),
           18.gap,
           Expanded(
             child: Text(
               title,
-              style: context.titleMedium.regular.s14.copyWith(),
+              style: context.titleMedium.regular.s14.copyWith(
+                color: itemColor, // Apply color to text as well
+              ),
             ),
           ),
           trailing ?? // arrow
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
-                color: AppColors.primary,
+                color: itemColor, // Apply color to arrow
               ),
         ],
       ),

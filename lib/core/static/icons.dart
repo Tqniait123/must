@@ -11,6 +11,7 @@ static const String changeIc = '$_iconsPath/change_ic.svg';
 static const String historyIc = '$_iconsPath/history_ic.svg';
 static const String closeIc = '$_iconsPath/close_ic.svg';
 static const String removeIc = '$_iconsPath/remove_ic.svg';
+static const String menuIc = '$_iconsPath/menu_ic.svg';
 static const String settingsIc = '$_iconsPath/settings_ic.svg';
 static const String popularIc = '$_iconsPath/popular_ic.svg';
 static const String outlinedClockIc = '$_iconsPath/outlined_clock_ic.svg';

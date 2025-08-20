@@ -42,13 +42,14 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomIconButton(
-                    iconAsset: AppIcons.settingsIc,
+                    iconAsset: AppIcons.menuIc,
                     iconColor: AppColors.white,
                     color: Color(0xff6468AC),
                     onPressed: () {
                       context.push(Routes.profile);
                     },
                   ),
+                  15.gap,
                   Expanded(
                     child: Column(
                       children: [
