@@ -682,6 +682,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                     builder:
                         (BuildContext context, ProfileState state) => CustomElevatedButton(
+                          loading: state is ProfileLoading,
                           heroTag: 'save',
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
