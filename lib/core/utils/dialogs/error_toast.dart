@@ -14,7 +14,7 @@ void showErrorToast(context, String message) {
   );
 }
 
-void showSuccessToast(context, String message) {
+void showSuccessToast(context, String message, {int? seconds}) {
   FToast fToast;
 
   fToast = FToast();
@@ -22,7 +22,7 @@ void showSuccessToast(context, String message) {
 
   fToast.showToast(
     isDismissible: true,
-    toastDuration: const Duration(seconds: 3),
+    toastDuration:  Duration(seconds: seconds ?? 3),
     child: SuccessToast(message: message),
   );
 }

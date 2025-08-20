@@ -36,7 +36,7 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   Parking? _selectedParking;
   LatLng? _currentLocation;
   final Location _location = Location();
@@ -50,11 +50,39 @@ class _MapScreenState extends State<MapScreen> {
   // UI State
   bool _showRouteDetails = false;
 
+  // NEW: Animation and scroll controllers for parking list
+  late AnimationController _listAnimationController;
+  late Animation<double> _listSlideAnimation;
+  final ScrollController _parkingListController = ScrollController();
+  final MapController _mapController = MapController();
+
+  // NEW: List view state
+  bool _isListExpanded = true;
+  double _listHeight = 220.0; // Reduced base height
+
   @override
   void initState() {
     super.initState();
     _checkPermissionsAndGetLocation();
     _fetchParkingsData();
+
+    // NEW: Initialize animation controller
+    _listAnimationController = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+
+    _listSlideAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut));
+
+    // Start the animation when screen loads
+    _listAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _listAnimationController.dispose();
+    _parkingListController.dispose();
+    super.dispose();
   }
 
   void _fetchParkingsData() {
@@ -176,6 +204,33 @@ class _MapScreenState extends State<MapScreen> {
       _currentRouteInfo = null;
       _showRouteDetails = false;
     });
+  }
+
+  // NEW: Navigate to parking from list
+  void _navigateToParkingFromList(Parking parking) {
+    setState(() {
+      if (_selectedParking == null) {
+        _isListExpanded = false;
+        _listHeight = _isListExpanded ? 220.0 : 160.0;
+      } else {
+        _selectedParking = null;
+        _isListExpanded = true;
+        // _clearRoute();
+        _listHeight = _isListExpanded ? 220.0 : 160.0;
+      }
+    });
+    final parkingLocation = LatLng(parking.lat.toDouble(), parking.lng.toDouble());
+
+    // Clear any existing route
+    _clearRoute();
+
+    // Set selected parking
+    // setState(() {
+    //   _selectedParking = parking;
+    // });
+
+    // Animate map to parking location
+    _mapController.move(parkingLocation, 16.0);
   }
 
   void _showRouteToParking() {
@@ -356,10 +411,252 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  // NEW: Build parking list widget
+  Widget _buildParkingListView(List<Parking> parkings) {
+    return AnimatedBuilder(
+      animation: _listSlideAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, -50 * (1 - _listSlideAnimation.value)),
+          child: Opacity(
+            opacity: _listSlideAnimation.value,
+            child: Container(
+              height: _listHeight,
+              margin: const EdgeInsets.only(top: 100), // Account for status bar and back button
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+
+                children: [
+                  // Header with title and expand/collapse button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isListExpanded = !_isListExpanded;
+                              _listHeight = _isListExpanded ? 220.0 : 160.0;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              _isListExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Parking cards list
+                  Expanded(
+                    child: ListView.separated(
+                      controller: _parkingListController,
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: parkings.length,
+                      separatorBuilder: (context, index) => const SizedBox(width: 12),
+                      itemBuilder: (context, index) {
+                        final parking = parkings[index];
+                        final distance =
+                            _currentLocation != null
+                                ? _calculateDistance(
+                                  _currentLocation!,
+                                  LatLng(parking.lat.toDouble(), parking.lng.toDouble()),
+                                )
+                                : 0.0;
+                        final isSelected = _selectedParking?.id == parking.id;
+
+                        return _buildParkingCard(parking, distance, isSelected, _isListExpanded);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // NEW: Build individual parking card
+  Widget _buildParkingCard(Parking parking, double distance, bool isSelected, bool isListExpanded) {
+    return GestureDetector(
+      onTap: () => _navigateToParkingFromList(parking),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        width: 280,
+        margin: EdgeInsets.only(bottom: isSelected ? 4 : 8, top: isSelected ? 4 : 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors:
+                isSelected
+                    ? [AppColors.primary, AppColors.primary.withOpacity(0.8)]
+                    : [Colors.white, Colors.grey.shade50],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border:
+              isSelected
+                  ? Border.all(color: Colors.white, width: 2)
+                  : Border.all(color: Colors.grey.shade200, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected ? AppColors.primary.withOpacity(0.4) : Colors.black.withOpacity(0.1),
+              spreadRadius: isSelected ? 3 : 1,
+              blurRadius: isSelected ? 12 : 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with status and tags
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Status indicator
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: parking.isBusy ? Colors.red : Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      parking.isBusy ? LocaleKeys.map_status_full.tr() : LocaleKeys.map_status_available.tr(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
+                  // Tags
+                  Row(
+                    children: [
+                      if (_isMostPopular(parking))
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: AppImages.popular.toImage(width: 12, height: 12),
+                        ),
+                      if (_isMostPopular(parking) && _isMostWanted(parking)) const SizedBox(width: 4),
+                      if (_isMostWanted(parking))
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.purple.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: AppImages.wanted.toImage(width: 12, height: 12),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              // Parking name
+              Text(
+                parking.nameEn,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.white : Colors.black87,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+              const SizedBox(height: 4),
+
+              // Address
+              if (isListExpanded) ...[
+                Text(
+                  parking.address,
+                  style: TextStyle(fontSize: 12, color: isSelected ? Colors.white70 : Colors.grey.shade600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const Spacer(),
+
+                // Distance and navigation button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (_currentLocation != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white.withOpacity(0.2) : AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.location_on, size: 12, color: isSelected ? Colors.white : AppColors.primary),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatDistance(distance),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? Colors.white : AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Navigate button
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.white.withOpacity(0.2) : AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.navigation, size: 16, color: isSelected ? Colors.white : Colors.white),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMapWidget(List<Parking> parkings) {
     return Stack(
       children: [
         FlutterMap(
+          mapController: _mapController,
           options: MapOptions(
             initialCenter: _currentLocation ?? LatLng(30.0444, 31.2357),
             initialZoom: 12.0,
@@ -608,6 +905,9 @@ class _MapScreenState extends State<MapScreen> {
               Positioned(bottom: 20, left: 16, right: 16, child: _buildParkingDetails(_selectedParking!)),
           ],
         ),
+
+        // NEW: Parking list overlay
+        _buildParkingListView(parkings),
       ],
     );
   }

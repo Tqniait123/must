@@ -50,13 +50,13 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onResponse: (response, handler) {
-          if (response.statusCode == 401 || response.statusCode == 403) {
+          if (response.statusCode == 401) {
             _handleUnauthorized();
           }
           handler.next(response);
         },
         onError: (DioException e, handler) {
-          if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+          if (e.response?.statusCode == 401) {
             _handleUnauthorized();
           }
           handler.next(e);

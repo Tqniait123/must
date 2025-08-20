@@ -56,7 +56,11 @@ class ResetPasswordError extends AuthState {
   List<Object> get props => [message];
 }
 
-class RegisterSuccess extends AuthState {}
+class RegisterSuccess extends AuthState {
+  final String message;
+
+  const RegisterSuccess(this.message);
+}
 
 class ResendOTPLoading extends AuthState {}
 

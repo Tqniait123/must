@@ -68,7 +68,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -322,55 +322,57 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                       child: CustomDetailsInfo(
                                         title: '${widget.parking.pricePerHour} ${LocaleKeys.pointsPerHour.tr()}',
                                         icon: AppIcons.outlinedPriceIc,
+                                        iconColor: Colors.amber[900],
                                       ),
                                     ),
 
                                     12.gap,
 
                                     // Rating
-                                    Expanded(child: CustomDetailsInfo(title: '${widget.parking.points} ⭐', icon: null)),
+                                    Expanded(
+                                      child: CustomDetailsInfo(
+                                        title: '${widget.parking.userVisits} ${LocaleKeys.visitsByYou.tr()}',
+                                        icon: AppIcons.outlinedClockIc,
+                                        fullWidth: true,
+                                        iconColor: Colors.blue[800],
+                                      ),
+                                    ),
                                   ],
                                 ),
 
                                 12.gap,
 
                                 // User Visits
-                                CustomDetailsInfo(
-                                  title: '${widget.parking.userVisits} ${LocaleKeys.visitsByYou.tr()}',
-                                  icon: AppIcons.outlinedClockIc,
-                                  fullWidth: true,
-                                ),
                               ],
                             ),
                           ),
 
-                          // Missing Data Notice
-                          20.gap,
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.info_outline, color: AppColors.primary, size: 16),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    LocaleKeys.distanceTimeNotAvailable.tr(),
-                                    style: TextStyle(
-                                      color: AppColors.primary,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
+                          // // Missing Data Notice
+                          // 20.gap,
+                          // Container(
+                          //   padding: EdgeInsets.all(12),
+                          //   decoration: BoxDecoration(
+                          //     color: AppColors.primary.withOpacity(0.1),
+                          //     borderRadius: BorderRadius.circular(12),
+                          //     border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                          //   ),
+                          //   child: Row(
+                          //     children: [
+                          //       Icon(Icons.info_outline, color: AppColors.primary, size: 16),
+                          //       SizedBox(width: 8),
+                          //       Expanded(
+                          //         child: Text(
+                          //           LocaleKeys.distanceTimeNotAvailable.tr(),
+                          //           style: TextStyle(
+                          //             color: AppColors.primary,
+                          //             fontSize: 12,
+                          //             fontWeight: FontWeight.w500,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                           20.gap,
 
                           // Description
@@ -554,8 +556,9 @@ class CustomDetailsInfo extends StatelessWidget {
   final String title;
   final String? icon;
   final bool fullWidth;
+  final Color? iconColor;
 
-  const CustomDetailsInfo({super.key, required this.title, this.icon, this.fullWidth = false});
+  const CustomDetailsInfo({super.key, required this.title, this.icon, this.fullWidth = false, this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -564,20 +567,23 @@ class CustomDetailsInfo extends StatelessWidget {
       constraints: fullWidth ? null : const BoxConstraints(minWidth: 100, maxWidth: 200),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
+        border: Border.all(color: AppColors.greyAF.withOpacity(0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
         children: [
-          if (icon != null) ...[icon!.icon(color: AppColors.primary, height: 16), const SizedBox(width: 6)],
+          if (icon != null) ...[
+            icon!.icon(color: iconColor ?? AppColors.primary, height: 16),
+            const SizedBox(width: 6),
+          ],
           Flexible(
             child: Text(
               title,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.grey81),
             ),
           ),
         ],

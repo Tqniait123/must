@@ -17,7 +17,7 @@ abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> login(LoginParams params);
   Future<Either<AuthModel, AppError>> loginWithGoogle();
   Future<Either<AuthModel, AppError>> loginWithApple();
-  Future<Either<void, AppError>> register(RegisterParams params);
+  Future<Either<String, AppError>> register(RegisterParams params);
   Future<Either<AuthModel, AppError>> verifyRegistration(VerifyParams params);
   Future<Either<void, AppError>> verifyPasswordReset(VerifyParams params);
   Future<Either<void, AppError>> resendOTP(String phone);
@@ -119,13 +119,13 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<void, AppError>> register(RegisterParams params) async {
+  Future<Either<String, AppError>> register(RegisterParams params) async {
     try {
       final response = await _remoteDataSource.register(params);
 
       if (response.isSuccess) {
         // _localDataSource.saveToken(response.accessToken ?? '');
-        return Left(null);
+        return Left(response.message);
       } else {
         return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }

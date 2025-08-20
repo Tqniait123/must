@@ -10,7 +10,6 @@ import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
-import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/features/auth/data/models/verify_params.dart';
 import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
@@ -89,23 +88,17 @@ class _OtpScreenState extends State<OtpScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const CustomBackButton(),
-                        Text(
-                          LocaleKeys.otp_verification.tr(),
-                          style: context.titleLarge.copyWith(),
-                        ),
+                        // const CustomBackButton(),
+                        51.gap,
+                        Text(LocaleKeys.otp_verification.tr(), style: context.titleLarge.copyWith()),
                         51.gap,
                       ],
                     ),
                     46.gap,
                     Text(LocaleKeys.otp_code.tr()),
                     Text(
-                      LocaleKeys.activation_code_sent.tr(
-                        namedArgs: {"phone_number": widget.phone},
-                      ),
-                      style: context.bodyMedium.regular.s16.copyWith(
-                        color: AppColors.grey60,
-                      ),
+                      LocaleKeys.activation_code_sent.tr(namedArgs: {"phone_number": widget.phone}),
+                      style: context.bodyMedium.regular.s16.copyWith(color: AppColors.grey60),
                     ),
                     16.gap,
                     Material(
@@ -113,10 +106,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       child: Stack(
                         children: [
                           Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                            ),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(40)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -138,10 +128,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                       showErrorToast(context, state.message);
                                     }
                                   },
-                                  child: ResendOtpWidget(
-                                    phone: widget.phone,
-                                    onResend: _handleResendOtp,
-                                  ),
+                                  child: ResendOtpWidget(phone: widget.phone, onResend: _handleResendOtp),
                                 ),
                                 48.gap,
                               ],
@@ -184,19 +171,12 @@ class _OtpScreenState extends State<OtpScreen> {
                             switch (widget.flow) {
                               case OtpFlow.passwordReset:
                                 AuthCubit.get(context).verifyPasswordReset(
-                                  VerifyParams(
-                                    phone: widget.phone,
-                                    loginCode: otp,
-                                    codeKey: 'reset_password_code',
-                                  ),
+                                  VerifyParams(phone: widget.phone, loginCode: otp, codeKey: 'reset_password_code'),
                                 );
                               case OtpFlow.registration:
-                                AuthCubit.get(context).verifyRegistration(
-                                  VerifyParams(
-                                    phone: widget.phone,
-                                    loginCode: otp,
-                                  ),
-                                );
+                                AuthCubit.get(
+                                  context,
+                                ).verifyRegistration(VerifyParams(phone: widget.phone, loginCode: otp));
                               case OtpFlow.login:
                               // AuthCubit.get(context).verifyLogin(
                               //   VerifyParams(
@@ -245,10 +225,7 @@ class NumericKeyboard extends StatelessWidget {
   }
 
   Widget buildRow(List<String> keys) {
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      children: keys.map((key) => buildKey(key)).toList(),
-    );
+    return Row(mainAxisAlignment: mainAxisAlignment, children: keys.map((key) => buildKey(key)).toList());
   }
 
   Widget buildKey(String text) {
@@ -256,10 +233,7 @@ class NumericKeyboard extends StatelessWidget {
       child: Container(
         height: 70,
         margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: const Color(0xFFE9E6F7),
-          borderRadius: BorderRadius.circular(32),
-        ),
+        decoration: BoxDecoration(color: const Color(0xFFE9E6F7), borderRadius: BorderRadius.circular(32)),
         child:
             text.isEmpty
                 ? const SizedBox()
@@ -270,16 +244,8 @@ class NumericKeyboard extends StatelessWidget {
                 )
                 : MaterialButton(
                   onPressed: () => onKeyPressed(text),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Text(
-                    text,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+                  child: Text(text, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 ),
       ),
     );

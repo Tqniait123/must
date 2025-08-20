@@ -292,6 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: BlocConsumer<AuthCubit, AuthState>(
                   listener: (BuildContext context, AuthState state) async {
                     if (state is RegisterSuccess) {
+                      showSuccessToast(context, state.message, seconds: 20);
                       context.go(
                         Routes.otpScreen,
                         extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
