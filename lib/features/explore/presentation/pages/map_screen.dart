@@ -50,15 +50,15 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   // UI State
   bool _showRouteDetails = false;
 
-  // NEW: Animation and scroll controllers for parking list
+  // Animation and scroll controllers for parking list
   late AnimationController _listAnimationController;
   late Animation<double> _listSlideAnimation;
   final ScrollController _parkingListController = ScrollController();
   final MapController _mapController = MapController();
 
-  // NEW: List view state
+  // List view state - UPDATED: Default collapsed state when parking is selected
   bool _isListExpanded = true;
-  double _listHeight = 220.0; // Reduced base height
+  double _listHeight = 220.0;
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     _checkPermissionsAndGetLocation();
     _fetchParkingsData();
 
-    // NEW: Initialize animation controller
+    // Initialize animation controller
     _listAnimationController = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
 
     _listSlideAnimation = Tween<double>(
@@ -206,31 +206,68 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     });
   }
 
-  // NEW: Navigate to parking from list
+  // UPDATED: Navigate to parking from list with improved logic
   void _navigateToParkingFromList(Parking parking) {
-    setState(() {
-      if (_selectedParking == null) {
-        _isListExpanded = false;
-        _listHeight = _isListExpanded ? 220.0 : 160.0;
-      } else {
-        _selectedParking = null;
-        _isListExpanded = true;
-        // _clearRoute();
-        _listHeight = _isListExpanded ? 220.0 : 160.0;
-      }
-    });
     final parkingLocation = LatLng(parking.lat.toDouble(), parking.lng.toDouble());
 
-    // Clear any existing route
+    // Check if clicking on the same parking that's already selected
+    if (_selectedParking?.id == parking.id) {
+      // Deselect parking and expand list
+      setState(() {
+        _selectedParking = null;
+        _isListExpanded = true;
+        _listHeight = 220.0;
+        _showRouteDetails = false;
+      });
+      _clearRoute();
+    } else {
+      // Select new parking and collapse list
+      setState(() {
+        _selectedParking = parking;
+        _isListExpanded = false;
+        _listHeight = 120.0; // More collapsed when parking is selected
+        _showRouteDetails = false;
+      });
+      _clearRoute();
+
+      // Animate map to parking location
+      _mapController.move(parkingLocation, 16.0);
+    }
+  }
+
+  // UPDATED: Handle parking selection from map markers
+  void _selectParkingFromMap(Parking parking) {
+    // Check if clicking on the same parking that's already selected
+    if (_selectedParking?.id == parking.id) {
+      // Deselect parking and expand list
+      setState(() {
+        _selectedParking = null;
+        _isListExpanded = true;
+        _listHeight = 220.0;
+        _showRouteDetails = false;
+      });
+      _clearRoute();
+    } else {
+      // Select new parking and collapse list
+      setState(() {
+        _selectedParking = parking;
+        _isListExpanded = false;
+        _listHeight = 120.0; // More collapsed when parking is selected
+        _showRouteDetails = false;
+      });
+      _clearRoute();
+    }
+  }
+
+  // UPDATED: Handle close button in parking details
+  void _closeParkingDetails() {
+    setState(() {
+      _selectedParking = null;
+      _isListExpanded = true;
+      _listHeight = 220.0;
+      _showRouteDetails = false;
+    });
     _clearRoute();
-
-    // Set selected parking
-    // setState(() {
-    //   _selectedParking = parking;
-    // });
-
-    // Animate map to parking location
-    _mapController.move(parkingLocation, 16.0);
   }
 
   void _showRouteToParking() {
@@ -411,7 +448,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     );
   }
 
-  // NEW: Build parking list widget
+  // UPDATED: Build parking list widget with improved collapse/expand logic
   Widget _buildParkingListView(List<Parking> parkings) {
     return AnimatedBuilder(
       animation: _listSlideAnimation,
@@ -420,50 +457,53 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           offset: Offset(0, -50 * (1 - _listSlideAnimation.value)),
           child: Opacity(
             opacity: _listSlideAnimation.value,
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
               height: _listHeight,
               margin: const EdgeInsets.only(top: 100), // Account for status bar and back button
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
-
                 children: [
-                  // Header with title and expand/collapse button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isListExpanded = !_isListExpanded;
-                              _listHeight = _isListExpanded ? 220.0 : 160.0;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              _isListExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                              color: AppColors.primary,
-                              size: 20,
+                  // Header with expand/collapse button - only show when no parking is selected
+                  if (_selectedParking == null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isListExpanded = !_isListExpanded;
+                                _listHeight = _isListExpanded ? 220.0 : 160.0;
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.9),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                _isListExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
+
+                  SizedBox(height: _selectedParking == null ? 12 : 8),
 
                   // Parking cards list
                   Expanded(
@@ -497,7 +537,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     );
   }
 
-  // NEW: Build individual parking card
+  // Build individual parking card
   Widget _buildParkingCard(Parking parking, double distance, bool isSelected, bool isListExpanded) {
     return GestureDetector(
       onTap: () => _navigateToParkingFromList(parking),
@@ -594,7 +634,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 4),
 
-              // Address
+              // Address and other details - only show when list is expanded OR when parking is selected
               if (isListExpanded) ...[
                 Text(
                   parking.address,
@@ -740,12 +780,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     height: 150.0,
                     point: parkingLocation,
                     child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedParking = parking;
-                          _clearRoute(); // Clear any existing route
-                        });
-                      },
+                      onTap: () => _selectParkingFromMap(parking), // UPDATED: Use new method
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -798,10 +833,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     color: parking.isBusy ? Colors.red : Colors.green,
                                     borderRadius: BorderRadius.circular(18),
-                                    // border:
-                                    //     _selectedParking?.id == parking.id
-                                    //         ? Border.all(color: Colors.white, width: 2)
-                                    //         : null,
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.25),
@@ -863,10 +894,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                 _selectedParking?.id == parking.id ? 24 : 20,
                                 _selectedParking?.id == parking.id ? 16 : 12,
                               ),
-                              painter: _TrianglePainter(
-                                color: parking.isBusy ? Colors.red : Colors.green,
-                                // hasBorder: _selectedParking?.id == parking.id,
-                              ),
+                              painter: _TrianglePainter(color: parking.isBusy ? Colors.red : Colors.green),
                             ),
                           ),
                         ],
@@ -906,7 +934,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           ],
         ),
 
-        // NEW: Parking list overlay
+        // Parking list overlay
         _buildParkingListView(parkings),
       ],
     );
@@ -953,7 +981,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     );
   }
 
-  // Original design parking details with new functionality
+  // UPDATED: Original design parking details with new close functionality
   Widget _buildParkingDetails(Parking parking) {
     final distance =
         _currentLocation != null
@@ -969,12 +997,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             CustomIconButton(
               color: Colors.white,
               iconAsset: AppIcons.closeIc,
-              onPressed: () {
-                setState(() {
-                  _selectedParking = null;
-                  _clearRoute();
-                });
-              },
+              onPressed: _closeParkingDetails, // UPDATED: Use new close method
             ),
             CustomIconButton(
               color: const Color(0xffEAEAF3),
@@ -1016,7 +1039,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           parking.address,
                           style: TextStyle(fontSize: 14, color: AppColors.primary.withValues(alpha: 0.7)),
                         ),
-                        // NEW: Distance display
+                        // Distance display
                         if (_currentLocation != null) ...[
                           const SizedBox(height: 4),
                           Text(
@@ -1050,7 +1073,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 ],
               ),
 
-              // NEW: Tags row for Most Popular/Most Wanted
+              // Tags row for Most Popular/Most Wanted
               if (_isMostPopular(parking) || _isMostWanted(parking)) ...[
                 const SizedBox(height: 12),
                 Row(
@@ -1068,7 +1091,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AppImages.popular.toImage(),
-                            // const Icon(Icons.star, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               LocaleKeys.map_tag_most_popular.tr(),
@@ -1091,7 +1113,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AppImages.wanted.toImage(),
-                            // const Icon(Icons.favorite, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               LocaleKeys.map_tag_most_wanted.tr(),
@@ -1106,7 +1127,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 16),
 
-              // NEW: Route information panel (when route is shown)
+              // Route information panel (when route is shown)
               if (_showRouteDetails && _currentRouteInfo != null) ...[
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -1212,8 +1233,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         title: LocaleKeys.map_button_details.tr(),
                         onPressed: () {
                           context.push(Routes.parkingDetails, extra: parking);
-                          // Navigate to parking details screen
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => ParkingDetailsScreen(parking: parking)));
                         },
                       ),
                     ),
@@ -1299,12 +1318,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   void _showCarSelectionForNavigation() {
     showAllCarsBottomSheet(
       context,
-      title: LocaleKeys.select_car_for_navigation.tr(), // You might need to add this translation key
+      title: LocaleKeys.select_car_for_navigation.tr(),
       onChooseCar: (Car selectedCar) {
-        // Navigate to Google Maps
-        // openGoogleMapsRoute(_selectedParking!.lat.toDouble(), _selectedParking!.lng.toDouble());
-
-        // After navigation, show QR code for the selected car
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
             context.push(Routes.myQrCode, extra: selectedCar);
@@ -1361,6 +1376,7 @@ class _TrianglePainter extends CustomPainter {
   final Color color;
 
   _TrianglePainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint =
@@ -1375,17 +1391,6 @@ class _TrianglePainter extends CustomPainter {
     path.close();
 
     canvas.drawPath(path, paint);
-
-    // // Add border if selected
-    // if (hasBorder) {
-    //   final borderPaint =
-    //       Paint()
-    //         ..color = Colors.white
-    //         ..style = PaintingStyle.stroke
-    //         ..strokeWidth = 2;
-
-    // canvas.drawPath(path, borderPaint);
-    // }
   }
 
   @override
