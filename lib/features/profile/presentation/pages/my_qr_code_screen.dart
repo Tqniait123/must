@@ -70,15 +70,15 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
     try {
       // Get user info (you might need to get this from your auth service)
       final userId = currentUser?.id ?? 'USER_${Random().nextInt(999999).toString().padLeft(6, '0')}';
-      final userName = currentUser?.name ?? 'Unknown User';
+      final userName = currentUser?.name ?? LocaleKeys.unknown_user.tr();
 
       // Generate QR code using ParkingQrService
       _qrData = ParkingQrService.generateUserQr(
         userId: userId.toString(),
         userName: userName,
         carId: selectedCar.id ?? selectedCar.hashCode.toString(),
-        carName: selectedCar.name ?? 'Unknown Car',
-        metalPlate: selectedCar.metalPlate ?? 'No Plate',
+        carName: selectedCar.name ?? LocaleKeys.unknown_car.tr(),
+        metalPlate: selectedCar.metalPlate ?? LocaleKeys.no_plate.tr(),
         carColor: selectedCar.color,
       );
     } catch (e) {
@@ -109,7 +109,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('تم تجديد رمز الاستجابة السريعة بنجاح'),
+        content: Text(LocaleKeys.qr_regenerated_successfully.tr()),
         backgroundColor: AppColors.primary,
         duration: const Duration(seconds: 2),
       ),
@@ -134,21 +134,24 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
             showPaymentRequestBottomSheet(
               context: context,
               request: PaymentRequestModel(
-                requesterName: "محمد إبراهيم",
-                parkingName: "موقف النصر",
-                location: "أسوان - شارع السوق السياحي",
+                requesterName: LocaleKeys.sample_requester_name.tr(),
+                parkingName: LocaleKeys.sample_parking_name.tr(),
+                location: LocaleKeys.sample_location.tr(),
                 amount: 75.0,
                 pointsEquivalent: 150,
               ),
               onApprove: () {
-                print("تمت الموافقة على الدفع ✅");
+                print(LocaleKeys.payment_approved.tr());
               },
               onReject: (reason) {
-                print("تم رفض الدفع ❌ بسبب: $reason");
+                print("${LocaleKeys.payment_rejected.tr()}: $reason");
               },
             );
           },
-          label: Text('Simulate Payment Request', style: context.bodyMedium.s8.copyWith(color: Colors.white)),
+          label: Text(
+            LocaleKeys.simulate_payment_request.tr(),
+            style: context.bodyMedium.s8.copyWith(color: Colors.white),
+          ),
         ),
       ),
       body: SafeArea(
@@ -245,10 +248,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
               children: [
                 CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
                 16.gap,
-                Text(
-                  'جاري إنشاء رمز الاستجابة السريعة...',
-                  style: context.bodyMedium.copyWith(color: Colors.grey[600]),
-                ),
+                Text(LocaleKeys.generating_qr_code.tr(), style: context.bodyMedium.copyWith(color: Colors.grey[600])),
               ],
             ),
           ),
@@ -303,15 +303,15 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
               Icon(Icons.directions_car, color: AppColors.primary, size: 20),
               8.gap,
               Text(
-                'معلومات السيارة',
+                LocaleKeys.car_information.tr(),
                 style: context.bodyMedium.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
               ),
             ],
           ),
           12.gap,
-          _buildInfoRow('الاسم:', selectedCar.name ?? 'غير محدد'),
-          ...[4.gap, _buildInfoRow('رقم اللوحة:', selectedCar.metalPlate)],
-          if (selectedCar.color != null) ...[4.gap, _buildInfoRow('اللون:', selectedCar.color!)],
+          _buildInfoRow(LocaleKeys.name_label.tr(), selectedCar.name ?? LocaleKeys.not_specified.tr()),
+          ...[4.gap, _buildInfoRow(LocaleKeys.plate_number_label.tr(), selectedCar.metalPlate)],
+          if (selectedCar.color != null) ...[4.gap, _buildInfoRow(LocaleKeys.color_label.tr(), selectedCar.color!)],
         ],
       ),
     );

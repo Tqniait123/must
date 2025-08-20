@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 class NavigationButton extends StatelessWidget {
   final bool isLoadingRoute;
@@ -31,10 +33,7 @@ class NavigationButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap:
-              isLoadingRoute
-                  ? null
-                  : (isNavigating ? onStopNavigation : onStartNavigation),
+          onTap: isLoadingRoute ? null : (isNavigating ? onStopNavigation : onStartNavigation),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 18),
             decoration: BoxDecoration(
@@ -57,41 +56,23 @@ class NavigationButton extends StatelessWidget {
                   SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    'جاري التحميل...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  Text(
+                    LocaleKeys.loading.tr(),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ] else ...[
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isNavigating ? Icons.stop : Icons.navigation,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+                    child: Icon(isNavigating ? Icons.stop : Icons.navigation, color: Colors.white, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    isNavigating ? 'إيقاف التنقل' : 'بدء التنقل',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    isNavigating ? LocaleKeys.stop_navigation.tr() : LocaleKeys.start_navigation.tr(),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ],
               ],

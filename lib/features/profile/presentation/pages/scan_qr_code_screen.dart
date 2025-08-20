@@ -27,7 +27,7 @@ import 'package:must_invest/features/profile/presentation/widgets/car_widget.dar
 
 class ScanQrCodeScreen extends StatefulWidget {
   final Car? selectedCar;
-  final bool isEmployee; // تحديد هل ده موظف ولا يوزر
+  final bool isEmployee;
   const ScanQrCodeScreen({super.key, this.selectedCar, this.isEmployee = false});
 
   @override
@@ -99,10 +99,10 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
       QrScanResult result;
 
       if (isEmployee) {
-        // الموظف بيسكان QR اليوزر عشان يعرف بيانات العربية
+        // Employee scans user QR to get car data
         result = ParkingQrService.scanUserQr(qrData);
       } else {
-        // اليوزر بيسكان QR الموظف عشان يعرف مين دخله
+        // User scans employee QR to identify who parked them
         result = ParkingQrService.scanEmployeeQr(qrData);
       }
 
@@ -113,11 +113,11 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
           _showEmployeeDataBottomSheet(context, result.employeeData!);
         }
       } else {
-        _showErrorBottomSheet(result.error ?? 'Failed to process QR code');
+        _showErrorBottomSheet(result.error ?? LocaleKeys.qr_process_failed.tr());
       }
     } catch (e) {
       Navigator.of(context).pop();
-      _showErrorBottomSheet('Error processing QR code: $e');
+      _showErrorBottomSheet('${LocaleKeys.qr_processing_error.tr()}: $e');
     }
   }
 
@@ -139,7 +139,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
     );
   }
 
-  // عرض بيانات اليوزر للموظف - Bottom Sheet
+  // Show user data to employee - Bottom Sheet
   void _showUserDataBottomSheet(BuildContext context, UserQrData userData) {
     showModalBottomSheet(
       context: context,
@@ -193,12 +193,12 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                 ),
                                 16.gap,
                                 Text(
-                                  'تم العثور على بيانات العربية',
+                                  LocaleKeys.car_data_found.tr(),
                                   style: context.titleLarge.copyWith(fontWeight: FontWeight.bold, color: Colors.green),
                                 ),
                                 8.gap,
                                 Text(
-                                  'تفاصيل العميل والعربية',
+                                  LocaleKeys.customer_car_details.tr(),
                                   style: context.bodyMedium.copyWith(color: Colors.grey[600]),
                                 ),
                               ],
@@ -227,7 +227,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                 ),
                                 12.gap,
                                 Text(
-                                  'بيانات العميل',
+                                  LocaleKeys.customer_data.tr(),
                                   style: context.titleMedium.copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
                                 ),
                               ],

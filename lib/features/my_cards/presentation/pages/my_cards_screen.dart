@@ -61,7 +61,7 @@ class MyCardsScreen extends StatelessWidget {
                   8.gap,
 
                   Text(
-                    'Enter the amount you want to charge',
+                    LocaleKeys.enter_amount_to_charge.tr(),
                     style: context.textTheme.bodyMedium!.s14.regular.copyWith(
                       color: AppColors.primary.withValues(alpha: 0.7),
                     ),
@@ -72,7 +72,7 @@ class MyCardsScreen extends StatelessWidget {
                   // Amount input field
                   CustomTextFormField(
                     controller: amountController,
-                    hint: 'Enter amount (EGP)',
+                    hint: LocaleKeys.enter_amount_egp.tr(),
                     isBordered: true,
                     backgroundColor: Color(0xffF4F4FA),
                     hintColor: AppColors.primary.withValues(alpha: 0.5),
@@ -82,7 +82,7 @@ class MyCardsScreen extends StatelessWidget {
 
                   // Predefined amount buttons
                   Text(
-                    'Quick amounts:',
+                    LocaleKeys.quick_amounts.tr(),
                     style: context.textTheme.bodyMedium!.s14.regular.copyWith(color: AppColors.primary),
                   ),
                   12.gap,
@@ -103,7 +103,7 @@ class MyCardsScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                '$amount EGP',
+                                '$amount ${LocaleKeys.egp.tr()}',
                                 style: context.textTheme.bodyMedium!.s12.regular.copyWith(color: AppColors.primary),
                               ),
                             ),
@@ -126,7 +126,7 @@ class MyCardsScreen extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            'Cancel',
+                            LocaleKeys.cancel.tr(),
                             style: context.textTheme.bodyMedium!.s16.medium.copyWith(color: AppColors.primary),
                           ),
                         ),
@@ -165,7 +165,7 @@ class MyCardsScreen extends StatelessWidget {
                                     }
                                   },
 
-                                  title: 'Charge',
+                                  title: LocaleKeys.charge.tr(),
                                 ),
                           ),
                         ),
