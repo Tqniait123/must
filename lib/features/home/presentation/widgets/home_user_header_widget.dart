@@ -161,125 +161,122 @@ void showAllCarsBottomSheet(BuildContext context, {void Function(Car car)? onCho
 
                     const SizedBox(height: 16),
 
-                    // Scrollable content
+                    // Scrollable content (takes remaining space except button area)
                     Expanded(
-                      child: SingleChildScrollView(
-                        controller: scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: BlocProvider(
-                          create: (BuildContext context) => CarCubit(sl())..getMyCars(),
-                          child: BlocBuilder<CarCubit, CarState>(
-                            builder: (context, state) {
-                              if (state is CarsLoading) {
-                                return const Center(
-                                  child: Padding(padding: EdgeInsets.all(20.0), child: CircularProgressIndicator()),
-                                );
-                              }
+                      child: BlocProvider(
+                        create: (BuildContext context) => CarCubit(sl())..getMyCars(),
+                        child: BlocBuilder<CarCubit, CarState>(
+                          builder: (context, state) {
+                            if (state is CarsLoading) {
+                              return const Center(
+                                child: Padding(padding: EdgeInsets.all(20.0), child: CircularProgressIndicator()),
+                              );
+                            }
 
-                              if (state is CarsError) {
+                            if (state is CarsError) {
+                              return Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        state.message,
+                                        style: context.bodyMedium.copyWith(color: Colors.red),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      8.gap,
+                                      TextButton(
+                                        onPressed: () {
+                                          CarCubit.get(context).getMyCars();
+                                        },
+                                        child: Text(LocaleKeys.retry.tr()),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
+                            if (state is CarsSuccess) {
+                              final cars = state.cars;
+
+                              if (cars.isEmpty) {
                                 return Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(20.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          state.message,
-                                          style: context.bodyMedium.copyWith(color: Colors.red),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        8.gap,
-                                        TextButton(
-                                          onPressed: () {
-                                            CarCubit.get(context).getMyCars();
-                                          },
-                                          child: Text(LocaleKeys.retry.tr()),
-                                        ),
-                                      ],
+                                    child: Text(
+                                      LocaleKeys.no_cars_found.tr(),
+                                      style: context.bodyMedium,
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 );
                               }
 
-                              if (state is CarsSuccess) {
-                                final cars = state.cars;
+                              // Cars grid with proper scrolling
+                              return SingleChildScrollView(
+                                controller: scrollController,
+                                padding: const EdgeInsets.only(
+                                  left: 20,
+                                  right: 20,
+                                  bottom: 20, // Add bottom padding to prevent content from being hidden behind button
+                                ),
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2, // 2 items per row
+                                    childAspectRatio: 0.90, // Adjust height ratio (width/height)
+                                    crossAxisSpacing: 12, // Horizontal spacing between items
+                                    mainAxisSpacing: 12, // Vertical spacing between items
+                                  ),
+                                  itemCount: cars.length,
+                                  itemBuilder: (context, index) {
+                                    final car = cars[index];
+                                    final isSelected = selectedId == car.id;
 
-                                if (cars.isEmpty) {
-                                  return Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Text(
-                                        LocaleKeys.no_cars_found.tr(),
-                                        style: context.bodyMedium,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  );
-                                }
-
-                                return Column(
-                                  children: [
-                                    // Cars list
-                                    ListView.separated(
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      itemCount: cars.length,
-                                      separatorBuilder: (context, index) => 12.gap,
-                                      itemBuilder: (context, index) {
-                                        final car = cars[index];
-                                        final isSelected = selectedId == car.id;
-
-                                        return CarWidget.selectDesign(
-                                          car: car,
-                                          isSelect: isSelected,
-                                          onSelectChanged: (value) {
-                                            setState(() {
-                                              selectedId = value ?? false ? car.id : null;
-                                              selectedCar = value ?? false ? car : null;
-                                            });
-                                          },
-                                        );
-                                        // .withPressEffect(
-                                        //   onTap: () {
-                                        //     setState(() {
-                                        //       selectedId = car.id;
-                                        //       selectedCar = car;
-                                        //     });
-                                        //   },
-                                        // );
+                                    return CarWidget.gridDesign(
+                                      car: car,
+                                      isSelect: isSelected,
+                                      onSelectChanged: (value) {
+                                        setState(() {
+                                          selectedId = value ?? false ? car.id : null;
+                                          selectedCar = value ?? false ? car : null;
+                                        });
                                       },
-                                    ),
-                                    // Fixed button at bottom
-                                    Container(
-                                      padding: const EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                        color: context.theme.scaffoldBackgroundColor,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.05),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, -2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: CustomElevatedButton(
-                                        height: 50,
-                                        onPressed:
-                                            selectedId != null
-                                                ? () {
-                                                  Navigator.pop(context, selectedId);
-                                                }
-                                                : null,
-                                        title: LocaleKeys.select_car.tr(),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
+                                    );
+                                  },
+                                ),
+                              );
+                            }
 
-                              // Initial state or other states
-                              return const SizedBox.shrink();
-                            },
-                          ),
+                            // Initial state or other states
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Fixed button at bottom (outside of scrollable area)
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                      decoration: BoxDecoration(
+                        color: context.theme.scaffoldBackgroundColor,
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
+                        ],
+                      ),
+                      child: SafeArea(
+                        top: false, // Only apply safe area to bottom
+                        child: CustomElevatedButton(
+                          height: 50,
+                          onPressed:
+                              selectedId != null
+                                  ? () {
+                                    Navigator.pop(context, selectedId);
+                                  }
+                                  : null,
+                          title: LocaleKeys.select_car.tr(),
                         ),
                       ),
                     ),
