@@ -1202,7 +1202,16 @@ class CodegenLoader extends AssetLoader{
   "location_services_disabled": "Location services are disabled. Please enable location services.",
   "location_permissions_denied": "Location permissions are denied. Please grant location access.",
   "location_permissions_permanently_denied": "Location permissions are permanently denied. Please enable them in settings.",
-  "failed_to_get_location": "Failed to get location: {}"
+  "failed_to_get_location": "Failed to get location: {}",
+  "validation": {
+    "name_required": "Name is required",
+    "city_required": "City is required"
+  },
+  "profile_data": {
+    "name": "name",
+    "city_id": "cityId",
+    "files_count": "filesCount"
+  }
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2392,7 +2401,16 @@ static const Map<String,dynamic> _ar = {
   "location_services_disabled": "خدمات الموقع معطلة. يرجى تفعيل خدمات الموقع.",
   "location_permissions_denied": "تم رفض أذونات الموقع. يرجى منح الوصول للموقع.",
   "location_permissions_permanently_denied": "تم رفض أذونات الموقع نهائياً. يرجى تفعيلها في الإعدادات.",
-  "failed_to_get_location": "فشل في الحصول على الموقع: {}"
+  "failed_to_get_location": "فشل في الحصول على الموقع: {}",
+  "validation": {
+    "name_required": "الاسم مطلوب",
+    "city_required": "المدينة مطلوبة"
+  },
+  "profile_data": {
+    "name": "الاسم",
+    "city_id": "رقم المدينة",
+    "files_count": "عدد الملفات"
+  }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

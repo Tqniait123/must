@@ -1185,5 +1185,12 @@ abstract class  LocaleKeys {
   static const location_permissions_denied = 'location_permissions_denied';
   static const location_permissions_permanently_denied = 'location_permissions_permanently_denied';
   static const failed_to_get_location = 'failed_to_get_location';
+  static const validation_name_required = 'validation.name_required';
+  static const validation_city_required = 'validation.city_required';
+  static const validation = 'validation';
+  static const profile_data_name = 'profile_data.name';
+  static const profile_data_city_id = 'profile_data.city_id';
+  static const profile_data_files_count = 'profile_data.files_count';
+  static const profile_data = 'profile_data';
 
 }

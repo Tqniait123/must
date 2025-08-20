@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 class UpdateProfileParams {
   final String name;
@@ -61,7 +63,6 @@ class UpdateProfileParams {
 
     return FormData.fromMap(fields);
   }
-  
 
   /// Helper method to create MultipartFile from PlatformFile using path
   Future<MultipartFile> _createMultipartFile(PlatformFile file, String fieldName) async {
@@ -179,11 +180,11 @@ class UpdateProfileParams {
     final errors = <String>[];
 
     if (name.isEmpty) {
-      errors.add('Name is required');
+      errors.add(LocaleKeys.validation_name_required.tr());
     }
 
     if (cityId <= 0) {
-      errors.add('City is required');
+      errors.add(LocaleKeys.validation_city_required.tr());
     }
 
     return errors;
@@ -222,7 +223,7 @@ class UpdateProfileParams {
 
   @override
   String toString() {
-    return 'UpdateProfileParams{name: $name, cityId: $cityId, filesCount: ${getFilesCount()}}';
+    return 'UpdateProfileParams{${LocaleKeys.profile_data_name.tr()}: $name, ${LocaleKeys.profile_data_city_id.tr()}: $cityId, ${LocaleKeys.profile_data_files_count.tr()}: ${getFilesCount()}}';
   }
 
   @override

@@ -1230,6 +1230,15 @@
   "location_services_disabled": "Location services are disabled. Please enable location services.",
   "location_permissions_denied": "Location permissions are denied. Please grant location access.",
   "location_permissions_permanently_denied": "Location permissions are permanently denied. Please enable them in settings.",
-  "failed_to_get_location": "Failed to get location: {}"
+  "failed_to_get_location": "Failed to get location: {}",
+   "validation": {
+    "name_required": "Name is required",
+    "city_required": "City is required"
+  },
+  "profile_data": {
+    "name": "name",
+    "city_id": "cityId",
+    "files_count": "filesCount"
+  }
 
 }

@@ -112,6 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     CustomTextFormField(
                       controller: _emailController,
                       margin: 0,
+                      isRequired: true,
                       hint: LocaleKeys.email.tr(),
                       title: LocaleKeys.email.tr(),
                     ),

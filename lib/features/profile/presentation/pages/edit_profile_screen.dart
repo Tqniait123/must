@@ -403,12 +403,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       margin: 0,
                       hint: LocaleKeys.full_name.tr(),
                       title: LocaleKeys.full_name.tr(),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Name is required';
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value?.isEmpty ?? true) {
+                      //     return 'Name is required';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                     16.gap,
                     CustomPhoneFormField(

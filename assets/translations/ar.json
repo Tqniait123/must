@@ -1234,7 +1234,16 @@
   "location_services_disabled": "خدمات الموقع معطلة. يرجى تفعيل خدمات الموقع.",
   "location_permissions_denied": "تم رفض أذونات الموقع. يرجى منح الوصول للموقع.",
   "location_permissions_permanently_denied": "تم رفض أذونات الموقع نهائياً. يرجى تفعيلها في الإعدادات.",
-  "failed_to_get_location": "فشل في الحصول على الموقع: {}"
+  "failed_to_get_location": "فشل في الحصول على الموقع: {}",
+  "validation": {
+    "name_required": "الاسم مطلوب",
+    "city_required": "المدينة مطلوبة"
+  },
+  "profile_data": {
+    "name": "الاسم",
+    "city_id": "رقم المدينة",
+    "files_count": "عدد الملفات"
+  }
 
 
 
