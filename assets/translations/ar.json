@@ -1336,7 +1336,9 @@
   "processing_cognitive_patterns": "معالجة الأنماط المعرفية...",
   "analyzing_behavioral_data": "تحليل البيانات السلوكية...",
   "computing_personalized_insights": "حوسبة الرؤى الشخصية...",
-  "optimizing_recommendations": "تحسين التوصيات..."
+  "optimizing_recommendations": "تحسين التوصيات...",
+  "route_loading_message": "جاري تحديد أفضل مسار..."
+
 
 
 

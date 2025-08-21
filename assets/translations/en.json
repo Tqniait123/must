@@ -1334,7 +1334,9 @@
   "processing_cognitive_patterns": "Processing cognitive patterns...",
   "analyzing_behavioral_data": "Analyzing behavioral data...",
   "computing_personalized_insights": "Computing personalized insights...",
-  "optimizing_recommendations": "Optimizing recommendations..."
+  "optimizing_recommendations": "Optimizing recommendations...",
+  "route_loading_message": "Finding the best route..."
+
 
 
 }

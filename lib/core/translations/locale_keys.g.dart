@@ -1278,5 +1278,6 @@ abstract class  LocaleKeys {
   static const analyzing_behavioral_data = 'analyzing_behavioral_data';
   static const computing_personalized_insights = 'computing_personalized_insights';
   static const optimizing_recommendations = 'optimizing_recommendations';
+  static const route_loading_message = 'route_loading_message';
 
 }

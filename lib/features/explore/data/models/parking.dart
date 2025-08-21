@@ -1,3 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+
+extension ParkingX on Parking {
+  String getNameByLocale(BuildContext context) {
+    final lang = context.locale.languageCode; // "en" أو "ar"
+    return lang == "ar" ? nameAr : nameEn;
+  }
+}
+
 class Parking {
   final int id;
   final String nameEn;
