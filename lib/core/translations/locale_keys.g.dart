@@ -1323,5 +1323,15 @@ abstract class  LocaleKeys {
   static const user_id_database = 'user_id_database';
   static const user_employee_confirmed = 'user_employee_confirmed';
   static const employee_id_database = 'employee_id_database';
+  static const guestModeTitle = 'guestModeTitle';
+  static const guestModeDescription = 'guestModeDescription';
+  static const signIn = 'signIn';
+  static const accountNotVerified = 'accountNotVerified';
+  static const verifyAccountSubtitle = 'verifyAccountSubtitle';
+  static const verificationSteps = 'verificationSteps';
+  static const uploadNationalIdFront = 'uploadNationalIdFront';
+  static const uploadNationalIdBack = 'uploadNationalIdBack';
+  static const uploadDrivingLicenseFront = 'uploadDrivingLicenseFront';
+  static const verifyNow = 'verifyNow';
 
 }

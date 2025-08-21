@@ -1381,7 +1381,17 @@
   "car_id_database": "Car ID للداتابيز",
   "user_id_database": "User ID للداتابيز",
   "user_employee_confirmed": "اليوزر: تم تأكيد الموظف",
-  "employee_id_database": "Employee ID للداتابيز"
+  "employee_id_database": "Employee ID للداتابيز",
+  "guestModeTitle": "يجب تسجيل الدخول",
+  "guestModeDescription": "للوصول إلى هذه الميزة، تحتاج إلى تسجيل الدخول إلى حسابك. أنشئ حساب أو سجل دخولك للمتابعة.",
+  "signIn": "تسجيل الدخول",
+  "accountNotVerified": "الحساب غير موثق",
+  "verifyAccountSubtitle": "أكمل التوثيق للوصول إلى جميع الميزات",
+  "verificationSteps": "خطوات التوثيق:",
+  "uploadNationalIdFront": "رفع صورة الهوية الوطنية - الوجه الأمامي",
+  "uploadNationalIdBack": "رفع صورة الهوية الوطنية - الوجه الخلفي",
+  "uploadDrivingLicenseFront": "رفع صورة رخصة القيادة - الوجه الأمامي",
+  "verifyNow": "توثيق الآن"
 
 
 

@@ -1342,7 +1342,17 @@ class CodegenLoader extends AssetLoader{
   "car_id_database": "Car ID for database",
   "user_id_database": "User ID for database",
   "user_employee_confirmed": "User: Employee confirmed",
-  "employee_id_database": "Employee ID for database"
+  "employee_id_database": "Employee ID for database",
+  "guestModeTitle": "Sign In Required",
+  "guestModeDescription": "To access this feature, you need to sign in to your account. Create an account or sign in to continue.",
+  "signIn": "Sign In",
+  "accountNotVerified": "Account Not Verified",
+  "verifyAccountSubtitle": "Complete verification to access all features",
+  "verificationSteps": "Verification Steps:",
+  "uploadNationalIdFront": "Upload National ID Front Image",
+  "uploadNationalIdBack": "Upload National ID Back Image",
+  "uploadDrivingLicenseFront": "Upload Driving License Front Image",
+  "verifyNow": "Verify Now"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2672,7 +2682,17 @@ static const Map<String,dynamic> _ar = {
   "car_id_database": "Car ID للداتابيز",
   "user_id_database": "User ID للداتابيز",
   "user_employee_confirmed": "اليوزر: تم تأكيد الموظف",
-  "employee_id_database": "Employee ID للداتابيز"
+  "employee_id_database": "Employee ID للداتابيز",
+  "guestModeTitle": "يجب تسجيل الدخول",
+  "guestModeDescription": "للوصول إلى هذه الميزة، تحتاج إلى تسجيل الدخول إلى حسابك. أنشئ حساب أو سجل دخولك للمتابعة.",
+  "signIn": "تسجيل الدخول",
+  "accountNotVerified": "الحساب غير موثق",
+  "verifyAccountSubtitle": "أكمل التوثيق للوصول إلى جميع الميزات",
+  "verificationSteps": "خطوات التوثيق:",
+  "uploadNationalIdFront": "رفع صورة الهوية الوطنية - الوجه الأمامي",
+  "uploadNationalIdBack": "رفع صورة الهوية الوطنية - الوجه الخلفي",
+  "uploadDrivingLicenseFront": "رفع صورة رخصة القيادة - الوجه الأمامي",
+  "verifyNow": "توثيق الآن"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

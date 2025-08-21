@@ -1381,8 +1381,17 @@
   "car_id_database": "Car ID for database",
   "user_id_database": "User ID for database",
   "user_employee_confirmed": "User: Employee confirmed",
-  "employee_id_database": "Employee ID for database"
-
+  "employee_id_database": "Employee ID for database",
+  "guestModeTitle": "Sign In Required",
+  "guestModeDescription": "To access this feature, you need to sign in to your account. Create an account or sign in to continue.",
+  "signIn": "Sign In",
+  "accountNotVerified": "Account Not Verified",
+  "verifyAccountSubtitle": "Complete verification to access all features",
+  "verificationSteps": "Verification Steps:",
+  "uploadNationalIdFront": "Upload National ID Front Image",
+  "uploadNationalIdBack": "Upload National ID Back Image",
+  "uploadDrivingLicenseFront": "Upload Driving License Front Image",
+  "verifyNow": "Verify Now"
 
 
 

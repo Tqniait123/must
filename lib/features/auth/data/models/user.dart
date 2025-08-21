@@ -157,6 +157,7 @@ class User {
   final bool inParking;
   final DateTime? inParkingFrom;
   final bool? approved;
+  final bool? verified;
 
   const User._({
     required this.id,
@@ -173,6 +174,7 @@ class User {
     this.inParking = false,
     this.inParkingFrom,
     this.approved,
+    this.verified,
   });
 
   User copyWith({
@@ -190,6 +192,7 @@ class User {
     bool? inParking,
     DateTime? inParkingFrom,
     bool? approved,
+    bool? verified,
   }) {
     return User._(
       id: id ?? this.id,
@@ -206,6 +209,7 @@ class User {
       inParking: inParking ?? this.inParking,
       inParkingFrom: inParkingFrom ?? this.inParkingFrom,
       approved: approved ?? this.approved,
+      verified: verified ?? this.verified,
     );
   }
 
@@ -244,6 +248,7 @@ class User {
       inParking: json['in_parking'] ?? false,
       inParkingFrom: _parseCustomDateTime(json['in_parking_from']),
       approved: json['approved'] != null ? json['approved'] == 1 : null,
+      verified: json['verified'],
     );
   }
 
@@ -263,6 +268,7 @@ class User {
       'in_parking': inParking,
       'in_parking_from': inParkingFrom?.toIso8601String(),
       'approved': approved != null ? (approved! ? 1 : 0) : null,
+      'verified': verified,
     };
   }
 }
