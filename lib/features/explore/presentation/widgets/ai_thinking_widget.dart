@@ -4,19 +4,23 @@ import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:must_invest/core/static/lottie.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 class AIThinkingWidget extends StatefulWidget {
   final String? searchQuery;
   final bool isNearestSelected;
+  final List<String>? items; // Add items parameter for list animation
 
-  const AIThinkingWidget({super.key, this.searchQuery, this.isNearestSelected = false});
+  const AIThinkingWidget({super.key, this.searchQuery, this.isNearestSelected = false, this.items});
 
   @override
   State<AIThinkingWidget> createState() => _AIThinkingWidgetState();
 }
 
 class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProviderStateMixin {
+  // Animation controllers
   late AnimationController _mainOrb;
   late AnimationController _pulseController;
   late AnimationController _waveController;
@@ -24,7 +28,10 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   late AnimationController _particleController;
   late AnimationController _glowController;
   late AnimationController _progressController;
+  late AnimationController _listController;
+  late AnimationController _rearrangeController;
 
+  // Animations
   late Animation<double> _orbAnimation;
   late Animation<double> _pulseAnimation;
   late Animation<double> _waveAnimation;
@@ -32,11 +39,17 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   late Animation<double> _particleAnimation;
   late Animation<double> _glowAnimation;
   late Animation<double> _progressAnimation;
+  late Animation<double> _listAnimation;
+  late Animation<double> _rearrangeAnimation;
 
+  // State variables
   String _currentThinkingText = "Initializing neural pathways...";
   int _currentStepIndex = 0;
   int _dotCount = 0;
   double _overallProgress = 0.0;
+  AnimationPhase _currentPhase = AnimationPhase.thinking;
+  List<ListItemData> _listItems = [];
+  List<ListItemData> _rearrangedItems = [];
 
   List<String> get _thinkingSteps {
     if (widget.isNearestSelected) {
@@ -69,9 +82,26 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   @override
   void initState() {
     super.initState();
+    _initializeItems();
     _setupAdvancedAnimations();
     _startIntelligentSequence();
     _startTypingAnimation();
+  }
+
+  void _initializeItems() {
+    if (widget.items != null && widget.items!.isNotEmpty) {
+      _listItems =
+          widget.items!.asMap().entries.map((entry) {
+            return ListItemData(id: entry.key, text: entry.value, originalIndex: entry.key, currentIndex: entry.key);
+          }).toList();
+
+      // Create a shuffled version for rearrangement
+      _rearrangedItems = List.from(_listItems);
+      _rearrangedItems.shuffle();
+      for (int i = 0; i < _rearrangedItems.length; i++) {
+        _rearrangedItems[i].targetIndex = i;
+      }
+    }
   }
 
   void _setupAdvancedAnimations() {
@@ -124,6 +154,20 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
       end: 1.0,
     ).animate(CurvedAnimation(parent: _progressController, curve: Curves.easeInOutQuart));
 
+    // List appearance animation
+    _listController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    _listAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _listController, curve: Curves.elasticOut));
+
+    // Rearrangement animation
+    _rearrangeController = AnimationController(duration: const Duration(seconds: 3), vsync: this);
+    _rearrangeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _rearrangeController, curve: Curves.easeInOutBack));
+
     // Start all animations
     _mainOrb.repeat(reverse: true);
     _pulseController.repeat();
@@ -134,8 +178,54 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
     _textController.forward();
   }
 
-  void _startIntelligentSequence() {
+  void _startIntelligentSequence() async {
     _updateIntelligentText();
+
+    // Only start list animation sequence if we have items and this is nearest selected
+    if (widget.isNearestSelected && widget.items != null && widget.items!.isNotEmpty) {
+      // Phase 1: AI thinking (8 seconds to match your delay)
+      await Future.delayed(const Duration(seconds: 8));
+
+      // Phase 2: Show list items
+      if (mounted) {
+        setState(() {
+          _currentPhase = AnimationPhase.showingList;
+          _currentThinkingText = "Presenting nearby parking options...";
+        });
+        _listController.forward();
+      }
+
+      await Future.delayed(const Duration(seconds: 3));
+
+      // Phase 3: AI analyzing
+      if (mounted) {
+        setState(() {
+          _currentPhase = AnimationPhase.analyzing;
+          _currentThinkingText = "AI is optimizing by distance...";
+        });
+      }
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Phase 4: Rearranging
+      if (mounted) {
+        setState(() {
+          _currentPhase = AnimationPhase.rearranging;
+          _currentThinkingText = "Intelligently sorting by proximity...";
+        });
+        _rearrangeController.forward();
+      }
+
+      await Future.delayed(const Duration(seconds: 4));
+
+      // Phase 5: Complete
+      if (mounted) {
+        setState(() {
+          _currentPhase = AnimationPhase.complete;
+          _currentThinkingText = "Optimization complete!";
+        });
+      }
+    }
   }
 
   void _startTypingAnimation() {
@@ -152,10 +242,10 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   }
 
   void _updateIntelligentText() {
-    if (!mounted) return;
+    if (!mounted || _currentPhase != AnimationPhase.thinking) return;
 
     _textController.reverse().then((_) {
-      if (mounted) {
+      if (mounted && _currentPhase == AnimationPhase.thinking) {
         setState(() {
           _currentStepIndex = (_currentStepIndex + 1) % _thinkingSteps.length;
           _currentThinkingText = _thinkingSteps[_currentStepIndex];
@@ -179,6 +269,8 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
     _particleController.dispose();
     _glowController.dispose();
     _progressController.dispose();
+    _listController.dispose();
+    _rearrangeController.dispose();
     super.dispose();
   }
 
@@ -186,24 +278,9 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      decoration: BoxDecoration(
-        // gradient: RadialGradient(
-        //   center: Alignment.center,
-        //   radius: 1.5,
-        //   colors:
-        //       isDark
-        //           ? [const Color(0xFF0B0B0F), const Color(0xFF1A1A2E), const Color(0xFF16213E), const Color(0xFF0F0F23)]
-        //           : [
-        //             const Color(0xFFFCFCFF),
-        //             const Color(0xFFF8FAFF),
-        //             const Color(0xFFF0F4FF),
-        //             const Color(0xFFE8F0FE),
-        //           ],
-        // ),
-      ),
       child: Stack(
         children: [
           // Advanced particle system
@@ -217,26 +294,29 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Main AI consciousness orb
-                _buildConsciousnessOrb(isDark),
-                const SizedBox(height: 60),
+                // Main AI consciousness orb (scaled down when showing list)
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.easeInOutBack,
+                  transform: Matrix4.identity()..scale(_currentPhase == AnimationPhase.thinking ? 1.0 : 0.6),
+                  child: _buildConsciousnessOrb(isDark),
+                ),
+
+                SizedBox(height: _currentPhase == AnimationPhase.thinking ? 60 : 30),
 
                 // Intelligent thinking text
                 _buildIntelligentText(isDark),
 
                 const SizedBox(height: 40),
 
-                // Progress indicator
-                _buildProgressIndicator(isDark),
+                // Progress indicator (only show during thinking phase)
+                if (_currentPhase == AnimationPhase.thinking) _buildProgressIndicator(isDark),
 
                 const SizedBox(height: 30),
 
-                // Neural wave patterns
-                // _buildNeuralWaves(isDark),
-                // const SizedBox(height: 50),
-
-                // AI branding with status
-                // _buildAdvancedBranding(isDark),
+                // Animated list (only show if we have items and not in thinking phase)
+                if (_currentPhase != AnimationPhase.thinking && widget.items != null && widget.items!.isNotEmpty)
+                  _buildAnimatedList(isDark),
               ],
             ),
           ),
@@ -260,12 +340,6 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
 
               // Main consciousness orb
               _buildMainOrb(isDark),
-
-              // Inner energy core
-              // _buildEnergyCore(isDark),
-
-              // Floating data points
-              // ..._buildDataPoints(isDark),
             ],
           ),
         );
@@ -299,99 +373,65 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   Widget _buildMainOrb(bool isDark) {
     return Transform.scale(
       scale: 1.0 + (_orbAnimation.value * 0.1),
-      child: Container(
-        width: 180,
-        height: 180,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors:
-                isDark
-                    ? [
-                      const Color(0xFF6366F1).withOpacity(0.8),
-                      const Color(0xFF4F46E5).withOpacity(0.6),
-                      const Color(0xFF3730A3).withOpacity(0.4),
-                      const Color(0xFF1E1B4B).withOpacity(0.2),
-                    ]
-                    : [
-                      const Color(0xFF8B5CF6).withOpacity(0.7),
-                      const Color(0xFF6366F1).withOpacity(0.5),
-                      const Color(0xFF4F46E5).withOpacity(0.3),
-                      const Color(0xFF3730A3).withOpacity(0.1),
-                    ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: (isDark ? const Color(0xFF4F46E5) : const Color(0xFF6366F1)).withOpacity(
-                _glowAnimation.value * 0.5,
+      child: Stack(
+        children: [
+          Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors:
+                    isDark
+                        ? [
+                          const Color(0xFF6366F1).withOpacity(0.8),
+                          const Color(0xFF4F46E5).withOpacity(0.6),
+                          const Color(0xFF3730A3).withOpacity(0.4),
+                          const Color(0xFF1E1B4B).withOpacity(0.2),
+                        ]
+                        : [
+                          const Color(0xFF8B5CF6).withOpacity(0.7),
+                          const Color(0xFF6366F1).withOpacity(0.5),
+                          const Color(0xFF4F46E5).withOpacity(0.3),
+                          const Color(0xFF3730A3).withOpacity(0.1),
+                        ],
               ),
-              blurRadius: 40,
-              spreadRadius: 10,
+              boxShadow: [
+                BoxShadow(
+                  color: (isDark ? const Color(0xFF4F46E5) : const Color(0xFF6366F1)).withOpacity(
+                    _glowAnimation.value * 0.5,
+                  ),
+                  blurRadius: 40,
+                  spreadRadius: 10,
+                ),
+              ],
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(90),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors:
-                      isDark
-                          ? [Colors.white.withOpacity(0.2), Colors.transparent, Colors.white.withOpacity(0.1)]
-                          : [Colors.white.withOpacity(0.4), Colors.transparent, Colors.white.withOpacity(0.2)],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(90),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors:
+                          isDark
+                              ? [Colors.white.withOpacity(0.2), Colors.transparent, Colors.white.withOpacity(0.1)]
+                              : [Colors.white.withOpacity(0.4), Colors.transparent, Colors.white.withOpacity(0.2)],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+
+          // Centered Lottie animation
+          Positioned.fill(child: Center(child: Lottie.asset(AppAnimations.search))),
+        ],
       ),
     );
-  }
-
-  Widget _buildEnergyCore(bool isDark) {
-    return AnimatedBuilder(
-      animation: _waveAnimation,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: EnergyCoreePainter(progress: _waveAnimation.value, orbProgress: _orbAnimation.value, isDark: isDark),
-          size: const Size(180, 180),
-        );
-      },
-    );
-  }
-
-  List<Widget> _buildDataPoints(bool isDark) {
-    return List.generate(8, (index) {
-      final angle = (index * math.pi * 2 / 8) + (_orbAnimation.value * math.pi * 2);
-      final radius = 100 + math.sin(_orbAnimation.value * math.pi * 2 + index) * 20;
-      final x = 150 + radius * math.cos(angle);
-      final y = 150 + radius * math.sin(angle);
-
-      return Positioned(
-        left: x - 6,
-        top: y - 6,
-        child: Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: (isDark ? const Color(0xFF06B6D4) : const Color(0xFF0EA5E9)).withOpacity(0.8),
-            boxShadow: [
-              BoxShadow(
-                color: (isDark ? const Color(0xFF06B6D4) : const Color(0xFF0EA5E9)).withOpacity(0.6),
-                blurRadius: 8,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-        ),
-      );
-    });
   }
 
   Widget _buildIntelligentText(bool isDark) {
@@ -425,7 +465,7 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
                 child: Column(
                   children: [
                     Text(
-                      _currentThinkingText + dots,
+                      _currentThinkingText + (_currentPhase == AnimationPhase.complete ? "" : dots),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -435,17 +475,19 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Advanced AI • Processing ${(_overallProgress * 100).toInt()}%",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: (isDark ? const Color(0xFF06B6D4) : const Color(0xFF0EA5E9)).withOpacity(0.9),
-                        letterSpacing: 0.5,
+                    if (_currentPhase == AnimationPhase.thinking) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        "Advanced AI • Processing ${(_overallProgress * 100).toInt()}%",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: (isDark ? const Color(0xFF06B6D4) : const Color(0xFF0EA5E9)).withOpacity(0.9),
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -488,102 +530,144 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
     );
   }
 
-  Widget _buildNeuralWaves(bool isDark) {
-    return SizedBox(
-      width: 320,
-      height: 100,
-      child: AnimatedBuilder(
-        animation: _waveAnimation,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: NeuralWavePainter(
-              progress: _waveAnimation.value,
-              glowIntensity: _glowAnimation.value,
-              isDark: isDark,
-            ),
-            size: const Size(320, 100),
-          );
-        },
-      ),
+  Widget _buildAnimatedList(bool isDark) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_listAnimation, _rearrangeAnimation]),
+      builder: (context, child) {
+        return Container(
+          constraints: const BoxConstraints(maxWidth: 400, maxHeight: 300),
+          child: SingleChildScrollView(
+            child: Column(children: _listItems.map((item) => _buildListItem(item, isDark)).toList()),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildAdvancedBranding(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        gradient: LinearGradient(
-          colors:
-              isDark
-                  ? [const Color(0xFF1F2937).withOpacity(0.6), const Color(0xFF111827).withOpacity(0.4)]
-                  : [Colors.white.withOpacity(0.7), const Color(0xFFF9FAFB).withOpacity(0.5)],
-        ),
-        border: Border.all(
-          color: (isDark ? const Color(0xFF374151) : const Color(0xFFE5E7EB)).withOpacity(0.4),
-          width: 1,
-        ),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.2 : 0.05), blurRadius: 15, spreadRadius: 0)],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnimatedBuilder(
-            animation: _glowAnimation,
-            builder: (context, child) {
-              return Container(
-                width: 10,
-                height: 10,
+  Widget _buildListItem(ListItemData item, bool isDark) {
+    final progress = _currentPhase == AnimationPhase.rearranging ? _rearrangeAnimation.value : 1.0;
+
+    // Calculate positions for rearrangement
+    final originalY = item.originalIndex * 60.0;
+    final targetY = _currentPhase == AnimationPhase.rearranging ? item.targetIndex * 60.0 : originalY;
+
+    final currentY = originalY + (targetY - originalY) * progress;
+
+    // Entry animation
+    final entryDelay = item.originalIndex * 0.1;
+    final entryProgress = math.max(0.0, (_listAnimation.value - entryDelay) / (1.0 - entryDelay));
+    final clampedEntryProgress = math.min(1.0, math.max(0.0, entryProgress));
+
+    return AnimatedBuilder(
+      animation: _glowAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, currentY - item.originalIndex * 60.0),
+          child: Transform.scale(
+            scale: 0.5 + (clampedEntryProgress * 0.5),
+            child: Opacity(
+              opacity: clampedEntryProgress,
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(0xFF10B981).withOpacity(_glowAnimation.value),
-                      const Color(0xFF059669).withOpacity(_glowAnimation.value * 0.8),
-                    ],
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: LinearGradient(
+                    colors:
+                        isDark
+                            ? [const Color(0xFF1F2937).withOpacity(0.9), const Color(0xFF111827).withOpacity(0.7)]
+                            : [Colors.white.withOpacity(0.9), const Color(0xFFF9FAFB).withOpacity(0.7)],
+                  ),
+                  border: Border.all(
+                    color:
+                        _currentPhase == AnimationPhase.rearranging
+                            ? (isDark ? const Color(0xFF6366F1) : const Color(0xFF8B5CF6)).withOpacity(
+                              _glowAnimation.value * 0.8,
+                            )
+                            : (isDark ? const Color(0xFF374151) : const Color(0xFFE5E7EB)).withOpacity(0.5),
+                    width: _currentPhase == AnimationPhase.rearranging ? 2 : 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withOpacity(_glowAnimation.value * 0.6),
-                      blurRadius: 12,
-                      spreadRadius: 2,
+                      color:
+                          _currentPhase == AnimationPhase.rearranging
+                              ? (isDark ? const Color(0xFF6366F1) : const Color(0xFF8B5CF6)).withOpacity(
+                                _glowAnimation.value * 0.3,
+                              )
+                              : Colors.black.withOpacity(isDark ? 0.2 : 0.1),
+                      blurRadius: _currentPhase == AnimationPhase.rearranging ? 20 : 10,
+                      spreadRadius: _currentPhase == AnimationPhase.rearranging ? 2 : 0,
                     ),
                   ],
                 ),
-              );
-            },
-          ),
-          const SizedBox(width: 12),
-          Text(
-            "Powered by Next-Gen AI",
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF3F4F6) : const Color(0xFF374151),
-              letterSpacing: 0.3,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(
-                colors: [const Color(0xFF6366F1).withOpacity(0.2), const Color(0xFF8B5CF6).withOpacity(0.2)],
+                child: Row(
+                  children: [
+                    // AI processing indicator
+                    if (_currentPhase == AnimationPhase.rearranging)
+                      Container(
+                        width: 8,
+                        height: 8,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              const Color(0xFF10B981).withOpacity(_glowAnimation.value),
+                              const Color(0xFF059669).withOpacity(_glowAnimation.value * 0.8),
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF10B981).withOpacity(_glowAnimation.value * 0.6),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Item text
+                    Expanded(
+                      child: Text(
+                        item.text,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? const Color(0xFFE5E7EB) : const Color(0xFF1F2937),
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+
+                    // Rank indicator (shown after rearrangement)
+                    if (_currentPhase == AnimationPhase.complete)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF6366F1).withOpacity(0.2),
+                              const Color(0xFF8B5CF6).withOpacity(0.2),
+                            ],
+                          ),
+                        ),
+                        child: Text(
+                          "#${item.targetIndex + 1}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? const Color(0xFF8B5CF6) : const Color(0xFF6366F1),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-            child: Text(
-              "GPT-5",
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFF8B5CF6) : const Color(0xFF6366F1),
-                letterSpacing: 0.5,
-              ),
-            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -655,7 +739,26 @@ class _AIThinkingWidgetState extends State<AIThinkingWidget> with TickerProvider
   }
 }
 
-// Enhanced energy core painter
+// Data models and enums for list animation
+class ListItemData {
+  final int id;
+  final String text;
+  final int originalIndex;
+  int currentIndex;
+  int targetIndex;
+
+  ListItemData({
+    required this.id,
+    required this.text,
+    required this.originalIndex,
+    required this.currentIndex,
+    this.targetIndex = 0,
+  });
+}
+
+enum AnimationPhase { thinking, showingList, analyzing, rearranging, complete }
+
+// Enhanced energy core painter (keeping original)
 class EnergyCoreePainter extends CustomPainter {
   final double progress;
   final double orbProgress;
@@ -774,4 +877,14 @@ class NeuralWavePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// AI List Rearrangement Widget (alias for backwards compatibility)
+class AIListRearrangementWidget extends AIThinkingWidget {
+  const AIListRearrangementWidget({
+    super.key,
+    super.searchQuery,
+    super.isNearestSelected = false,
+    required List<String> items,
+  }) : super(items: items);
 }

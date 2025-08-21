@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
 
 class AIFilterOptionWidget extends StatefulWidget {
@@ -158,7 +159,7 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
                         ClipPath(
                           clipper: CurveCustomClipper(),
                           child: Container(
-                            width: 100, // Fixed: Explicitly set width
+                            width: 120, // Fixed: Explicitly set width
                             height: 70, // Fixed: Explicitly set height
                             decoration: BoxDecoration(
                               gradient: widget.isSelected || widget.isAIThinking ? _buildAIGradient() : null,
@@ -200,16 +201,40 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
                                       children: [
                                         Flexible(
                                           // Fixed: Make text flexible to prevent overflow
-                                          child: Text(
-                                            widget.title,
-                                            style: TextStyle(
-                                              color: widget.isSelected ? Colors.white : Colors.blue.withOpacity(0.6),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 2, // Fixed: Limit text to 2 lines
-                                            overflow: TextOverflow.ellipsis, // Fixed: Handle text overflow
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  widget.title,
+                                                  style: TextStyle(
+                                                    color:
+                                                        widget.isSelected
+                                                            ? Colors.white
+                                                            : AppColors.primary.withValues(alpha: 0.4),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2, // Fixed: Limit text to 2 lines
+                                                  overflow: TextOverflow.ellipsis, // Fixed: Handle text overflow
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.purple.withOpacity(0.3),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                child: const Text(
+                                                  'AI',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 8,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         const SizedBox(height: 5),

@@ -108,7 +108,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
       // Generate random delay between 5-10 seconds for nearest filter
       final random = Random();
-      final delaySeconds = 20000 + random.nextInt(6); // 5-10 seconds
+      final delaySeconds = 5 + random.nextInt(6); // 5-10 seconds
       final delayMilliseconds = delaySeconds * 1000;
 
       // Add loading delay for nearest filter
