@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:must_invest/core/extensions/text_style_extension.dart';
+import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/features/explore/presentation/widgets/custom_clipper.dart';
 
@@ -194,7 +196,7 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
                                 // Content - Fixed: Use Positioned.fill to constrain content
                                 Positioned.fill(
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                                    padding: const EdgeInsets.symmetric(horizontal: 15),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
@@ -206,17 +208,15 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
                                               Expanded(
                                                 child: Text(
                                                   widget.title,
-                                                  style: TextStyle(
+                                                  style: context.bodyMedium.s14.regular.copyWith(
                                                     color:
                                                         widget.isSelected
-                                                            ? Colors.white
+                                                            ? AppColors.white
                                                             : AppColors.primary.withValues(alpha: 0.4),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
                                                   ),
+                                                  softWrap: true,
+                                                  overflow: TextOverflow.visible,
                                                   textAlign: TextAlign.center,
-                                                  maxLines: 2, // Fixed: Limit text to 2 lines
-                                                  overflow: TextOverflow.ellipsis, // Fixed: Handle text overflow
                                                 ),
                                               ),
                                               Container(
