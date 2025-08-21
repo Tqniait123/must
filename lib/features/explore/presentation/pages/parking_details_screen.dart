@@ -300,6 +300,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
 
                           // Parking Details Grid
                           Container(
+                            width: double.infinity,
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: AppColors.primary.withOpacity(0.05),
@@ -315,27 +316,23 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                 16.gap,
 
                                 // Available Details Row
-                                Row(
+                                Wrap(
+                                  spacing: 12,
+                                  runSpacing: 12,
                                   children: [
                                     // Price
-                                    Expanded(
-                                      child: CustomDetailsInfo(
-                                        title: '${widget.parking.pricePerHour} ${LocaleKeys.pointsPerHour.tr()}',
-                                        icon: AppIcons.outlinedPriceIc,
-                                        iconColor: Colors.amber[900],
-                                      ),
+                                    CustomDetailsInfo(
+                                      title: '${widget.parking.pricePerHour} ${LocaleKeys.pointsPerHour.tr()}',
+                                      icon: AppIcons.outlinedPriceIc,
+                                      iconColor: Colors.amber[900],
                                     ),
 
-                                    12.gap,
-
                                     // Rating
-                                    Expanded(
-                                      child: CustomDetailsInfo(
-                                        title: '${widget.parking.userVisits} ${LocaleKeys.visitsByYou.tr()}',
-                                        icon: AppIcons.outlinedClockIc,
-                                        fullWidth: true,
-                                        iconColor: Colors.blue[800],
-                                      ),
+                                    CustomDetailsInfo(
+                                      title: '${widget.parking.userVisits} ${LocaleKeys.visitsByYou.tr()}',
+                                      icon: AppIcons.outlinedClockIc,
+                                      fullWidth: false,
+                                      iconColor: Colors.blue[800],
                                     ),
                                   ],
                                 ),
@@ -564,7 +561,7 @@ class CustomDetailsInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: fullWidth ? double.infinity : null,
-      constraints: fullWidth ? null : const BoxConstraints(minWidth: 100, maxWidth: 200),
+      // constraints: fullWidth ? null : const BoxConstraints(minWidth: 100, maxWidth: 200),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.white,
