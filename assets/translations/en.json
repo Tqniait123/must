@@ -1297,7 +1297,7 @@
   "available": "Available",
   "stop_navigation": "Stop Navigation",
   "start_navigation": "Start Navigation",
- 
+
   "unknown_user": "Unknown User",
   "unknown_car": "Unknown Car",
   "no_plate": "No Plate",
@@ -1319,7 +1319,22 @@
   "enter_amount_egp": "Enter amount (EGP)",
   "quick_amounts": "Quick amounts:",
   "egp": "EGP",
-  "charge": "Charge"
+  "charge": "Charge",
+  "activating_spatial_intelligence": "Activating spatial intelligence...",
+  "processing_geospatial_vectors": "Processing geospatial vectors...",
+  "optimizing_proximity_algorithms": "Optimizing proximity algorithms...",
+  "computing_route_intelligence": "Computing route intelligence...",
+  "synthesizing_location_insights": "Synthesizing location insights...",
+  "parsing_natural_language": "Parsing natural language...",
+  "accessing_knowledge_networks": "Accessing knowledge networks...",
+  "cross_referencing_data_sources": "Cross-referencing data sources...",
+  "applying_contextual_reasoning": "Applying contextual reasoning...",
+  "generating_intelligent_responses": "Generating intelligent responses...",
+  "initializing_neural_networks": "Initializing neural networks...",
+  "processing_cognitive_patterns": "Processing cognitive patterns...",
+  "analyzing_behavioral_data": "Analyzing behavioral data...",
+  "computing_personalized_insights": "Computing personalized insights...",
+  "optimizing_recommendations": "Optimizing recommendations..."
 
 
 }

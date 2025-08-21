@@ -34,16 +34,6 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
   late Animation<double> _thinkingAnimation;
   late Animation<double> _sparkleAnimation;
 
-  String _currentThinkingText = "Analyzing...";
-  final List<String> _thinkingSteps = [
-    "Analyzing location...",
-    "Processing data...",
-    "Calculating distances...",
-    "Finding best matches...",
-    "Optimizing results...",
-  ];
-  int _currentStepIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -90,22 +80,7 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
   void _startThinkingSimulation() {
     if (widget.isAIThinking) {
       _thinkingController.repeat();
-      _updateThinkingText();
     }
-  }
-
-  void _updateThinkingText() {
-    if (!widget.isAIThinking) return;
-
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted && widget.isAIThinking) {
-        setState(() {
-          _currentStepIndex = (_currentStepIndex + 1) % _thinkingSteps.length;
-          _currentThinkingText = _thinkingSteps[_currentStepIndex];
-        });
-        _updateThinkingText();
-      }
-    });
   }
 
   @override
@@ -152,129 +127,119 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedBuilder(
-              animation: Listenable.merge([_gradientAnimation, _pulseAnimation, _thinkingAnimation, _sparkleAnimation]),
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: widget.isSelected ? _pulseAnimation.value : 1.0,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // AI Glow Effect Background
-                      if (widget.isSelected || widget.isAIThinking)
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              // BoxShadow(
-                              //   color:
-                              //       widget.isAIThinking ? Colors.purple.withOpacity(0.4) : Colors.blue.withOpacity(0.3),
-                              //   blurRadius: 20,
-                              //   spreadRadius: 2,
-                              // ),
-                            ],
+            // Fixed: Wrap content in Flexible to prevent overflow
+            Flexible(
+              child: AnimatedBuilder(
+                animation: Listenable.merge([
+                  _gradientAnimation,
+                  _pulseAnimation,
+                  _thinkingAnimation,
+                  _sparkleAnimation,
+                ]),
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: widget.isSelected ? _pulseAnimation.value : 1.0,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // AI Glow Effect Background
+                        if (widget.isSelected || widget.isAIThinking)
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: const [
+                                // Removed problematic BoxShadow
+                              ],
+                            ),
+                            child: const SizedBox(width: 120, height: 100),
                           ),
-                          child: const SizedBox(width: 120, height: 100),
-                        ),
 
-                      // Main Container with AI Gradient
-                      ClipPath(
-                        clipper: CurveCustomClipper(),
-                        child: Container(
-                          // width: 120,
-                          // height: 100,
-                          decoration: BoxDecoration(
-                            gradient: widget.isSelected || widget.isAIThinking ? _buildAIGradient() : null,
-                            color: widget.isSelected || widget.isAIThinking ? null : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Stack(
-                            children: [
-                              // Animated gradient overlay for AI effect
-                              if (widget.isSelected || widget.isAIThinking)
-                                Positioned.fill(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.white.withOpacity(0.2),
-                                          Colors.transparent,
-                                          Colors.white.withOpacity(0.1),
-                                        ],
-                                        stops:
-                                            [
-                                              _gradientAnimation.value - 0.3,
-                                              _gradientAnimation.value,
-                                              _gradientAnimation.value + 0.3,
-                                            ].map((e) => e.clamp(0.0, 1.0)).toList(),
+                        // Main Container with AI Gradient
+                        ClipPath(
+                          clipper: CurveCustomClipper(),
+                          child: Container(
+                            width: 100, // Fixed: Explicitly set width
+                            height: 70, // Fixed: Explicitly set height
+                            decoration: BoxDecoration(
+                              gradient: widget.isSelected || widget.isAIThinking ? _buildAIGradient() : null,
+                              color: widget.isSelected || widget.isAIThinking ? null : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Stack(
+                              children: [
+                                // Animated gradient overlay for AI effect
+                                if (widget.isSelected || widget.isAIThinking)
+                                  Positioned.fill(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.white.withOpacity(0.2),
+                                            Colors.transparent,
+                                            Colors.white.withOpacity(0.1),
+                                          ],
+                                          stops:
+                                              [
+                                                _gradientAnimation.value - 0.3,
+                                                _gradientAnimation.value,
+                                                _gradientAnimation.value + 0.3,
+                                              ].map((e) => e.clamp(0.0, 1.0)).toList(),
+                                        ),
                                       ),
                                     ),
                                   ),
+                                // Content - Fixed: Use Positioned.fill to constrain content
+                                Positioned.fill(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+                                      children: [
+                                        Flexible(
+                                          // Fixed: Make text flexible to prevent overflow
+                                          child: Text(
+                                            widget.title,
+                                            style: TextStyle(
+                                              color: widget.isSelected ? Colors.white : Colors.blue.withOpacity(0.6),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2, // Fixed: Limit text to 2 lines
+                                            overflow: TextOverflow.ellipsis, // Fixed: Handle text overflow
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: BoxDecoration(
+                                            color: widget.isSelected ? Colors.white : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              // Content
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (widget.isAIThinking) ...[
-                                      // AI Thinking Indicator
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(Icons.psychology, size: 16, color: Colors.white),
-                                          const SizedBox(width: 4),
-                                          _buildThinkingDots(),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        _currentThinkingText,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ] else ...[
-                                      Text(
-                                        widget.title,
-                                        style: TextStyle(
-                                          color: widget.isSelected ? Colors.white : Colors.blue.withOpacity(0.6),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Container(
-                                        width: 6,
-                                        height: 6,
-                                        decoration: BoxDecoration(
-                                          color: widget.isSelected ? Colors.white : Colors.transparent,
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
 
-                              // Sparkle Effects
-                              if (widget.isSelected && !widget.isAIThinking) ..._buildSparkles(),
-                            ],
+                                // Sparkle Effects
+                                if (widget.isSelected && !widget.isAIThinking) ..._buildSparkles(),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-            const SizedBox(height: 10),
+            // Fixed: Remove extra SizedBox that could cause overflow
+            // const SizedBox(height: 10),
           ],
         ),
       ),
@@ -301,34 +266,6 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
         colors: [Colors.blue.shade600, Colors.blue.shade700, Colors.indigo.shade600],
       );
     }
-  }
-
-  Widget _buildThinkingDots() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(3, (index) {
-        return AnimatedBuilder(
-          animation: _thinkingAnimation,
-          builder: (context, child) {
-            final delay = index * 0.3;
-            final animValue = (_thinkingAnimation.value - delay).clamp(0.0, 1.0);
-            final opacity = (math.sin(animValue * math.pi * 2) + 1) / 2;
-
-            return Container(
-              margin: EdgeInsets.only(left: index > 0 ? 2 : 0),
-              child: Opacity(
-                opacity: opacity,
-                child: Container(
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(2)),
-                ),
-              ),
-            );
-          },
-        );
-      }),
-    );
   }
 
   List<Widget> _buildSparkles() {

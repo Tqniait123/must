@@ -1282,7 +1282,22 @@ class CodegenLoader extends AssetLoader{
   "enter_amount_egp": "Enter amount (EGP)",
   "quick_amounts": "Quick amounts:",
   "egp": "EGP",
-  "charge": "Charge"
+  "charge": "Charge",
+  "activating_spatial_intelligence": "Activating spatial intelligence...",
+  "processing_geospatial_vectors": "Processing geospatial vectors...",
+  "optimizing_proximity_algorithms": "Optimizing proximity algorithms...",
+  "computing_route_intelligence": "Computing route intelligence...",
+  "synthesizing_location_insights": "Synthesizing location insights...",
+  "parsing_natural_language": "Parsing natural language...",
+  "accessing_knowledge_networks": "Accessing knowledge networks...",
+  "cross_referencing_data_sources": "Cross-referencing data sources...",
+  "applying_contextual_reasoning": "Applying contextual reasoning...",
+  "generating_intelligent_responses": "Generating intelligent responses...",
+  "initializing_neural_networks": "Initializing neural networks...",
+  "processing_cognitive_patterns": "Processing cognitive patterns...",
+  "analyzing_behavioral_data": "Analyzing behavioral data...",
+  "computing_personalized_insights": "Computing personalized insights...",
+  "optimizing_recommendations": "Optimizing recommendations..."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2552,7 +2567,22 @@ static const Map<String,dynamic> _ar = {
   "enter_amount_egp": "أدخل المبلغ (ج.م)",
   "quick_amounts": "مبالغ سريعة:",
   "egp": "ج.م",
-  "charge": "شحن"
+  "charge": "شحن",
+  "activating_spatial_intelligence": "تفعيل الذكاء المكاني...",
+  "processing_geospatial_vectors": "معالجة المتجهات الجغرافية المكانية...",
+  "optimizing_proximity_algorithms": "تحسين خوارزميات القرب...",
+  "computing_route_intelligence": "حوسبة ذكاء المسار...",
+  "synthesizing_location_insights": "تركيب رؤى الموقع...",
+  "parsing_natural_language": "تحليل اللغة الطبيعية...",
+  "accessing_knowledge_networks": "الوصول إلى شبكات المعرفة...",
+  "cross_referencing_data_sources": "الربط المرجعي لمصادر البيانات...",
+  "applying_contextual_reasoning": "تطبيق التفكير السياقي...",
+  "generating_intelligent_responses": "توليد استجابات ذكية...",
+  "initializing_neural_networks": "تهيئة الشبكات العصبية...",
+  "processing_cognitive_patterns": "معالجة الأنماط المعرفية...",
+  "analyzing_behavioral_data": "تحليل البيانات السلوكية...",
+  "computing_personalized_insights": "حوسبة الرؤى الشخصية...",
+  "optimizing_recommendations": "تحسين التوصيات..."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

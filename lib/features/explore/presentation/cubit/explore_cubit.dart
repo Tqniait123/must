@@ -17,14 +17,15 @@ class ExploreCubit extends Cubit<ExploreState> {
     try {
       emit(ParkingsLoading());
       final response = await exploreRepo.getAllParkings(filter: filter);
-      response.fold(
-        (parkings) => emit(ParkingsSuccess(parkings)),
-        (error) => emit(ParkingsError(error.message)),
-      );
+      response.fold((parkings) => emit(ParkingsSuccess(parkings)), (error) => emit(ParkingsError(error.message)));
     } on AppError catch (e) {
       emit(ParkingsError(e.message));
     } catch (e) {
       emit(ParkingsError(e.toString()));
     }
+  }
+
+  void setLoadingState() {
+    emit(ParkingsLoading());
   }
 }

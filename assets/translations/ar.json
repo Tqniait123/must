@@ -1321,7 +1321,22 @@
   "enter_amount_egp": "أدخل المبلغ (ج.م)",
   "quick_amounts": "مبالغ سريعة:",
   "egp": "ج.م",
-  "charge": "شحن"
+  "charge": "شحن",
+  "activating_spatial_intelligence": "تفعيل الذكاء المكاني...",
+  "processing_geospatial_vectors": "معالجة المتجهات الجغرافية المكانية...",
+  "optimizing_proximity_algorithms": "تحسين خوارزميات القرب...",
+  "computing_route_intelligence": "حوسبة ذكاء المسار...",
+  "synthesizing_location_insights": "تركيب رؤى الموقع...",
+  "parsing_natural_language": "تحليل اللغة الطبيعية...",
+  "accessing_knowledge_networks": "الوصول إلى شبكات المعرفة...",
+  "cross_referencing_data_sources": "الربط المرجعي لمصادر البيانات...",
+  "applying_contextual_reasoning": "تطبيق التفكير السياقي...",
+  "generating_intelligent_responses": "توليد استجابات ذكية...",
+  "initializing_neural_networks": "تهيئة الشبكات العصبية...",
+  "processing_cognitive_patterns": "معالجة الأنماط المعرفية...",
+  "analyzing_behavioral_data": "تحليل البيانات السلوكية...",
+  "computing_personalized_insights": "حوسبة الرؤى الشخصية...",
+  "optimizing_recommendations": "تحسين التوصيات..."
 
 
 

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +18,11 @@ import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
-import 'package:must_invest/core/utils/widgets/loading/loading_widget.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
 import 'package:must_invest/features/explore/data/models/filter_model.dart';
 import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.dart';
 import 'package:must_invest/features/explore/presentation/widgets/ai_filter_widget.dart';
+import 'package:must_invest/features/explore/presentation/widgets/ai_thinking_widget.dart';
 import 'package:must_invest/features/explore/presentation/widgets/filter_option_widget.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
 
@@ -94,10 +95,72 @@ class _ExploreScreenState extends State<ExploreScreen> {
     }
   }
 
-  // Apply current filter and search
+  // Apply current filter and search with AI thinking simulation ONLY for nearest
   void _applyFilters() {
     final filter = _createFilterWithSearch();
-    _exploreCubit.getAllParkings(filter: filter);
+
+    // Only show AI thinking effect and loading delay for nearest sorting
+    if (_selectedSortBy == SortBy.nearest) {
+      // Set loading state immediately for AI thinking effect (if not already set)
+      if (_exploreCubit.state is! ParkingsLoading) {
+        _exploreCubit.setLoadingState();
+      }
+
+      // Generate random delay between 5-10 seconds for nearest filter
+      final random = Random();
+      final delaySeconds = 20000 + random.nextInt(6); // 5-10 seconds
+      final delayMilliseconds = delaySeconds * 1000;
+
+      // Add loading delay for nearest filter
+      Future.delayed(Duration(milliseconds: delayMilliseconds), () {
+        if (mounted) {
+          _exploreCubit.getAllParkings(filter: filter);
+        }
+      });
+    } else {
+      // For other filters, apply immediately without loading delay
+      _exploreCubit.getAllParkings(filter: filter);
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() {
+      _isGettingLocation = true;
+    });
+
+    try {
+      final hasPermission = await _checkLocationPermission();
+      if (!hasPermission) {
+        setState(() {
+          _isGettingLocation = false;
+          _selectedSortBy = SortBy.mostPopular;
+        });
+        _applyFilters();
+        return;
+      }
+
+      // Remove the AI thinking delay from here since it's now handled in _applyFilters
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
+      );
+
+      setState(() {
+        _currentPosition = position;
+        _isGettingLocation = false;
+      });
+
+      _applyFilters(); // This will handle the AI thinking delay
+    } catch (e) {
+      setState(() {
+        log(e.toString());
+        _isGettingLocation = false;
+        _selectedSortBy = SortBy.mostPopular;
+      });
+
+      _showLocationDialog(LocaleKeys.failed_to_get_location.tr(args: [e.toString()]));
+      _applyFilters();
+    }
   }
 
   Future<bool> _checkLocationPermission() async {
@@ -128,53 +191,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return true;
   }
 
-  // Also update the _getCurrentLocation method to add realistic AI thinking time:
-
-  Future<void> _getCurrentLocation() async {
-    setState(() {
-      _isGettingLocation = true;
-    });
-
-    try {
-      final hasPermission = await _checkLocationPermission();
-      if (!hasPermission) {
-        setState(() {
-          _isGettingLocation = false;
-          _selectedSortBy = SortBy.mostPopular;
-        });
-        _applyFilters();
-        return;
-      }
-
-      // Add AI thinking simulation delay
-      await Future.delayed(const Duration(milliseconds: 2500)); // AI thinking time
-
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
-      );
-
-      // Add additional processing delay for AI effect
-      await Future.delayed(const Duration(milliseconds: 1500)); // AI processing time
-
-      setState(() {
-        _currentPosition = position;
-        _isGettingLocation = false;
-      });
-
-      _applyFilters();
-    } catch (e) {
-      setState(() {
-        log(e.toString());
-        _isGettingLocation = false;
-        _selectedSortBy = SortBy.mostPopular;
-      });
-
-      _showLocationDialog(LocaleKeys.failed_to_get_location.tr(args: [e.toString()]));
-      _applyFilters();
-    }
-  }
-
   void _showLocationDialog(String message) {
     showDialog(
       context: context,
@@ -192,7 +208,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
       _selectedSortBy = newSortBy;
     });
 
+    // Show AI thinking immediately for nearest
     if (newSortBy == SortBy.nearest) {
+      _exploreCubit.setLoadingState(); // Set loading state immediately
       _getCurrentLocation();
     } else {
       _applyFilters();
@@ -238,6 +256,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -247,6 +266,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ],
               ),
               40.gap,
+
+              // Search Field
               CustomTextFormField(
                 controller: _searchController,
                 backgroundColor: Color(0xffEAEAF3),
@@ -266,6 +287,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 onChanged: _onSearchChanged,
               ),
               20.gap,
+
+              // Filter Options
               SizedBox(
                 height: 120,
                 child: ListView.separated(
@@ -274,12 +297,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   separatorBuilder: (context, index) => 10.gap,
                   itemBuilder: (context, index) {
                     final filter = _filters[index];
-                    bool isNearestSelected = _selectedSortBy == SortBy.nearest;
                     final isNearest = filter['sortBy'] == SortBy.nearest;
                     final isSelected = _selectedSortBy == filter['sortBy'];
                     final isAIThinking = isNearest && isSelected && _isGettingLocation;
 
-                    return isNearestSelected
+                    return isNearest
                         ? AIFilterOptionWidget(
                           title: filter['title'],
                           id: filter['sortBy'].index,
@@ -293,9 +315,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           title: filter['title'],
                           id: filter['sortBy'].index,
                           isSelected: isSelected,
-                          // onTap: () {
-                          //   _onFilterChanged(filter['sortBy']);
-                          // },
                         ).withPressEffect(
                           onTap: () {
                             _onFilterChanged(filter['sortBy']);
@@ -305,7 +324,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
               ),
 
-              // Show search indicator when searching
+              // Search indicator when searching
               if (_searchQuery.isNotEmpty) ...[
                 10.gap,
                 Container(
@@ -327,13 +346,29 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   ),
                 ),
               ],
+
+              // Main Content with AI Thinking Animation ONLY for nearest
               Expanded(
                 child: BlocProvider.value(
                   value: _exploreCubit,
                   child: BlocBuilder<ExploreCubit, ExploreState>(
                     builder: (BuildContext context, ExploreState state) {
                       if (state is ParkingsLoading) {
-                        return LoadingWidget();
+                        // Use AI Thinking Widget ONLY when nearest is selected
+                        if (_selectedSortBy == SortBy.nearest) {
+                          return AIThinkingWidget(
+                            searchQuery: _searchQuery,
+                            isNearestSelected: true,
+                            // items: Parking.getFakeHistoryParkings().map((x) => x.nameEn).toList(),
+                          );
+                        } else {
+                          // Use regular loading indicator for other filters
+                          return Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                            ),
+                          );
+                        }
                       } else if (state is ParkingsSuccess) {
                         if (state.parkings.isEmpty) {
                           return Center(
@@ -358,7 +393,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           );
                         }
 
-                        return ListView.separated(
+                        // Add smooth transition only after AI thinking completes (for nearest)
+                        // or show results immediately for other filters
+                        Widget resultsList = ListView.separated(
+                          key: ValueKey('parking_list'),
                           physics: const BouncingScrollPhysics(),
                           shrinkWrap: false,
                           padding: EdgeInsets.zero,
@@ -368,6 +406,29 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             return ParkingCard(parking: state.parkings[index]);
                           },
                         );
+
+                        // Only add smooth transition animation for nearest filter
+                        if (_selectedSortBy == SortBy.nearest) {
+                          return AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 800),
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0.0, 0.3),
+                                    end: Offset.zero,
+                                  ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: resultsList,
+                          );
+                        } else {
+                          // Show results immediately for other filters
+                          return resultsList;
+                        }
                       } else if (state is ParkingsError) {
                         return Center(
                           child: Column(
