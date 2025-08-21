@@ -1168,8 +1168,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           ),
                           _buildInfoItem(
                             Icons.monetization_on,
-                            '${_currentRouteInfo!.estimatedCost.toInt()}${LocaleKeys.map_unit_points.tr()}',
-                            LocaleKeys.map_route_estimated_cost.tr(),
+                            _selectedParking!.pricePerHour,
+                            LocaleKeys.pointsPerHour.tr(),
                           ),
                         ],
                       ),
