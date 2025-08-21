@@ -80,59 +80,89 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     super.dispose();
   }
 
-  // Show image source selection dialog
+  // Show image source selection bottom sheet
   Future<void> _showImageSourceDialog(ImageType type) async {
-    await showDialog<ImageSource>(
+    await showModalBottomSheet<ImageSource>(
       context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text(
-              LocaleKeys.select_image_source.tr(), // Add this key to your locale_keys.g.dart
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            content: Column(
+          (context) => Container(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ListTile(
-                  leading: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.camera_alt, color: AppColors.primary),
-                  ),
-                  title: Text(LocaleKeys.camera.tr()), // Add this key
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(type, ImageSource.camera);
-                  },
+                // Handle bar
+                Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
                 ),
-                ListTile(
-                  leading: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+
+                // Title
+                Text(
+                  LocaleKeys.select_image_source.tr(),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black87),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Options
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildImageSourceOption(
+                        icon: Icons.camera_alt_rounded,
+                        label: LocaleKeys.camera.tr(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _pickImage(type, ImageSource.camera);
+                        },
+                      ),
                     ),
-                    child: Icon(Icons.photo_library, color: AppColors.primary),
-                  ),
-                  title: Text(LocaleKeys.gallery.tr()), // Add this key
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(type, ImageSource.gallery);
-                  },
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildImageSourceOption(
+                        icon: Icons.photo_library_rounded,
+                        label: LocaleKeys.gallery.tr(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _pickImage(type, ImageSource.gallery);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(LocaleKeys.cancel.tr(), style: TextStyle(color: Colors.grey[600])),
-              ),
-            ],
           ),
+    );
+  }
+
+  // Helper method to build image source option
+  Widget _buildImageSourceOption({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+              child: Icon(icon, color: AppColors.primary, size: 28),
+            ),
+            const SizedBox(height: 12),
+            Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
+          ],
+        ),
+      ),
     );
   }
 
