@@ -139,7 +139,8 @@ class MyCardsScreen extends StatelessWidget {
                             listener: (BuildContext context, HomeState state) {
                               // Handle side effects here if needed
                               if (state is HomeError) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+                                showErrorToast(context, state.message);
+                                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
                               }
                               if (state is HomeSuccess) {
                                 context.pop();
