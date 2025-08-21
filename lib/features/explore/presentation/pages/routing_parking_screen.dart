@@ -1114,6 +1114,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen> with Ticker
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
+              interactionOptions: const InteractionOptions(flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
               initialCenter:
                   _currentLocation != null
                       ? LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!)

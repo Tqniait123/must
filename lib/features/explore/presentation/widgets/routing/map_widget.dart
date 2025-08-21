@@ -7,18 +7,14 @@ class MapWidget extends StatelessWidget {
   final List<Polyline> polylines;
   final List<Marker> markers;
 
-  const MapWidget({
-    Key? key,
-    required this.mapController,
-    required this.polylines,
-    required this.markers,
-  }) : super(key: key);
+  const MapWidget({super.key, required this.mapController, required this.polylines, required this.markers});
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
+        interactionOptions: const InteractionOptions(flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
         initialCenter: const LatLng(30.0444, 31.2357), // Default to Cairo
         initialZoom: 15.0,
         maxZoom: 18.0,
@@ -36,9 +32,7 @@ class MapWidget extends StatelessWidget {
         // Markers
         MarkerLayer(markers: markers),
         // Attribution
-        const RichAttributionWidget(
-          attributions: [TextSourceAttribution('OpenStreetMap contributors')],
-        ),
+        const RichAttributionWidget(attributions: [TextSourceAttribution('OpenStreetMap contributors')]),
       ],
     );
   }

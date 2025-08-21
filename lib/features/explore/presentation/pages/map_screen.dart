@@ -698,6 +698,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
+            interactionOptions: const InteractionOptions(flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
             initialCenter: _currentLocation ?? LatLng(30.0444, 31.2357),
             initialZoom: 12.0,
             maxZoom: 18.0,
