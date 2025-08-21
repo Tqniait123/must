@@ -1301,7 +1301,25 @@ class CodegenLoader extends AssetLoader{
   "route_loading_message": "Finding the best route...",
   "select_image_source": "Select Image Source",
   "camera": "Camera",
-  "gallery": "Gallery"
+  "gallery": "Gallery",
+  "phone": "Phone",
+  "documents": "Documents",
+  "national_id_front": "National ID Front",
+  "national_id_back": "National ID Back",
+  "driving_license_front": "Driving License Front",
+  "upload_front_side_national_id": "Upload front side of your national ID",
+  "upload_back_side_national_id": "Upload back side of your national ID",
+  "upload_front_side_driving_license": "Upload front side of your driving license",
+  "current_image_uploaded_tap_to_change": "Current image uploaded • Tap to change",
+  "name_is_required": "Name is required",
+  "phone_number_changed": "Phone number changed",
+  "country_code_changed": "Country code changed",
+  "validation_errors": "Validation errors",
+  "update_profile_data": "Update Profile Data",
+  "files_count": "Files count",
+  "total_files_size": "Total files size",
+  "error_creating_form_data": "Error creating form data",
+  "city_is_required": "City is required"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2590,7 +2608,25 @@ static const Map<String,dynamic> _ar = {
   "route_loading_message": "جاري تحديد أفضل مسار...",
   "select_image_source": "اختر مصدر الصورة",
   "camera": "الكاميرا",
-  "gallery": "المعرض"
+  "gallery": "المعرض",
+  "phone": "الهاتف",
+  "documents": "المستندات",
+  "national_id_front": "البطاقة الشخصية - الوجه الأمامي",
+  "national_id_back": "البطاقة الشخصية - الوجه الخلفي",
+  "driving_license_front": "رخصة القيادة - الوجه الأمامي",
+  "upload_front_side_national_id": "ارفع الوجه الأمامي للبطاقة الشخصية",
+  "upload_back_side_national_id": "ارفع الوجه الخلفي للبطاقة الشخصية",
+  "upload_front_side_driving_license": "ارفع الوجه الأمامي لرخصة القيادة",
+  "current_image_uploaded_tap_to_change": "تم رفع الصورة الحالية • اضغط للتغيير",
+  "name_is_required": "الاسم مطلوب",
+  "city_is_required": "المدينة مطلوبة",
+  "phone_number_changed": "تم تغيير رقم الهاتف",
+  "country_code_changed": "تم تغيير رمز الدولة",
+  "validation_errors": "أخطاء التحقق",
+  "update_profile_data": "بيانات تحديث الملف الشخصي",
+  "files_count": "عدد الملفات",
+  "total_files_size": "الحجم الإجمالي للملفات",
+  "error_creating_form_data": "خطأ في إنشاء بيانات النموذج"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

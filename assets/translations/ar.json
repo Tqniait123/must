@@ -1340,7 +1340,25 @@
   "route_loading_message": "جاري تحديد أفضل مسار...",
   "select_image_source": "اختر مصدر الصورة",
   "camera": "الكاميرا",
-  "gallery": "المعرض"
+  "gallery": "المعرض",
+  "phone": "الهاتف",
+  "documents": "المستندات",
+  "national_id_front": "البطاقة الشخصية - الوجه الأمامي",
+  "national_id_back": "البطاقة الشخصية - الوجه الخلفي",
+  "driving_license_front": "رخصة القيادة - الوجه الأمامي",
+  "upload_front_side_national_id": "ارفع الوجه الأمامي للبطاقة الشخصية",
+  "upload_back_side_national_id": "ارفع الوجه الخلفي للبطاقة الشخصية",
+  "upload_front_side_driving_license": "ارفع الوجه الأمامي لرخصة القيادة",
+  "current_image_uploaded_tap_to_change": "تم رفع الصورة الحالية • اضغط للتغيير",
+  "name_is_required": "الاسم مطلوب",
+  "city_is_required": "المدينة مطلوبة",
+  "phone_number_changed": "تم تغيير رقم الهاتف",
+  "country_code_changed": "تم تغيير رمز الدولة",
+  "validation_errors": "أخطاء التحقق",
+  "update_profile_data": "بيانات تحديث الملف الشخصي",
+  "files_count": "عدد الملفات",
+  "total_files_size": "الحجم الإجمالي للملفات",
+  "error_creating_form_data": "خطأ في إنشاء بيانات النموذج"
 
 
 

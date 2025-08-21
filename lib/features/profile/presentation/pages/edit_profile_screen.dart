@@ -77,7 +77,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // Set initial phone number
     _phoneController.text = user.phone;
-    log("Phone: ${_phoneController.text}");
+    log("${LocaleKeys.phone.tr()}: ${_phoneController.text}");
 
     // Set initial selected IDs from user data
     selectedCountryId = user.countryId;
@@ -322,7 +322,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (currentFile != null) {
       return '${currentFile.name} • ${_formatFileSize(currentFile.size)}';
     } else if (existingImageUrl != null && existingImageUrl.isNotEmpty) {
-      return 'Current image uploaded • Tap to change';
+      return LocaleKeys.current_image_uploaded_tap_to_change.tr();
     } else {
       return subtitle;
     }
@@ -406,7 +406,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       title: LocaleKeys.full_name.tr(),
                       // validator: (value) {
                       //   if (value?.isEmpty ?? true) {
-                      //     return 'Name is required';
+                      //     return LocaleKeys.name_is_required.tr();
                       //   }
                       //   return null;
                       // },
@@ -422,13 +422,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       // Add autofill hints for phone number
                       // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
                       onChanged: (phone) {
-                        log('Phone number changed: $phone');
+                        log('${LocaleKeys.phone_number_changed.tr()}: $phone');
                       },
                       onChangedCountryCode: (code, countryCode) {
                         setState(() {
                           _code = code;
                           _countryCode = countryCode;
-                          log('Country code changed: $code');
+                          log('${LocaleKeys.country_code_changed.tr()}: $code');
                         });
                       },
                     ),
@@ -557,7 +557,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   readonly: true,
                                   validator: (value) {
                                     if (selectedCityId == null) {
-                                      return 'City is required';
+                                      return LocaleKeys.city_is_required.tr();
                                     }
                                     return null;
                                   },
@@ -586,7 +586,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                     // Document Upload Section
                     Text(
-                      'Documents',
+                      LocaleKeys.documents.tr(),
                       style: context.textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
@@ -595,8 +595,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     12.gap,
 
                     _buildImageUploadCard(
-                      title: 'National ID Front',
-                      subtitle: 'Upload front side of your national ID',
+                      title: LocaleKeys.national_id_front.tr(),
+                      subtitle: LocaleKeys.upload_front_side_national_id.tr(),
                       currentFile: nationalIdFront,
                       existingImageUrl: context.user.nationalId?.front,
                       icon: Icons.credit_card,
@@ -610,8 +610,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     12.gap,
 
                     _buildImageUploadCard(
-                      title: 'National ID Back',
-                      subtitle: 'Upload back side of your national ID',
+                      title: LocaleKeys.national_id_back.tr(),
+                      subtitle: LocaleKeys.upload_back_side_national_id.tr(),
                       currentFile: nationalIdBack,
                       existingImageUrl: context.user.nationalId?.back,
                       icon: Icons.credit_card,
@@ -625,8 +625,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     12.gap,
 
                     _buildImageUploadCard(
-                      title: 'Driving License Front',
-                      subtitle: 'Upload front side of your driving license',
+                      title: LocaleKeys.driving_license_front.tr(),
+                      subtitle: LocaleKeys.upload_front_side_driving_license.tr(),
                       currentFile: drivingLicenseFront,
                       existingImageUrl: context.user.drivingLicense?.front,
                       icon: Icons.drive_eta,
@@ -730,20 +730,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (!params.isValid()) {
       final errors = params.getValidationErrors();
-      print('Validation errors: ${errors.join(', ')}');
+      print('${LocaleKeys.validation_errors.tr()}: ${errors.join(', ')}');
       return;
     }
 
     try {
       final formData = await params.toFormData();
-      log('Update Profile Data: ${params.toMap()}');
-      log('Files count: ${params.getFilesCount()}');
-      log('Total files size: ${(params.getTotalFilesSize() / 1024).toStringAsFixed(1)} KB');
+      log('${LocaleKeys.update_profile_data.tr()}: ${params.toMap()}');
+      log('${LocaleKeys.files_count.tr()}: ${params.getFilesCount()}');
+      log('${LocaleKeys.total_files_size.tr()}: ${(params.getTotalFilesSize() / 1024).toStringAsFixed(1)} KB');
 
       await cubit.updateProfile(params);
       context.pop();
     } catch (e) {
-      log('Error creating form data: $e');
+      log('${LocaleKeys.error_creating_form_data.tr()}: $e');
     }
   }
 }

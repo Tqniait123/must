@@ -1282,5 +1282,23 @@ abstract class  LocaleKeys {
   static const select_image_source = 'select_image_source';
   static const camera = 'camera';
   static const gallery = 'gallery';
+  static const phone = 'phone';
+  static const documents = 'documents';
+  static const national_id_front = 'national_id_front';
+  static const national_id_back = 'national_id_back';
+  static const driving_license_front = 'driving_license_front';
+  static const upload_front_side_national_id = 'upload_front_side_national_id';
+  static const upload_back_side_national_id = 'upload_back_side_national_id';
+  static const upload_front_side_driving_license = 'upload_front_side_driving_license';
+  static const current_image_uploaded_tap_to_change = 'current_image_uploaded_tap_to_change';
+  static const name_is_required = 'name_is_required';
+  static const phone_number_changed = 'phone_number_changed';
+  static const country_code_changed = 'country_code_changed';
+  static const validation_errors = 'validation_errors';
+  static const update_profile_data = 'update_profile_data';
+  static const files_count = 'files_count';
+  static const total_files_size = 'total_files_size';
+  static const error_creating_form_data = 'error_creating_form_data';
+  static const city_is_required = 'city_is_required';
 
 }
