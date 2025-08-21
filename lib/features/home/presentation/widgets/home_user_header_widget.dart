@@ -91,15 +91,17 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 iconAsset: AppIcons.cameraIc,
                 color: AppColors.primary,
                 onPressed: () {
-                  // Show car selection for camera scan
-                  showAllCarsBottomSheet(
-                    context,
-                    title: LocaleKeys.select_car.tr(), // You might need to add this translation key
-                    onChooseCar: (car) {
-                      // Navigate to scan QR code screen with selected car
-                      context.push(Routes.scanQrcode, extra: car);
-                    },
+                  context.checkVerifiedAndGuestOrDo(
+                    () => showAllCarsBottomSheet(
+                      context,
+                      title: LocaleKeys.select_car.tr(), // You might need to add this translation key
+                      onChooseCar: (car) {
+                        // Navigate to scan QR code screen with selected car
+                        context.push(Routes.scanQrcode, extra: car);
+                      },
+                    ),
                   );
+                  // Show car selection for camera scan
                 },
               ),
               6.gap,
@@ -107,7 +109,9 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 iconAsset: AppIcons.qrCodeIc,
                 color: AppColors.primary,
                 onPressed: () {
-                  showAllCarsBottomSheet(context, title: LocaleKeys.my_cars.tr(), onChooseCar: onChooseCar);
+                  context.checkVerifiedAndGuestOrDo(
+                    () => showAllCarsBottomSheet(context, title: LocaleKeys.my_cars.tr(), onChooseCar: onChooseCar),
+                  );
                 },
               ),
             ],

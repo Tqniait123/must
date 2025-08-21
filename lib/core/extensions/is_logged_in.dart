@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
@@ -22,6 +24,18 @@ extension UserCubitX on BuildContext {
       _showNotVerifiedBottomSheet();
     } else {
       onVerifiedAction();
+    }
+  }
+
+  /// Checks user verification and guest status, executes async function if verified and logged in
+  /// Otherwise shows appropriate bottom sheet
+  Future<void> checkVerifiedAndGuestOrDoAsync(Future<void> Function() onVerifiedAction) async {
+    if (!isLoggedIn) {
+      _showGuestModeBottomSheet();
+    } else if (!isVerified) {
+      _showNotVerifiedBottomSheet();
+    } else {
+      await onVerifiedAction();
     }
   }
 
@@ -70,8 +84,8 @@ class GuestModeBottomSheet extends StatelessWidget {
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(color: Colors.blue[50], shape: BoxShape.circle),
-            child: Icon(Icons.person_outline, size: 40, color: Colors.blue[600]),
+            decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), shape: BoxShape.circle),
+            child: Icon(Icons.person_outline, size: 40, color: Theme.of(context).primaryColor),
           ),
           const SizedBox(height: 20),
 
@@ -114,10 +128,10 @@ class GuestModeBottomSheet extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                     // Navigate to login/register screen
-                    Navigator.pushNamed(context, '/login');
+                    context.go(Routes.login);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[600],
+                    backgroundColor: Theme.of(context).primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -168,8 +182,11 @@ class NotVerifiedBottomSheet extends StatelessWidget {
               Container(
                 width: 60,
                 height: 60,
-                decoration: BoxDecoration(color: Colors.orange[50], shape: BoxShape.circle),
-                child: Icon(Icons.verified_user_outlined, size: 30, color: Colors.orange[600]),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.verified_user_outlined, size: 30, color: Theme.of(context).primaryColor),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -230,10 +247,10 @@ class NotVerifiedBottomSheet extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                     // Navigate to edit profile screen
-                    Navigator.pushNamed(context, '/edit-profile');
+                    context.push(Routes.editProfile);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange[600],
+                    backgroundColor: Theme.of(context).primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -259,11 +276,11 @@ class NotVerifiedBottomSheet extends StatelessWidget {
         Container(
           width: 32,
           height: 32,
-          decoration: BoxDecoration(color: Colors.orange[100], shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.15), shape: BoxShape.circle),
           child: Center(
             child: Text(
               stepNumber.toString(),
-              style: TextStyle(color: Colors.orange[700], fontSize: 14, fontWeight: FontWeight.w600),
+              style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -279,5 +296,81 @@ class NotVerifiedBottomSheet extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// Extension to add verification checks to any VoidCallback function
+extension VoidCallbackVerificationX on VoidCallback {
+  /// Wraps the function with verification check
+  /// Only executes if user is logged in and verified
+  /// Otherwise shows appropriate bottom sheet
+  void withVerificationCheck(BuildContext context) {
+    context.checkVerifiedAndGuestOrDo(this);
+  }
+}
+
+/// Extension to add verification checks to any Future<void> function
+extension FutureVoidVerificationX on Future<void> Function() {
+  /// Wraps the async function with verification check
+  /// Only executes if user is logged in and verified
+  /// Otherwise shows appropriate bottom sheet
+  Future<void> withVerificationCheck(BuildContext context) async {
+    await context.checkVerifiedAndGuestOrDoAsync(this);
+  }
+}
+
+/// Extension to add verification checks to any Future<T> function
+extension FutureVerificationX<T> on Future<T> Function() {
+  /// Wraps the async function with verification check
+  /// Only executes if user is logged in and verified
+  /// Otherwise shows appropriate bottom sheet and returns null
+  Future<T?> withVerificationCheck(BuildContext context) async {
+    if (!context.isLoggedIn) {
+      context._showGuestModeBottomSheet();
+      return null;
+    } else if (!context.isVerified) {
+      context._showNotVerifiedBottomSheet();
+      return null;
+    } else {
+      return await this();
+    }
+  }
+}
+
+/// Extension to add verification checks to any function that returns T
+extension FunctionVerificationX<T> on T Function() {
+  /// Wraps the function with verification check
+  /// Only executes if user is logged in and verified
+  /// Otherwise shows appropriate bottom sheet and returns null
+  T? withVerificationCheck(BuildContext context) {
+    if (!context.isLoggedIn) {
+      context._showGuestModeBottomSheet();
+      return null;
+    } else if (!context.isVerified) {
+      context._showNotVerifiedBottomSheet();
+      return null;
+    } else {
+      return this();
+    }
+  }
+}
+
+/// Extension to add verification checks directly to Future instances
+/// This allows syntax like: context.push('/route').checkVerifiedAndGuestOrDoAsync(context)
+/// Works for both Future<T> and Future<void>
+extension FutureInstanceVerificationX<T> on Future<T> {
+  /// Checks verification before executing this Future
+  /// Only executes if user is logged in and verified
+  /// Otherwise shows appropriate bottom sheet and returns null
+  Future<T?> checkVerifiedAndGuestOrDoAsync(BuildContext context) async {
+    if (!context.isLoggedIn) {
+      context._showGuestModeBottomSheet();
+      return null;
+    } else if (!context.isVerified) {
+      context._showNotVerifiedBottomSheet();
+      return null;
+    } else {
+      return await this;
+    }
   }
 }

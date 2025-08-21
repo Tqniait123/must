@@ -238,7 +238,7 @@ class MyPointsCardMinimal extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () => context.push(Routes.myCards),
+                      onTap: () => context.checkVerifiedAndGuestOrDo(() => context.push(Routes.myCards)),
                       child: Center(
                         child: Text(
                           LocaleKeys.add_points.tr(),
