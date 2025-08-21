@@ -1358,7 +1358,14 @@
   "update_profile_data": "بيانات تحديث الملف الشخصي",
   "files_count": "عدد الملفات",
   "total_files_size": "الحجم الإجمالي للملفات",
-  "error_creating_form_data": "خطأ في إنشاء بيانات النموذج"
+  "error_creating_form_data": "خطأ في إنشاء بيانات النموذج",
+  "select_document_source": "اختر مصدر المستند",
+  "scan_document": "مسح المستند",
+  "choose_from_gallery": "اختر من المعرض",
+  "error_picking_image": "حدث خطأ أثناء اختيار الصورة",
+  "error_picking_document": "حدث خطأ أثناء اختيار المستند",
+  "driving_license_back": "الجانب الخلفي لرخصة القيادة",
+  "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة"
 
 
 

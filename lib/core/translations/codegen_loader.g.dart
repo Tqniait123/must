@@ -1319,7 +1319,14 @@ class CodegenLoader extends AssetLoader{
   "files_count": "Files count",
   "total_files_size": "Total files size",
   "error_creating_form_data": "Error creating form data",
-  "city_is_required": "City is required"
+  "city_is_required": "City is required",
+  "select_document_source": "Select Document Source",
+  "scan_document": "Scan Document",
+  "choose_from_gallery": "Choose from Gallery",
+  "error_picking_image": "Error picking image",
+  "error_picking_document": "Error picking document",
+  "driving_license_back": "Driving License Back",
+  "upload_back_side_driving_license": "Upload Back Side of Driving License"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2626,7 +2633,14 @@ static const Map<String,dynamic> _ar = {
   "update_profile_data": "بيانات تحديث الملف الشخصي",
   "files_count": "عدد الملفات",
   "total_files_size": "الحجم الإجمالي للملفات",
-  "error_creating_form_data": "خطأ في إنشاء بيانات النموذج"
+  "error_creating_form_data": "خطأ في إنشاء بيانات النموذج",
+  "select_document_source": "اختر مصدر المستند",
+  "scan_document": "مسح المستند",
+  "choose_from_gallery": "اختر من المعرض",
+  "error_picking_image": "حدث خطأ أثناء اختيار الصورة",
+  "error_picking_document": "حدث خطأ أثناء اختيار المستند",
+  "driving_license_back": "الجانب الخلفي لرخصة القيادة",
+  "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

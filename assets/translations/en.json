@@ -1358,7 +1358,14 @@
   "files_count": "Files count",
   "total_files_size": "Total files size",
   "error_creating_form_data": "Error creating form data",
-  "city_is_required": "City is required"
+  "city_is_required": "City is required",
+  "select_document_source": "Select Document Source",
+  "scan_document": "Scan Document",
+  "choose_from_gallery": "Choose from Gallery",
+  "error_picking_image": "Error picking image",
+  "error_picking_document": "Error picking document",
+  "driving_license_back": "Driving License Back",
+  "upload_back_side_driving_license": "Upload Back Side of Driving License"
 
 
 

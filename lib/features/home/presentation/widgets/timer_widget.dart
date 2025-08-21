@@ -7,6 +7,7 @@ import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/widgets/scrolling_text.dart';
 
 // Design 2: Minimalist Card with Accent (for Timer)
 class ParkingTimerCard extends StatefulWidget {
@@ -205,8 +206,10 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    ScrollingText(
                       LocaleKeys.active_parking.tr(),
+                      // maxLines: 1,
+                      // overflow: TextOverflow.ellipsis,
                       style: context.bodyMedium.s14.copyWith(color: AppColors.primary, fontWeight: FontWeight.w500),
                     ),
                     4.gap,
@@ -239,7 +242,7 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> {
                 onTap: _showPaymentBottomSheet,
                 child: Center(
                   child: Text(
-                    LocaleKeys.check_payment.tr(),
+                    LocaleKeys.details.tr(),
                     style: context.bodyMedium.s14.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                 ),

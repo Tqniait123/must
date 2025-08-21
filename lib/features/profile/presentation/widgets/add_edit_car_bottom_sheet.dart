@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/image_source_dialog.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
@@ -80,109 +81,49 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     super.dispose();
   }
 
-  // Show image source selection bottom sheet
+  // Show image source selection using reusable dialog
   Future<void> _showImageSourceDialog(ImageType type) async {
-    await showModalBottomSheet<ImageSource>(
+    await ImageSourceDialog.show(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Handle bar
-                Container(
-                  width: 36,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
-                ),
-
-                // Title
-                Text(
-                  LocaleKeys.select_image_source.tr(),
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black87),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Options
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildImageSourceOption(
-                        icon: Icons.camera_alt_rounded,
-                        label: LocaleKeys.camera.tr(),
-                        onTap: () {
-                          Navigator.pop(context);
-                          _pickImage(type, ImageSource.camera);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildImageSourceOption(
-                        icon: Icons.photo_library_rounded,
-                        label: LocaleKeys.gallery.tr(),
-                        onTap: () {
-                          Navigator.pop(context);
-                          _pickImage(type, ImageSource.gallery);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+      title: LocaleKeys.select_image_source.tr(),
+      onSourceSelected: (ImageSourceType sourceType) {
+        _pickImageFromSource(type, sourceType);
+      },
     );
   }
 
-  // Helper method to build image source option
-  Widget _buildImageSourceOption({required IconData icon, required String label, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
-              child: Icon(icon, color: AppColors.primary, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey.shade800)),
-          ],
-        ),
-      ),
-    );
-  }
+  // Handle image picking from different sources
+  Future<void> _pickImageFromSource(ImageType type, ImageSourceType sourceType) async {
+    try {
+      final ImageSource imageSource = sourceType == ImageSourceType.camera ? ImageSource.camera : ImageSource.gallery;
 
-  Future<void> _pickImage(ImageType type, ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source, maxWidth: 1920, maxHeight: 1080, imageQuality: 85);
+      final pickedFile = await _picker.pickImage(
+        source: imageSource,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
 
-    if (pickedFile != null) {
-      setState(() {
-        switch (type) {
-          case ImageType.carPhoto:
-            _carPhoto = File(pickedFile.path);
-            break;
-          case ImageType.frontLicense:
-            _frontLicense = File(pickedFile.path);
-            break;
-          case ImageType.backLicense:
-            _backLicense = File(pickedFile.path);
-            break;
-        }
-      });
+      if (pickedFile != null) {
+        setState(() {
+          switch (type) {
+            case ImageType.carPhoto:
+              _carPhoto = File(pickedFile.path);
+              break;
+            case ImageType.frontLicense:
+              _frontLicense = File(pickedFile.path);
+              break;
+            case ImageType.backLicense:
+              _backLicense = File(pickedFile.path);
+              break;
+          }
+        });
+      }
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(LocaleKeys.error_picking_image.tr()), backgroundColor: Colors.red));
     }
   }
 
@@ -330,7 +271,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
         Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
         SizedBox(height: 8),
         GestureDetector(
-          onTap: () => _showImageSourceDialog(type), // Changed to show dialog
+          onTap: () => _showImageSourceDialog(type), // Uses reusable dialog
           child: Container(
             height: 120,
             width: double.infinity,

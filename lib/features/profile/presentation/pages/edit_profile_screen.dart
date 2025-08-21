@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
@@ -13,6 +14,7 @@ import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
+import 'package:must_invest/core/utils/dialogs/image_source_dialog.dart';
 import 'package:must_invest/core/utils/dialogs/selection_bottom_sheet.dart';
 import 'package:must_invest/core/utils/widgets/adaptive_layout/custom_layout.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
@@ -139,7 +141,97 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _countryController.dispose();
     _governorateController.dispose();
     _cityController.dispose();
+    _phoneController.dispose();
     super.dispose();
+  }
+
+  // Show image source selection dialog for profile image
+  Future<void> _showProfileImageSourceDialog() async {
+    await ImageSourceDialog.show(
+      context: context,
+      title: LocaleKeys.select_image_source.tr(),
+      onSourceSelected: (ImageSourceType sourceType) {
+        _pickProfileImageFromSource(sourceType);
+      },
+    );
+  }
+
+  // Show image source selection dialog for documents
+  Future<void> _showDocumentSourceDialog(Function(PlatformFile?) onFileSelected) async {
+    await ImageSourceDialog.show(
+      context: context,
+      title: LocaleKeys.select_document_source.tr(),
+      cameraLabel: LocaleKeys.scan_document.tr(),
+      galleryLabel: LocaleKeys.choose_from_gallery.tr(),
+      onSourceSelected: (ImageSourceType sourceType) {
+        _pickDocumentFromSource(sourceType, onFileSelected);
+      },
+    );
+  }
+
+  // Handle profile image picking from different sources
+  Future<void> _pickProfileImageFromSource(ImageSourceType sourceType) async {
+    try {
+      if (sourceType == ImageSourceType.camera) {
+        final ImagePicker picker = ImagePicker();
+        final XFile? image = await picker.pickImage(
+          source: ImageSource.camera,
+          imageQuality: 85,
+          maxWidth: 1024,
+          maxHeight: 1024,
+        );
+        if (image != null) {
+          final bytes = await image.readAsBytes();
+          final platformFile = PlatformFile(name: image.name, size: bytes.length, bytes: bytes, path: image.path);
+          setState(() {
+            profileImage = platformFile;
+          });
+        }
+      } else {
+        final result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
+        if (result != null && result.files.isNotEmpty) {
+          setState(() {
+            profileImage = result.files.first;
+          });
+        }
+      }
+    } catch (e) {
+      showErrorToast(context, LocaleKeys.error_picking_image.tr());
+      log('Error picking profile image: $e');
+    }
+  }
+
+  // Handle document picking from different sources
+  Future<void> _pickDocumentFromSource(ImageSourceType sourceType, Function(PlatformFile?) onFileSelected) async {
+    try {
+      if (sourceType == ImageSourceType.camera) {
+        final ImagePicker picker = ImagePicker();
+        final XFile? image = await picker.pickImage(
+          source: ImageSource.camera,
+          imageQuality: 90,
+          maxWidth: 2048,
+          maxHeight: 2048,
+        );
+        if (image != null) {
+          final bytes = await image.readAsBytes();
+          final platformFile = PlatformFile(
+            name: '${DateTime.now().millisecondsSinceEpoch}_document.jpg',
+            size: bytes.length,
+            bytes: bytes,
+            path: image.path,
+          );
+          onFileSelected(platformFile);
+        }
+      } else {
+        final result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
+        if (result != null && result.files.isNotEmpty) {
+          onFileSelected(result.files.first);
+        }
+      }
+    } catch (e) {
+      showErrorToast(context, LocaleKeys.error_picking_document.tr());
+      log('Error picking document: $e');
+    }
   }
 
   Widget _buildImageUploadCard({
@@ -336,13 +428,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 
-  Future<void> _pickFile(Function(PlatformFile?) onFileSelected) async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
-    if (result != null && result.files.isNotEmpty) {
-      onFileSelected(result.files.first);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -352,7 +437,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         spacerHeight: 35,
         topPadding: 70,
         contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-
         upperContent: Container(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -373,7 +457,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ],
           ),
         ),
-
         children: [
           Form(
             key: _formKey,
@@ -390,9 +473,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         initialImage: context.user.image,
                         pickedImage: profileImage,
                         onPick: (file) {
-                          setState(() {
-                            profileImage = file;
-                          });
+                          // Use the reusable dialog instead of direct file picking
+                          _showProfileImageSourceDialog();
                         },
                       ),
                     ),
@@ -418,7 +500,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       margin: 0,
                       hint: LocaleKeys.phone_number.tr(),
                       title: LocaleKeys.phone_number.tr(),
-
                       // Add autofill hints for phone number
                       // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
                       onChanged: (phone) {
@@ -601,7 +682,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       existingImageUrl: context.user.nationalId?.front,
                       icon: Icons.credit_card,
                       onTap:
-                          () => _pickFile((file) {
+                          () => _showDocumentSourceDialog((file) {
                             setState(() {
                               nationalIdFront = file;
                             });
@@ -616,7 +697,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       existingImageUrl: context.user.nationalId?.back,
                       icon: Icons.credit_card,
                       onTap:
-                          () => _pickFile((file) {
+                          () => _showDocumentSourceDialog((file) {
                             setState(() {
                               nationalIdBack = file;
                             });
@@ -631,12 +712,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       existingImageUrl: context.user.drivingLicense?.front,
                       icon: Icons.drive_eta,
                       onTap:
-                          () => _pickFile((file) {
+                          () => _showDocumentSourceDialog((file) {
                             setState(() {
                               drivingLicenseFront = file;
                             });
                           }),
                     ),
+                    // 12.gap,
+
+                    // _buildImageUploadCard(
+                    //   title: LocaleKeys.driving_license_back.tr(),
+                    //   subtitle: LocaleKeys.upload_back_side_driving_license.tr(),
+                    //   currentFile: drivingLicenseBack,
+                    //   existingImageUrl: context.user.drivingLicense?.back,
+                    //   icon: Icons.drive_eta,
+                    //   onTap: () => _showDocumentSourceDialog((file) {
+                    //     setState(() {
+                    //       drivingLicenseBack = file;
+                    //     });
+                    //   }),
+                    // ),
                     12.gap,
                   ],
                 ),

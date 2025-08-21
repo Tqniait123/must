@@ -1300,5 +1300,12 @@ abstract class  LocaleKeys {
   static const total_files_size = 'total_files_size';
   static const error_creating_form_data = 'error_creating_form_data';
   static const city_is_required = 'city_is_required';
+  static const select_document_source = 'select_document_source';
+  static const scan_document = 'scan_document';
+  static const choose_from_gallery = 'choose_from_gallery';
+  static const error_picking_image = 'error_picking_image';
+  static const error_picking_document = 'error_picking_document';
+  static const driving_license_back = 'driving_license_back';
+  static const upload_back_side_driving_license = 'upload_back_side_driving_license';
 
 }
