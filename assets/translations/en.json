@@ -1335,7 +1335,10 @@
   "analyzing_behavioral_data": "Analyzing behavioral data...",
   "computing_personalized_insights": "Computing personalized insights...",
   "optimizing_recommendations": "Optimizing recommendations...",
-  "route_loading_message": "Finding the best route..."
+  "route_loading_message": "Finding the best route...",
+  "select_image_source": "Select Image Source",
+  "camera": "Camera",
+  "gallery": "Gallery"
 
 
 

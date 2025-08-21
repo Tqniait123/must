@@ -360,6 +360,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomBackButton(),
+              20.gap,
               Center(child: LogoWidget(type: LogoType.svg)),
               27.gap,
               Text(

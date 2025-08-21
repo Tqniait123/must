@@ -1298,7 +1298,10 @@ class CodegenLoader extends AssetLoader{
   "analyzing_behavioral_data": "Analyzing behavioral data...",
   "computing_personalized_insights": "Computing personalized insights...",
   "optimizing_recommendations": "Optimizing recommendations...",
-  "route_loading_message": "Finding the best route..."
+  "route_loading_message": "Finding the best route...",
+  "select_image_source": "Select Image Source",
+  "camera": "Camera",
+  "gallery": "Gallery"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2584,7 +2587,10 @@ static const Map<String,dynamic> _ar = {
   "analyzing_behavioral_data": "تحليل البيانات السلوكية...",
   "computing_personalized_insights": "حوسبة الرؤى الشخصية...",
   "optimizing_recommendations": "تحسين التوصيات...",
-  "route_loading_message": "جاري تحديد أفضل مسار..."
+  "route_loading_message": "جاري تحديد أفضل مسار...",
+  "select_image_source": "اختر مصدر الصورة",
+  "camera": "الكاميرا",
+  "gallery": "المعرض"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

@@ -1279,5 +1279,8 @@ abstract class  LocaleKeys {
   static const computing_personalized_insights = 'computing_personalized_insights';
   static const optimizing_recommendations = 'optimizing_recommendations';
   static const route_loading_message = 'route_loading_message';
+  static const select_image_source = 'select_image_source';
+  static const camera = 'camera';
+  static const gallery = 'gallery';
 
 }

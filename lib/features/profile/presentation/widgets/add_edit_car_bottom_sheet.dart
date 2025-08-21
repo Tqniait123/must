@@ -80,13 +80,64 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _pickImage(ImageType type) async {
-    final pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1920,
-      maxHeight: 1080,
-      imageQuality: 85,
+  // Show image source selection dialog
+  Future<void> _showImageSourceDialog(ImageType type) async {
+    await showDialog<ImageSource>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(
+              LocaleKeys.select_image_source.tr(), // Add this key to your locale_keys.g.dart
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(Icons.camera_alt, color: AppColors.primary),
+                  ),
+                  title: Text(LocaleKeys.camera.tr()), // Add this key
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(type, ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(Icons.photo_library, color: AppColors.primary),
+                  ),
+                  title: Text(LocaleKeys.gallery.tr()), // Add this key
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(type, ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(LocaleKeys.cancel.tr(), style: TextStyle(color: Colors.grey[600])),
+              ),
+            ],
+          ),
     );
+  }
+
+  Future<void> _pickImage(ImageType type, ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source, maxWidth: 1920, maxHeight: 1080, imageQuality: 85);
 
     if (pickedFile != null) {
       setState(() {
@@ -249,7 +300,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
         Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
         SizedBox(height: 8),
         GestureDetector(
-          onTap: () => _pickImage(type),
+          onTap: () => _showImageSourceDialog(type), // Changed to show dialog
           child: Container(
             height: 120,
             width: double.infinity,

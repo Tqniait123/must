@@ -1337,7 +1337,10 @@
   "analyzing_behavioral_data": "تحليل البيانات السلوكية...",
   "computing_personalized_insights": "حوسبة الرؤى الشخصية...",
   "optimizing_recommendations": "تحسين التوصيات...",
-  "route_loading_message": "جاري تحديد أفضل مسار..."
+  "route_loading_message": "جاري تحديد أفضل مسار...",
+  "select_image_source": "اختر مصدر الصورة",
+  "camera": "الكاميرا",
+  "gallery": "المعرض"
 
 
 
