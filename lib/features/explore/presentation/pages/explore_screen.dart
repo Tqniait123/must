@@ -42,6 +42,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   String _searchQuery = '';
 
   final List<Map<String, dynamic>> _filters = [
+    {'sortBy': SortBy.all, 'title': LocaleKeys.all.tr()},
     {'sortBy': SortBy.mostPopular, 'title': LocaleKeys.most_popular.tr()},
     {'sortBy': SortBy.mostWanted, 'title': LocaleKeys.most_wanted.tr()},
     {'sortBy': SortBy.nearest, 'title': LocaleKeys.nearst.tr()},
@@ -81,6 +82,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
   // Create filter based on current sort selection
   FilterModel _createCurrentFilter() {
     switch (_selectedSortBy) {
+      case SortBy.all:
+        return FilterModel.all();
       case SortBy.nearest:
         if (_currentPosition != null) {
           return FilterModel.nearest(lat: _currentPosition!.latitude, lng: _currentPosition!.longitude);
@@ -256,6 +259,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              10.gap,
               // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,7 +269,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
                 ],
               ),
-              40.gap,
+              20.gap,
 
               // Search Field
               CustomTextFormField(

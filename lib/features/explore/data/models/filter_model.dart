@@ -1,4 +1,5 @@
 enum SortBy {
+  all,
   nearest,
   mostPopular,
   mostWanted;
@@ -17,6 +18,8 @@ enum SortBy {
 
   Map<String, String> toJson() {
     switch (this) {
+      case SortBy.all:
+        return {};
       case SortBy.mostPopular:
         return {'most_popular': '1', 'most_wanted': '0'};
       case SortBy.mostWanted:
@@ -77,6 +80,10 @@ class FilterModel {
     );
   }
 
+  // Helper for all
+  factory FilterModel.all({bool byUserCity = false}) {
+    return FilterModel(sortBy: SortBy.all, byUserCity: byUserCity);
+  }
   // Helper method to create nearest filter with required coordinates
   factory FilterModel.nearest({required double lat, required double lng, bool byUserCity = false}) {
     return FilterModel(sortBy: SortBy.nearest, lat: lat, lng: lng, byUserCity: byUserCity);
@@ -94,5 +101,15 @@ class FilterModel {
   // Helper method to create filter with just byUserCity
   factory FilterModel.byUserCity() {
     return FilterModel(byUserCity: true);
+  }
+
+  // Helper method to create filter with just name
+  factory FilterModel.withName(String name) {
+    return FilterModel(name: name);
+  }
+
+  @override
+  String toString() {
+    return 'FilterModel{sortBy: $sortBy, lat: $lat, lng: $lng, byUserCity: $byUserCity}';
   }
 }
