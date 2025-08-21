@@ -1307,5 +1307,8 @@ abstract class  LocaleKeys {
   static const error_picking_document = 'error_picking_document';
   static const driving_license_back = 'driving_license_back';
   static const upload_back_side_driving_license = 'upload_back_side_driving_license';
+  static const remove = 'remove';
+  static const remove_image = 'remove_image';
+  static const are_you_sure_you_want_to_remove_this_image = 'are_you_sure_you_want_to_remove_this_image';
 
 }

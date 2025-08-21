@@ -1326,7 +1326,10 @@ class CodegenLoader extends AssetLoader{
   "error_picking_image": "Error picking image",
   "error_picking_document": "Error picking document",
   "driving_license_back": "Driving License Back",
-  "upload_back_side_driving_license": "Upload Back Side of Driving License"
+  "upload_back_side_driving_license": "Upload Back Side of Driving License",
+  "remove": "Remove",
+  "remove_image": "Remove Image",
+  "are_you_sure_you_want_to_remove_this_image": "Are you sure you want to remove this image?"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2640,7 +2643,10 @@ static const Map<String,dynamic> _ar = {
   "error_picking_image": "حدث خطأ أثناء اختيار الصورة",
   "error_picking_document": "حدث خطأ أثناء اختيار المستند",
   "driving_license_back": "الجانب الخلفي لرخصة القيادة",
-  "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة"
+  "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة",
+  "remove": "ازالة",
+  "remove_image": "إزالة الصورة",
+  "are_you_sure_you_want_to_remove_this_image": "هل أنت متأكد أنك تريد إزالة هذه الصورة؟"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

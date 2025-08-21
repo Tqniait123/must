@@ -1365,7 +1365,10 @@
   "error_picking_image": "حدث خطأ أثناء اختيار الصورة",
   "error_picking_document": "حدث خطأ أثناء اختيار المستند",
   "driving_license_back": "الجانب الخلفي لرخصة القيادة",
-  "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة"
+  "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة",
+  "remove": "ازالة",
+  "remove_image": "إزالة الصورة",
+  "are_you_sure_you_want_to_remove_this_image": "هل أنت متأكد أنك تريد إزالة هذه الصورة؟"
 
 
 

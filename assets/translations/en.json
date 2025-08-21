@@ -1365,7 +1365,11 @@
   "error_picking_image": "Error picking image",
   "error_picking_document": "Error picking document",
   "driving_license_back": "Driving License Back",
-  "upload_back_side_driving_license": "Upload Back Side of Driving License"
+  "upload_back_side_driving_license": "Upload Back Side of Driving License",
+  "remove": "Remove",
+"remove_image": "Remove Image",
+"are_you_sure_you_want_to_remove_this_image": "Are you sure you want to remove this image?"
+
 
 
 

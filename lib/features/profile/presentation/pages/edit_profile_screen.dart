@@ -285,127 +285,354 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ],
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Icon Container with Enhanced Design
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    gradient:
-                        hasAnyImage
-                            ? LinearGradient(
-                              colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                            : LinearGradient(
-                              colors: [Colors.grey[100]!, Colors.grey[50]!],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow:
-                        hasAnyImage
-                            ? [
-                              BoxShadow(
-                                color: AppColors.primary.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                            : null,
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      hasAnyImage ? Icons.check_circle_rounded : icon,
-                      key: ValueKey(hasAnyImage),
-                      color: hasAnyImage ? Colors.white : Colors.grey[600],
-                      size: 26,
+                Row(
+                  children: [
+                    // Icon Container with Enhanced Design
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        gradient:
+                            hasAnyImage
+                                ? LinearGradient(
+                                  colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                : LinearGradient(
+                                  colors: [Colors.grey[100]!, Colors.grey[50]!],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow:
+                            hasAnyImage
+                                ? [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                                : null,
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: Icon(
+                          hasAnyImage ? Icons.check_circle_rounded : icon,
+                          key: ValueKey(hasAnyImage),
+                          color: hasAnyImage ? Colors.white : Colors.grey[600],
+                          size: 26,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(width: 16),
+                    const SizedBox(width: 16),
 
-                // Content Section
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-                        style: context.textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: hasAnyImage ? AppColors.primary : Colors.black87,
-                          height: 1.2,
-                        ),
-                        child: Text(title),
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: Text(
-                          _getImageDisplayText(currentFile, existingImageUrl, subtitle),
-                          key: ValueKey('${isSelected}_$hasExistingImage'),
-                          style: context.textTheme.bodySmall!.copyWith(
-                            color: hasAnyImage ? AppColors.primary.withOpacity(0.7) : Colors.grey[600],
-                            height: 1.3,
+                    // Content Section
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnimatedDefaultTextStyle(
+                            duration: const Duration(milliseconds: 200),
+                            style: context.textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: hasAnyImage ? AppColors.primary : Colors.black87,
+                              height: 1.2,
+                            ),
+                            child: Text(title),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
 
-                      // Progress indicator for selected state
-                      if (hasAnyImage) ...[
-                        const SizedBox(height: 8),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height: 3,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(2), color: Colors.grey[200]),
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: 1.0,
-                            child: Container(
+                          const SizedBox(height: 6),
+
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: Text(
+                              _getImageDisplayText(currentFile, existingImageUrl, subtitle),
+                              key: ValueKey('${isSelected}_$hasExistingImage'),
+                              style: context.textTheme.bodySmall!.copyWith(
+                                color: hasAnyImage ? AppColors.primary.withOpacity(0.7) : Colors.grey[600],
+                                height: 1.3,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+
+                          // Progress indicator for selected state
+                          if (hasAnyImage) ...[
+                            const SizedBox(height: 8),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              height: 3,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(2),
-                                gradient: LinearGradient(
-                                  colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+                                color: Colors.grey[200],
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: 1.0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(2),
+                                    gradient: LinearGradient(
+                                      colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
+                          ],
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    // Action Icon
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: hasAnyImage ? AppColors.primary.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        hasAnyImage ? Icons.edit_rounded : Icons.cloud_upload_rounded,
+                        color: hasAnyImage ? AppColors.primary : Colors.grey[500],
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Image Preview Section
+                if (hasAnyImage) ...[
+                  const SizedBox(height: 16),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2)),
                       ],
-                    ],
-                  ),
-                ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(11),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // Image Display
+                          _buildImagePreview(currentFile, existingImageUrl),
 
-                const SizedBox(width: 12),
-
-                // Action Icon
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: hasAnyImage ? AppColors.primary.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                          // Overlay with action buttons
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // View Full Size Button
+                                GestureDetector(
+                                  onTap: () => _showImagePreviewDialog(currentFile, existingImageUrl, title),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.6),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Icon(Icons.zoom_in_rounded, color: Colors.white, size: 16),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                // Remove Button
+                                GestureDetector(
+                                  onTap: () => _removeImage(currentFile, existingImageUrl),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.withOpacity(0.8),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Icon(
-                    hasAnyImage ? Icons.edit_rounded : Icons.cloud_upload_rounded,
-                    color: hasAnyImage ? AppColors.primary : Colors.grey[500],
-                    size: 20,
-                  ),
-                ),
+                ],
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  // Helper method to build image preview
+  Widget _buildImagePreview(PlatformFile? currentFile, String? existingImageUrl) {
+    if (currentFile != null && currentFile.bytes != null) {
+      // Show newly picked image
+      return Image.memory(
+        currentFile.bytes!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(color: Colors.grey[200], child: const Center(child: Icon(Icons.error, color: Colors.red)));
+        },
+      );
+    } else if (existingImageUrl != null && existingImageUrl.isNotEmpty) {
+      // Show existing image from URL
+      return Image.network(
+        existingImageUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: Colors.grey[200],
+            child: Center(
+              child: CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                        : null,
+                color: AppColors.primary,
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return Container(color: Colors.grey[200], child: const Center(child: Icon(Icons.error, color: Colors.red)));
+        },
+      );
+    }
+
+    return Container(color: Colors.grey[200], child: const Center(child: Icon(Icons.image, color: Colors.grey)));
+  }
+
+  // Method to show full-size image preview
+  void _showImagePreviewDialog(PlatformFile? currentFile, String? existingImageUrl, String title) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Stack(
+              children: [
+                // Background
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.8),
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+                // Image
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: InteractiveViewer(
+                        panEnabled: true,
+                        boundaryMargin: const EdgeInsets.all(20),
+                        minScale: 0.5,
+                        maxScale: 4.0,
+                        child: _buildImagePreview(currentFile, existingImageUrl),
+                      ),
+                    ),
+                  ),
+                ),
+                // Close button
+                Positioned(
+                  top: 40,
+                  right: 20,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.close, color: Colors.white, size: 24),
+                    ),
+                  ),
+                ),
+                // Title
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      title,
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  // Method to remove image
+  void _removeImage(PlatformFile? currentFile, String? existingImageUrl) {
+    // Determine which type of image to remove based on the parameters
+    // You'll need to modify this based on which image is being removed
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(LocaleKeys.remove_image.tr()),
+            content: Text(LocaleKeys.are_you_sure_you_want_to_remove_this_image.tr()),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.cancel.tr())),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    // Remove the specific image based on which one was clicked
+                    // You might need to pass additional parameters to identify which image to remove
+                    if (currentFile == nationalIdFront) {
+                      nationalIdFront = null;
+                    } else if (currentFile == nationalIdBack) {
+                      nationalIdBack = null;
+                    } else if (currentFile == drivingLicenseFront) {
+                      drivingLicenseFront = null;
+                    } else if (currentFile == drivingLicenseBack) {
+                      drivingLicenseBack = null;
+                    }
+                  });
+                },
+                child: Text(LocaleKeys.remove.tr(), style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
     );
   }
 
@@ -484,6 +711,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     CustomTextFormField(
                       controller: _nameController,
                       margin: 0,
+                      isRequired: true,
                       hint: LocaleKeys.full_name.tr(),
                       title: LocaleKeys.full_name.tr(),
                       // validator: (value) {
