@@ -1368,7 +1368,20 @@
   "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة",
   "remove": "ازالة",
   "remove_image": "إزالة الصورة",
-  "are_you_sure_you_want_to_remove_this_image": "هل أنت متأكد أنك تريد إزالة هذه الصورة؟"
+  "are_you_sure_you_want_to_remove_this_image": "هل أنت متأكد أنك تريد إزالة هذه الصورة؟",
+  "certified_employee": "موظف معتمد",
+  "qr_scan_failed": "فشل في قراءة الـ QR",
+  "error_processing_code": "حدث خطأ أثناء معالجة الكود",
+  "ensure_qr_clarity": "تأكد من وضوح الـ QR كود",
+  "ensure_good_lighting": "تأكد من إضاءة جيدة",
+  "adjust_distance": "اقترب أو ابتعد قليلاً عن الكود",
+  "check_qr_type": "تأكد من صحة نوع الـ QR كود",
+  "employee_car_entry_confirmed": "الموظف: تم تأكيد دخول العربية",
+  "car_owner": "صاحب العربية",
+  "car_id_database": "Car ID للداتابيز",
+  "user_id_database": "User ID للداتابيز",
+  "user_employee_confirmed": "اليوزر: تم تأكيد الموظف",
+  "employee_id_database": "Employee ID للداتابيز"
 
 
 

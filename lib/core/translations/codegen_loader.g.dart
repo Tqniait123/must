@@ -1329,7 +1329,20 @@ class CodegenLoader extends AssetLoader{
   "upload_back_side_driving_license": "Upload Back Side of Driving License",
   "remove": "Remove",
   "remove_image": "Remove Image",
-  "are_you_sure_you_want_to_remove_this_image": "Are you sure you want to remove this image?"
+  "are_you_sure_you_want_to_remove_this_image": "Are you sure you want to remove this image?",
+  "certified_employee": "Certified Employee",
+  "qr_scan_failed": "QR Scan Failed",
+  "error_processing_code": "Error occurred while processing the code",
+  "ensure_qr_clarity": "Ensure QR code clarity",
+  "ensure_good_lighting": "Ensure good lighting",
+  "adjust_distance": "Move closer or farther from the code",
+  "check_qr_type": "Check QR code type validity",
+  "employee_car_entry_confirmed": "Employee: Car entry confirmed",
+  "car_owner": "Car Owner",
+  "car_id_database": "Car ID for database",
+  "user_id_database": "User ID for database",
+  "user_employee_confirmed": "User: Employee confirmed",
+  "employee_id_database": "Employee ID for database"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2646,7 +2659,20 @@ static const Map<String,dynamic> _ar = {
   "upload_back_side_driving_license": "قم برفع الجانب الخلفي لرخصة القيادة",
   "remove": "ازالة",
   "remove_image": "إزالة الصورة",
-  "are_you_sure_you_want_to_remove_this_image": "هل أنت متأكد أنك تريد إزالة هذه الصورة؟"
+  "are_you_sure_you_want_to_remove_this_image": "هل أنت متأكد أنك تريد إزالة هذه الصورة؟",
+  "certified_employee": "موظف معتمد",
+  "qr_scan_failed": "فشل في قراءة الـ QR",
+  "error_processing_code": "حدث خطأ أثناء معالجة الكود",
+  "ensure_qr_clarity": "تأكد من وضوح الـ QR كود",
+  "ensure_good_lighting": "تأكد من إضاءة جيدة",
+  "adjust_distance": "اقترب أو ابتعد قليلاً عن الكود",
+  "check_qr_type": "تأكد من صحة نوع الـ QR كود",
+  "employee_car_entry_confirmed": "الموظف: تم تأكيد دخول العربية",
+  "car_owner": "صاحب العربية",
+  "car_id_database": "Car ID للداتابيز",
+  "user_id_database": "User ID للداتابيز",
+  "user_employee_confirmed": "اليوزر: تم تأكيد الموظف",
+  "employee_id_database": "Employee ID للداتابيز"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

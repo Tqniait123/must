@@ -1368,7 +1368,21 @@
   "upload_back_side_driving_license": "Upload Back Side of Driving License",
   "remove": "Remove",
 "remove_image": "Remove Image",
-"are_you_sure_you_want_to_remove_this_image": "Are you sure you want to remove this image?"
+"are_you_sure_you_want_to_remove_this_image": "Are you sure you want to remove this image?",
+  "certified_employee": "Certified Employee",
+  "qr_scan_failed": "QR Scan Failed",
+  "error_processing_code": "Error occurred while processing the code",
+  "ensure_qr_clarity": "Ensure QR code clarity",
+  "ensure_good_lighting": "Ensure good lighting",
+  "adjust_distance": "Move closer or farther from the code",
+  "check_qr_type": "Check QR code type validity",
+  "employee_car_entry_confirmed": "Employee: Car entry confirmed",
+  "car_owner": "Car Owner",
+  "car_id_database": "Car ID for database",
+  "user_id_database": "User ID for database",
+  "user_employee_confirmed": "User: Employee confirmed",
+  "employee_id_database": "Employee ID for database"
+
 
 
 

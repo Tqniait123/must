@@ -236,9 +236,14 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                           16.gap,
 
                           // User Information Cards
-                          _buildModernInfoCard('اسم العميل', userData.userName, Icons.person, Colors.blue),
+                          _buildModernInfoCard(
+                            LocaleKeys.customer_name.tr(),
+                            userData.userName,
+                            Icons.person,
+                            Colors.blue,
+                          ),
                           8.gap,
-                          _buildModernInfoCard('ID العميل', userData.userId, Icons.badge, Colors.blue),
+                          _buildModernInfoCard(LocaleKeys.customer_id.tr(), userData.userId, Icons.badge, Colors.blue),
                           24.gap,
 
                           // Car Information Section
@@ -265,7 +270,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                 ),
                                 12.gap,
                                 Text(
-                                  'بيانات العربية',
+                                  LocaleKeys.car_data.tr(),
                                   style: context.titleMedium.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -273,19 +278,29 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                           ),
                           16.gap,
 
-                          _buildModernInfoCard('نوع العربية', userData.carName, Icons.car_rental, Colors.green),
+                          _buildModernInfoCard(
+                            LocaleKeys.car_type.tr(),
+                            userData.carName,
+                            Icons.car_rental,
+                            Colors.green,
+                          ),
                           8.gap,
                           _buildModernInfoCard(
-                            'رقم اللوحة',
+                            LocaleKeys.plate_number.tr(),
                             userData.metalPlate,
                             Icons.confirmation_number,
                             Colors.green,
                           ),
                           8.gap,
-                          _buildModernInfoCard('ID العربية', userData.carId, Icons.key, Colors.green),
+                          _buildModernInfoCard(LocaleKeys.car_id.tr(), userData.carId, Icons.key, Colors.green),
                           if (userData.carColor != null) ...[
                             8.gap,
-                            _buildModernInfoCard('اللون', userData.carColor!, Icons.palette, Colors.green),
+                            _buildModernInfoCard(
+                              LocaleKeys.car_color.tr(),
+                              userData.carColor!,
+                              Icons.palette,
+                              Colors.green,
+                            ),
                           ],
 
                           32.gap,
@@ -311,7 +326,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                         Icon(Icons.qr_code_scanner, size: 20, color: Colors.grey[600]),
                                         8.gap,
                                         Text(
-                                          'سكان آخر',
+                                          LocaleKeys.scan_another.tr(),
                                           style: context.bodyLarge.copyWith(
                                             color: Colors.grey[600],
                                             fontWeight: FontWeight.w600,
@@ -343,7 +358,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                         Icon(Icons.check_circle, size: 20),
                                         8.gap,
                                         Text(
-                                          'تأكيد الدخول',
+                                          LocaleKeys.confirm_entry.tr(),
                                           style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -417,12 +432,12 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                 ),
                                 16.gap,
                                 Text(
-                                  'تم العثور على الموظف',
+                                  LocaleKeys.employee_found.tr(),
                                   style: context.titleLarge.copyWith(fontWeight: FontWeight.bold, color: Colors.green),
                                 ),
                                 8.gap,
                                 Text(
-                                  'بيانات موظف الاستقبال',
+                                  LocaleKeys.reception_employee_data.tr(),
                                   style: context.bodyMedium.copyWith(color: Colors.grey[600]),
                                 ),
                               ],
@@ -454,7 +469,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                 ),
                                 12.gap,
                                 Text(
-                                  'موظف معتمد',
+                                  LocaleKeys.certified_employee.tr(),
                                   style: context.titleMedium.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
                                 ),
                                 Spacer(),
@@ -465,7 +480,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    'موثق',
+                                    LocaleKeys.verified.tr(),
                                     style: context.bodySmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -475,9 +490,19 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                           16.gap,
 
                           // Employee Information
-                          _buildModernInfoCard('اسم الموظف', employeeData.employeeName, Icons.person, Colors.green),
+                          _buildModernInfoCard(
+                            LocaleKeys.employee_name.tr(),
+                            employeeData.employeeName,
+                            Icons.person,
+                            Colors.green,
+                          ),
                           8.gap,
-                          _buildModernInfoCard('ID الموظف', employeeData.employeeId, Icons.badge, Colors.green),
+                          _buildModernInfoCard(
+                            LocaleKeys.employee_id.tr(),
+                            employeeData.employeeId,
+                            Icons.badge,
+                            Colors.green,
+                          ),
                           24.gap,
 
                           // Work Information Section
@@ -501,7 +526,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                 ),
                                 12.gap,
                                 Text(
-                                  'بيانات العمل',
+                                  LocaleKeys.work_data.tr(),
                                   style: context.titleMedium.copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -510,13 +535,18 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                           16.gap,
 
                           _buildModernInfoCard(
-                            'مكان الركن',
+                            LocaleKeys.parking_location.tr(),
                             employeeData.parkingLocation,
                             Icons.location_on,
                             Colors.blue,
                           ),
                           8.gap,
-                          _buildModernInfoCard('وردية العمل', employeeData.shiftTime, Icons.access_time, Colors.blue),
+                          _buildModernInfoCard(
+                            LocaleKeys.work_shift.tr(),
+                            employeeData.shiftTime,
+                            Icons.access_time,
+                            Colors.blue,
+                          ),
                           16.gap,
 
                           // Scan Time Info
@@ -547,7 +577,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'وقت السكان',
+                                        LocaleKeys.scan_time.tr(),
                                         style: context.bodySmall.copyWith(
                                           color: Colors.purple,
                                           fontWeight: FontWeight.bold,
@@ -591,7 +621,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                         Icon(Icons.qr_code_scanner, size: 20, color: Colors.grey[600]),
                                         8.gap,
                                         Text(
-                                          'سكان آخر',
+                                          LocaleKeys.scan_another.tr(),
                                           style: context.bodyLarge.copyWith(
                                             color: Colors.grey[600],
                                             fontWeight: FontWeight.w600,
@@ -628,7 +658,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                                 ),
                                               );
                                             },
-                                            title: 'تأكيد',
+                                            title: LocaleKeys.confirm.tr(),
                                           ),
                                         ),
                                   ),
@@ -693,13 +723,13 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                           16.gap,
 
                           Text(
-                            'فشل في قراءة الـ QR',
+                            LocaleKeys.qr_scan_failed.tr(),
                             style: context.titleLarge.copyWith(fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           8.gap,
 
                           Text(
-                            'حدث خطأ أثناء معالجة الكود',
+                            LocaleKeys.error_processing_code.tr(),
                             style: context.bodyMedium.copyWith(color: Colors.grey[600]),
                           ),
                           24.gap,
@@ -720,7 +750,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                     Icon(Icons.info_outline, color: Colors.red, size: 20),
                                     8.gap,
                                     Text(
-                                      'تفاصيل الخطأ',
+                                      LocaleKeys.error_details.tr(),
                                       style: context.bodyMedium.copyWith(
                                         color: Colors.red,
                                         fontWeight: FontWeight.bold,
@@ -756,7 +786,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                     Icon(Icons.lightbulb_outline, color: Colors.blue, size: 20),
                                     8.gap,
                                     Text(
-                                      'نصائح',
+                                      LocaleKeys.tips.tr(),
                                       style: context.bodyMedium.copyWith(
                                         color: Colors.blue,
                                         fontWeight: FontWeight.bold,
@@ -765,10 +795,10 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                   ],
                                 ),
                                 12.gap,
-                                _buildSuggestionItem('تأكد من وضوح الـ QR كود'),
-                                _buildSuggestionItem('تأكد من إضاءة جيدة'),
-                                _buildSuggestionItem('اقترب أو ابتعد قليلاً عن الكود'),
-                                _buildSuggestionItem('تأكد من صحة نوع الـ QR كود'),
+                                _buildSuggestionItem(LocaleKeys.ensure_qr_clarity.tr()),
+                                _buildSuggestionItem(LocaleKeys.ensure_good_lighting.tr()),
+                                _buildSuggestionItem(LocaleKeys.adjust_distance.tr()),
+                                _buildSuggestionItem(LocaleKeys.check_qr_type.tr()),
                               ],
                             ),
                           ),
@@ -911,40 +941,40 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
     );
   }
 
-  // معالجة دخول عربية اليوزر (للموظف)
+  // Handle user car entry (for employee)
   void _handleUserCarEntry(UserQrData userData) {
-    // هنا الموظف يحفظ بيانات دخول العربية في الداتابيز
-    print('🚗 الموظف: تم تأكيد دخول العربية');
-    print('- صاحب العربية: ${userData.userName}');
-    print('- نوع العربية: ${userData.carName}');
-    print('- رقم اللوحة: ${userData.metalPlate}');
-    print('- Car ID للداتابيز: ${userData.carId}');
-    print('- User ID للداتابيز: ${userData.userId}');
+    // Employee saves car entry data to database
+    print('🚗 ${LocaleKeys.employee_car_entry_confirmed.tr()}');
+    print('- ${LocaleKeys.car_owner.tr()}: ${userData.userName}');
+    print('- ${LocaleKeys.car_type.tr()}: ${userData.carName}');
+    print('- ${LocaleKeys.plate_number.tr()}: ${userData.metalPlate}');
+    print('- ${LocaleKeys.car_id_database.tr()}: ${userData.carId}');
+    print('- ${LocaleKeys.user_id_database.tr()}: ${userData.userId}');
 
     _showSuccessBottomSheet(
-      title: 'تم تسجيل الدخول بنجاح!',
-      message: 'تم تسجيل دخول عربية ${userData.carName} بنجاح',
+      title: LocaleKeys.entry_registered_successfully.tr(),
+      message: '${LocaleKeys.car_entry_registered.tr()} ${userData.carName} ${LocaleKeys.successfully.tr()}',
       icon: Icons.check_circle,
       color: Colors.green,
     );
   }
 
-  // معالجة تأكيد الموظف (لليوزر)
+  // Handle employee confirmation (for user)
   void _handleEmployeeConfirmation(EmployeeQrData employeeData) {
-    // هنا اليوزر يبعت ID الموظف للداتابيز عشان يعرف مين دخله
-    print('👤 اليوزر: تم تأكيد الموظف');
-    print('- اسم الموظف: ${employeeData.employeeName}');
-    print('- مكان الركن: ${employeeData.parkingLocation}');
-    print('- Employee ID للداتابيز: ${employeeData.employeeId}');
+    // User sends employee ID to database to know who parked them
+    print('👤 ${LocaleKeys.user_employee_confirmed.tr()}');
+    print('- ${LocaleKeys.employee_name.tr()}: ${employeeData.employeeName}');
+    print('- ${LocaleKeys.parking_location.tr()}: ${employeeData.parkingLocation}');
+    print('- ${LocaleKeys.employee_id_database.tr()}: ${employeeData.employeeId}');
 
     _showSuccessBottomSheet(
-      title: 'تم تأكيد الموظف بنجاح!',
-      message: 'تم التأكيد مع الموظف ${employeeData.employeeName}',
+      title: LocaleKeys.employee_confirmed_successfully.tr(),
+      message: '${LocaleKeys.confirmed_with_employee.tr()} ${employeeData.employeeName}',
       icon: Icons.verified_user,
       color: Colors.green,
     );
 
-    // TODO: إرسال ID الموظف للداتابيز
+    // TODO: Send employee ID to database
     // await sendEmployeeIdToDatabase(employeeData.employeeId);
   }
 
@@ -1033,7 +1063,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'تم في',
+                                        LocaleKeys.completed_at.tr(),
                                         style: context.bodySmall.copyWith(color: color, fontWeight: FontWeight.bold),
                                       ),
                                       4.gap,
@@ -1070,7 +1100,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                   Icon(Icons.home, size: 20),
                                   8.gap,
                                   Text(
-                                    'العودة للرئيسية',
+                                    LocaleKeys.back_to_home.tr(),
                                     style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ],
@@ -1119,7 +1149,10 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomBackButton(),
-                Text(isEmployee ? 'سكان QR العميل' : 'سكان QR الموظف', style: context.titleLarge.copyWith()),
+                Text(
+                  isEmployee ? LocaleKeys.scan_customer_qr.tr() : LocaleKeys.scan_employee_qr.tr(),
+                  style: context.titleLarge.copyWith(),
+                ),
                 NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
               ],
             ).paddingHorizontal(24),
@@ -1130,7 +1163,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
             if (selectedCar != null) ...[
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                child: CarWidget.custom(
+                child: CarWidget.compact(
                   car: selectedCar!,
                   trailing: CustomIconButton(
                     height: 30,
@@ -1139,12 +1172,12 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                     iconColor: AppColors.primary,
                     iconAsset: AppIcons.changeIc,
                     onPressed: () {
-                      showAllCarsBottomSheet(context, title: LocaleKeys.select_car.tr(), onChooseCar: _onCarChanged);
+                      showAllCarsBottomSheet(context, onChooseCar: _onCarChanged);
                     },
                   ),
                 ).withPressEffect(
                   onTap: () {
-                    showAllCarsBottomSheet(context, title: LocaleKeys.select_car.tr(), onChooseCar: _onCarChanged);
+                    showAllCarsBottomSheet(context, onChooseCar: _onCarChanged);
                   },
                 ),
               ),
@@ -1174,8 +1207,8 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                       Expanded(
                         child: Text(
                           isEmployee
-                              ? 'اسكان QR العميل عشان تشوف بيانات العربية'
-                              : 'اسكان QR الموظف عشان تعرف مين دخلك',
+                              ? LocaleKeys.scan_customer_qr_instruction.tr()
+                              : LocaleKeys.scan_employee_qr_instruction.tr(),
                           style: context.bodyMedium.copyWith(
                             color: isEmployee ? Colors.green : Colors.blue,
                             fontWeight: FontWeight.w500,
@@ -1226,7 +1259,7 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                                             Icon(Icons.qr_code_scanner, color: Colors.white, size: 30),
                                             8.gap,
                                             Text(
-                                              isEmployee ? 'QR العميل' : 'QR الموظف',
+                                              isEmployee ? LocaleKeys.customer_qr.tr() : LocaleKeys.employee_qr.tr(),
                                               style: context.bodySmall.copyWith(color: Colors.white),
                                               textAlign: TextAlign.center,
                                             ),
@@ -1305,7 +1338,11 @@ class _ScanQrCodeScreenState extends State<ScanQrCodeScreen> {
                   ),
                   8.gap,
                   Text(
-                    _isScanning ? (isEmployee ? 'جاهز لسكان QR العميل' : 'جاهز لسكان QR الموظف') : 'معالجة...',
+                    _isScanning
+                        ? (isEmployee
+                            ? LocaleKeys.ready_to_scan_customer_qr.tr()
+                            : LocaleKeys.ready_to_scan_employee_qr.tr())
+                        : LocaleKeys.processing.tr(),
                     style: context.bodyMedium.copyWith(
                       color: _isScanning ? AppColors.primary : Colors.grey[600],
                       fontWeight: FontWeight.w500,

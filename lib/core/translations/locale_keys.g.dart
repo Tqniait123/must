@@ -1310,5 +1310,18 @@ abstract class  LocaleKeys {
   static const remove = 'remove';
   static const remove_image = 'remove_image';
   static const are_you_sure_you_want_to_remove_this_image = 'are_you_sure_you_want_to_remove_this_image';
+  static const certified_employee = 'certified_employee';
+  static const qr_scan_failed = 'qr_scan_failed';
+  static const error_processing_code = 'error_processing_code';
+  static const ensure_qr_clarity = 'ensure_qr_clarity';
+  static const ensure_good_lighting = 'ensure_good_lighting';
+  static const adjust_distance = 'adjust_distance';
+  static const check_qr_type = 'check_qr_type';
+  static const employee_car_entry_confirmed = 'employee_car_entry_confirmed';
+  static const car_owner = 'car_owner';
+  static const car_id_database = 'car_id_database';
+  static const user_id_database = 'user_id_database';
+  static const user_employee_confirmed = 'user_employee_confirmed';
+  static const employee_id_database = 'employee_id_database';
 
 }
