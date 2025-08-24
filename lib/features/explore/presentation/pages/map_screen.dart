@@ -15,7 +15,6 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/string_extensions.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/static/app_assets.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -598,20 +597,20 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.orange.shade100,
+                            color: Colors.orange.shade400,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: AppImages.popular.toImage(width: 12, height: 12),
+                          child: Icon(Icons.star_rounded, color: Colors.white, size: 16),
                         ),
                       if (_isMostPopular(parking) && _isMostWanted(parking)) const SizedBox(width: 4),
                       if (_isMostWanted(parking))
                         Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.purple.shade100,
+                            color: Colors.purple.shade400,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: AppImages.wanted.toImage(width: 12, height: 12),
+                          child: Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 16),
                         ),
                     ],
                   ),
@@ -622,7 +621,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
               // Parking name
               Text(
-                parking.nameEn,
+                parking.getNameByLocale(context),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -795,9 +794,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                   // Most Popular Tag
                                   if (_isMostPopular(parking))
                                     _buildTag(
-                                      image: AppImages.popular,
-                                      backgroundColor: const Color(0xFFFF6B6B),
-                                      shadowColor: const Color(0xFFFF6B6B).withOpacity(0.3),
+                                      image: Icon(Icons.star_rounded, color: Colors.white, size: 16),
+                                      backgroundColor: Colors.orange.shade400,
+                                      shadowColor: Colors.orange.shade400.withOpacity(0.3),
                                       isSelected: _selectedParking?.id == parking.id,
                                     ),
 
@@ -807,9 +806,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                   // Most Wanted Tag
                                   if (_isMostWanted(parking))
                                     _buildTag(
-                                      image: AppImages.wanted,
-                                      backgroundColor: const Color(0xFF4ECDC4),
-                                      shadowColor: const Color(0xFF4ECDC4).withOpacity(0.3),
+                                      image: Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 16),
+                                      backgroundColor: Colors.purple.shade400,
+                                      shadowColor: Colors.purple.shade400.withOpacity(0.3),
                                       isSelected: _selectedParking?.id == parking.id,
                                     ),
                                 ],
@@ -862,7 +861,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                       // Price text
                                       AnimatedDefaultTextStyle(
                                         duration: const Duration(milliseconds: 300),
-                                        style: TextStyle(
+                                        style: context.bodyMedium.copyWith(
                                           fontSize: _selectedParking?.id == parking.id ? 15 : 13,
                                           color: Colors.white,
                                           fontWeight:
@@ -875,7 +874,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                             ),
                                           ],
                                         ),
-                                        child: Text(parking.nameEn),
+                                        child: Text(parking.getNameByLocale(context)),
                                       ),
                                     ],
                                   ),
@@ -1034,7 +1033,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(parking.nameEn, style: context.titleLarge),
+                        Text(parking.getNameByLocale(context), style: context.titleLarge),
                         const SizedBox(height: 6),
                         Text(
                           parking.address,
@@ -1091,7 +1090,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            AppImages.popular.toImage(),
+                            Icon(Icons.star_rounded, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               LocaleKeys.map_tag_most_popular.tr(),
@@ -1113,7 +1112,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            AppImages.wanted.toImage(),
+                            Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               LocaleKeys.map_tag_most_wanted.tr(),
@@ -1332,7 +1331,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   // Helper method to build enhanced tags
   Widget _buildTag({
-    required String image,
+    required Icon image,
     required Color backgroundColor,
     required Color shadowColor,
     required bool isSelected,
@@ -1354,11 +1353,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
-      child: AnimatedScale(
-        duration: const Duration(milliseconds: 300),
-        scale: isSelected ? 1.05 : 1.0,
-        child: image.toImage(width: isSelected ? 16 : 14, height: isSelected ? 16 : 14),
-      ),
+      child: AnimatedScale(duration: const Duration(milliseconds: 300), scale: isSelected ? 1.05 : 1.0, child: image),
     );
   }
 }
