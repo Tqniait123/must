@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/scrolling_text.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 // Design 2: Minimalist Card with Accent (for Timer)
 class ParkingTimerCard extends StatefulWidget {
@@ -19,31 +22,139 @@ class ParkingTimerCard extends StatefulWidget {
   State<ParkingTimerCard> createState() => _ParkingTimerCardState();
 }
 
-class _ParkingTimerCardState extends State<ParkingTimerCard> {
+class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBindingObserver {
   late Timer _timer;
   String _elapsedTime = "00:00:00";
+  final List<String> _logs = [];
+  DateTime? _lastUpdateTime;
+  int _timerTickCount = 0;
+  DateTime? _appPausedTime;
+  DateTime? _appResumedTime;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _logEvent("Timer initialized with startTime: ${widget.startTime}");
+    _logEvent("Current time: ${DateTime.now()}");
+    _logEvent("Initial duration difference: ${DateTime.now().difference(widget.startTime)}");
+
     _updateElapsedTime();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _timerTickCount++;
       _updateElapsedTime();
+
+      // Log every 30 seconds to track timer behavior
+      if (_timerTickCount % 30 == 0) {
+        _logEvent("Timer tick #$_timerTickCount - Current elapsed: $_elapsedTime");
+      }
     });
+
+    _logEvent("Timer started successfully");
   }
 
   @override
   void dispose() {
+    _logEvent("Timer disposing - Final tick count: $_timerTickCount");
+    _logEvent("Final elapsed time: $_elapsedTime");
+    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.paused:
+        _appPausedTime = DateTime.now();
+        _logEvent("App paused at: $_appPausedTime");
+        _logEvent("Timer was running for: $_elapsedTime when paused");
+        break;
+      case AppLifecycleState.resumed:
+        _appResumedTime = DateTime.now();
+        if (_appPausedTime != null) {
+          final pauseDuration = _appResumedTime!.difference(_appPausedTime!);
+          _logEvent("App resumed at: $_appResumedTime");
+          _logEvent("App was paused for: ${_formatDuration(pauseDuration)}");
+          _logEvent(
+            "Expected elapsed time after resume: ${_formatDuration(DateTime.now().difference(widget.startTime))}",
+          );
+          _logEvent("Actual displayed time: $_elapsedTime");
+        }
+        // Force update after resume
+        _updateElapsedTime();
+        break;
+      case AppLifecycleState.detached:
+        _logEvent("App detached at: ${DateTime.now()}");
+        break;
+      case AppLifecycleState.inactive:
+        _logEvent("App inactive at: ${DateTime.now()}");
+        break;
+      case AppLifecycleState.hidden:
+        _logEvent("App hidden at: ${DateTime.now()}");
+        break;
+    }
+  }
+
+  void _logEvent(String event) {
+    final timestamp = DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(DateTime.now());
+    final logEntry = "[$timestamp] $event";
+    _logs.add(logEntry);
+    print("PARKING_TIMER_LOG: $logEntry"); // Also print to console
+
+    // Keep only last 500 logs to prevent memory issues
+    if (_logs.length > 500) {
+      _logs.removeRange(0, _logs.length - 500);
+    }
   }
 
   void _updateElapsedTime() {
     final now = DateTime.now();
     final elapsed = now.difference(widget.startTime);
+    final newElapsedTime = _formatDuration(elapsed);
+
+    // Check for unexpected reset
+    if (_lastUpdateTime != null) {
+      final expectedElapsed = now.difference(widget.startTime);
+      final timeSinceLastUpdate = now.difference(_lastUpdateTime!);
+
+      // If time since last update is more than 2 seconds, log it as unusual
+      if (timeSinceLastUpdate.inSeconds > 2) {
+        _logEvent("WARNING: Large gap since last update: ${_formatDuration(timeSinceLastUpdate)}");
+        _logEvent("Expected elapsed: ${_formatDuration(expectedElapsed)}");
+        _logEvent("Previous displayed time: $_elapsedTime");
+        _logEvent("New displayed time: $newElapsedTime");
+      }
+
+      // Check if time appears to have reset
+      final previousSeconds = _parseTimeToSeconds(_elapsedTime);
+      final currentSeconds = elapsed.inSeconds;
+      if (currentSeconds < previousSeconds - 5) {
+        // 5 second tolerance
+        _logEvent("CRITICAL: Timer appears to have reset!");
+        _logEvent("Previous seconds: $previousSeconds");
+        _logEvent("Current seconds: $currentSeconds");
+        _logEvent("Start time: ${widget.startTime}");
+        _logEvent("Current time: $now");
+        _logEvent("Raw difference: ${now.difference(widget.startTime)}");
+      }
+    }
+
     setState(() {
-      _elapsedTime = _formatDuration(elapsed);
+      _elapsedTime = newElapsedTime;
     });
+
+    _lastUpdateTime = now;
+  }
+
+  int _parseTimeToSeconds(String timeString) {
+    final parts = timeString.split(':');
+    if (parts.length == 3) {
+      return int.parse(parts[0]) * 3600 + int.parse(parts[1]) * 60 + int.parse(parts[2]);
+    }
+    return 0;
   }
 
   String _formatDuration(Duration duration) {
@@ -59,11 +170,54 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> {
     return now.difference(widget.startTime);
   }
 
+  Future<void> _shareLogs() async {
+    try {
+      _logEvent("User requested to share logs");
+
+      // Add device info to logs
+      final deviceInfo = [
+        "=== DEVICE INFO ===",
+        "Platform: ${Platform.operatingSystem}",
+        "Platform Version: ${Platform.operatingSystemVersion}",
+        "Start Time: ${widget.startTime}",
+        "Share Time: ${DateTime.now()}",
+        "Total Timer Ticks: $_timerTickCount",
+        "Current Elapsed: $_elapsedTime",
+        "Expected Elapsed: ${_formatDuration(DateTime.now().difference(widget.startTime))}",
+        "=== LOGS ===",
+      ];
+
+      final allLogs = [...deviceInfo, ..._logs];
+      final logContent = allLogs.join('\n');
+
+      // Create temporary file
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/parking_timer_logs_${DateTime.now().millisecondsSinceEpoch}.txt');
+      await file.writeAsString(logContent);
+
+      // Share the file
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Parking Timer Debug Logs',
+        subject: 'Parking Timer Issue Report',
+      );
+
+      _logEvent("Logs shared successfully");
+    } catch (e) {
+      _logEvent("ERROR sharing logs: $e");
+      // Fallback to sharing as text
+      final logContent = _logs.join('\n');
+      await Share.share(logContent, subject: 'Parking Timer Debug Logs');
+    }
+  }
+
   void _showPaymentBottomSheet() {
+    _logEvent("Payment bottom sheet opened");
     final elapsed = _getElapsedDuration();
     final totalMinutes = elapsed.inMinutes + 1;
     final points = totalMinutes * 5;
     final parkingDuration = _formatDuration(elapsed);
+    _logEvent("Payment calculation - Duration: $parkingDuration, Points: $points");
 
     showModalBottomSheet(
       context: context,
@@ -141,6 +295,23 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> {
                 ),
 
                 const SizedBox(height: 24),
+
+                // Share logs button for debugging
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _shareLogs();
+                    },
+                    icon: const Icon(Icons.bug_report, size: 18),
+                    label: const Text("Share Debug Logs"),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
 
                 // // Action button
                 // SizedBox(
@@ -223,6 +394,9 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> {
                             color: AppColors.primary,
                           ),
                         ),
+
+                        // 8.gap,
+                        // Small debug indicator
                       ],
                     ),
                   ],
