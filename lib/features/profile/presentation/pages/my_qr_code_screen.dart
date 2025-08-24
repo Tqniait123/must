@@ -327,9 +327,10 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 80,
+          // width: 80,
           child: Text(label, style: context.bodySmall.copyWith(color: Colors.grey[600], fontWeight: FontWeight.w500)),
         ),
+        5.gap,
         Expanded(child: Text(value, style: context.bodySmall.copyWith(color: Colors.grey[800]))),
       ],
     );

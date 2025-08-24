@@ -1352,7 +1352,8 @@ class CodegenLoader extends AssetLoader{
   "uploadNationalIdFront": "Upload National ID Front Image",
   "uploadNationalIdBack": "Upload National ID Back Image",
   "uploadDrivingLicenseFront": "Upload Driving License Front Image",
-  "verifyNow": "Verify Now"
+  "verifyNow": "Verify Now",
+  "scroll_to_see_more": "Scroll to see more"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2692,7 +2693,8 @@ static const Map<String,dynamic> _ar = {
   "uploadNationalIdFront": "رفع صورة الهوية الوطنية - الوجه الأمامي",
   "uploadNationalIdBack": "رفع صورة الهوية الوطنية - الوجه الخلفي",
   "uploadDrivingLicenseFront": "رفع صورة رخصة القيادة - الوجه الأمامي",
-  "verifyNow": "توثيق الآن"
+  "verifyNow": "توثيق الآن",
+  "scroll_to_see_more": "اسحب لاظهار المزيد"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

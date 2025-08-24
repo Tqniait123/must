@@ -151,12 +151,12 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
     _pulseController.repeat(reverse: true);
 
     // Auto-stop after 6 seconds
-    Future.delayed(const Duration(seconds: 6), () {
-      if (mounted) {
-        _bounceController.stop();
-        _pulseController.stop();
-      }
-    });
+    // Future.delayed(const Duration(seconds: 6), () {
+    //   if (mounted) {
+    //     _bounceController.stop();
+    //     _pulseController.stop();
+    //   }
+    // });
   }
 
   @override
@@ -188,7 +188,7 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(18),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                 child: Container(
@@ -240,24 +240,24 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
                           child: Icon(Icons.keyboard_double_arrow_down, color: Colors.white, size: 18),
                         ),
                         const SizedBox(height: 2),
-                        ShaderMask(
-                          shaderCallback:
-                              (bounds) => LinearGradient(
-                                colors: [
-                                  AppColors.primary.withValues(alpha: 0.9),
-                                  AppColors.primary.withValues(alpha: 0.7),
-                                ],
-                              ).createShader(bounds),
-                          child: Text(
-                            'More below',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
+                        // ShaderMask(
+                        //   shaderCallback:
+                        //       (bounds) => LinearGradient(
+                        //         colors: [
+                        //           AppColors.primary.withValues(alpha: 0.9),
+                        //           AppColors.primary.withValues(alpha: 0.7),
+                        //         ],
+                        //       ).createShader(bounds),
+                        //   child: Text(
+                        //     LocaleKeys.scroll_to_see_more.tr(),
+                        //     style: TextStyle(
+                        //       color: Colors.white,
+                        //       fontSize: 9.5,
+                        //       fontWeight: FontWeight.w600,
+                        //       letterSpacing: 0.3,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -278,88 +278,88 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
   }
 }
 
-// Performance-optimized version for lower-end devices
-class AnimatedScrollHintLite extends StatefulWidget {
-  const AnimatedScrollHintLite({super.key});
+// // Performance-optimized version for lower-end devices
+// class AnimatedScrollHintLite extends StatefulWidget {
+//   const AnimatedScrollHintLite({super.key});
 
-  @override
-  State<AnimatedScrollHintLite> createState() => _AnimatedScrollHintLiteState();
-}
+//   @override
+//   State<AnimatedScrollHintLite> createState() => _AnimatedScrollHintLiteState();
+// }
 
-class _AnimatedScrollHintLiteState extends State<AnimatedScrollHintLite> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _bounceAnimation;
-  late Animation<double> _opacityAnimation;
+// class _AnimatedScrollHintLiteState extends State<AnimatedScrollHintLite> with SingleTickerProviderStateMixin {
+//   late AnimationController _controller;
+//   late Animation<double> _bounceAnimation;
+//   late Animation<double> _opacityAnimation;
 
-  @override
-  void initState() {
-    super.initState();
+//   @override
+//   void initState() {
+//     super.initState();
 
-    _controller = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
+//     _controller = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
 
-    _bounceAnimation = Tween<double>(
-      begin: 0.0,
-      end: 8.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.7, curve: Curves.easeInOutSine)));
+//     _bounceAnimation = Tween<double>(
+//       begin: 0.0,
+//       end: 8.0,
+//     ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.7, curve: Curves.easeInOutSine)));
 
-    _opacityAnimation = Tween<double>(
-      begin: 0.4,
-      end: 0.7,
-    ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.3, 1.0, curve: Curves.easeInOut)));
+//     _opacityAnimation = Tween<double>(
+//       begin: 0.4,
+//       end: 0.7,
+//     ).animate(CurvedAnimation(parent: _controller, curve: const Interval(0.3, 1.0, curve: Curves.easeInOut)));
 
-    _controller.repeat(reverse: true);
+//     _controller.repeat(reverse: true);
 
-    Future.delayed(const Duration(seconds: 6), () {
-      if (mounted) _controller.stop();
-    });
-  }
+//     Future.delayed(const Duration(seconds: 6), () {
+//       if (mounted) _controller.stop();
+//     });
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, _bounceAnimation.value),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: AppColors.primary.withValues(alpha: 0.12),
-              border: Border.all(color: AppColors.primary.withValues(alpha: _opacityAnimation.value * 0.5), width: 0.8),
-              boxShadow: [
-                BoxShadow(color: AppColors.primary.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2)),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.keyboard_double_arrow_down,
-                  color: AppColors.primary.withValues(alpha: _opacityAnimation.value),
-                  size: 18,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'More below',
-                  style: TextStyle(
-                    color: AppColors.primary.withValues(alpha: _opacityAnimation.value),
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedBuilder(
+//       animation: _controller,
+//       builder: (context, child) {
+//         return Transform.translate(
+//           offset: Offset(0, _bounceAnimation.value),
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(20),
+//               color: AppColors.primary.withValues(alpha: 0.12),
+//               border: Border.all(color: AppColors.primary.withValues(alpha: _opacityAnimation.value * 0.5), width: 0.8),
+//               boxShadow: [
+//                 BoxShadow(color: AppColors.primary.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2)),
+//               ],
+//             ),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Icon(
+//                   Icons.keyboard_double_arrow_down,
+//                   color: AppColors.primary.withValues(alpha: _opacityAnimation.value),
+//                   size: 18,
+//                 ),
+//                 const SizedBox(height: 2),
+//                 Text(
+//                   LocaleKeys.scroll_to_see_more.tr(),
+//                   style: TextStyle(
+//                     color: AppColors.primary.withValues(alpha: _opacityAnimation.value),
+//                     fontSize: 9.5,
+//                     fontWeight: FontWeight.w600,
+//                     letterSpacing: 0.3,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-}
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+// }

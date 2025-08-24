@@ -1333,5 +1333,6 @@ abstract class  LocaleKeys {
   static const uploadNationalIdBack = 'uploadNationalIdBack';
   static const uploadDrivingLicenseFront = 'uploadDrivingLicenseFront';
   static const verifyNow = 'verifyNow';
+  static const scroll_to_see_more = 'scroll_to_see_more';
 
 }

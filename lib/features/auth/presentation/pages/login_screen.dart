@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Added for TextInput and AutofillHints
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
@@ -10,7 +10,7 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
-import 'package:must_invest/core/services/biometric_service_2.dart'; // Updated import
+import 'package:must_invest/core/services/biometric_service_2.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _code = '+20';
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final BiometricService2 _biometricService = BiometricService2(); // Updated service
+  final BiometricService2 _biometricService = BiometricService2();
   bool isRemembered = false;
 
   // UI State variables
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       // Load saved credentials if available
-      // await _loadSavedCredentials();
+      await _loadSavedCredentials();
       log('Checking biometric status...');
 
       // Check biometric status
@@ -100,12 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       log('Biometric initialization completed successfully');
-
-      /// TODO: REMOVE THIS LINE BEFORE PRODUCTION
-      ///  TO AVOID AUTO LOGIN ON APP START
-      if (mounted) {
-        // await AuthCubit.get(context).autoLogin();
-      }
     } catch (e) {
       log('Biometric initialization error: $e');
       _showError('Failed to initialize biometric authentication');
@@ -132,8 +126,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // ==================== BIOMETRIC LOGIN ====================
 
-  // Update the _performBiometricLogin method in your LoginScreen
-
   Future<void> _performBiometricLogin() async {
     try {
       final result = await _biometricService.authenticateWithResult(
@@ -143,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result.success) {
         // Use the saved credentials for login instead of form inputs
-        final loginPhone = "${result.phone}" ?? "$_code${_phoneController.text}";
+        final loginPhone = result.phone ?? "$_code${_phoneController.text}";
         final loginPassword = result.password ?? _passwordController.text;
 
         // Login successful with biometric - use saved credentials
@@ -153,8 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
         switch (result.action) {
           case AuthenticationAction.openSettings:
             await _showBiometricEnrollmentDialog();
-
-            // });
             break;
           case AuthenticationAction.usePassword:
             // Clear biometric settings and prompt for password login
@@ -179,30 +169,35 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Also update the _loadSavedCredentials method
   Future<void> _loadSavedCredentials() async {
     try {
       log('Loading saved credentials...');
+
+      // Load remembered phone first
+      final rememberedPhone = await BiometricService2.getRememberedPhone();
+      log('Remembered phone: ${rememberedPhone != null ? 'Found' : 'Not found'}');
+
+      if (rememberedPhone != null && mounted) {
+        setState(() {
+          _phoneController.text = rememberedPhone;
+          isRemembered = true;
+        });
+        log('Remembered phone loaded successfully');
+      }
+
+      // Load biometric credentials (phone only, no password)
       final savedPhone = await BiometricService2.getSavedPhone();
-      final savedPassword = await BiometricService2.getSavedPassword();
 
       log('Saved phone: ${savedPhone != null ? 'Found' : 'Not found'}');
-      log('Saved password: ${savedPassword != null ? 'Found' : 'Not found'}');
 
       if (savedPhone != null) {
+        // Remove country code if present
+        final phoneWithoutCode = savedPhone.replaceAll(RegExp(r'^\+\d{1,2}'), '');
         setState(() {
-          _phoneController.text = savedPhone;
+          _phoneController.text = phoneWithoutCode;
         });
-        log('Phone loaded successfully');
+        log('Phone loaded successfully without country code');
       }
-
-      if (savedPassword != null) {
-        setState(() {
-          _passwordController.text = savedPassword;
-        });
-        log('Password loaded successfully');
-      }
-
       log('Finished loading saved credentials');
     } catch (e) {
       log('Error loading saved credentials: $e');
@@ -229,10 +224,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _performRegularLogin() {
     if (_formKey.currentState!.validate()) {
-      // If remember me is checked, commit autofill context
+      // If remember me is checked, save phone number only
       if (isRemembered) {
+        // Save only the phone number (without password)
+        BiometricService2.saveRememberedPhone(_phoneController.text);
         TextInput.finishAutofillContext(shouldSave: true);
       } else {
+        // Clear remembered phone if unchecked
+        BiometricService2.clearRememberedPhone();
         TextInput.finishAutofillContext(shouldSave: false);
       }
 
@@ -284,8 +283,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // ==================== DIALOGS & BOTTOM SHEETS ====================
-
-  // Updated _showBiometricEnrollmentDialog method for your LoginScreen
 
   Future<void> _showBiometricEnrollmentDialog() async {
     await showModalBottomSheet(
@@ -405,7 +402,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // New method to handle device credentials authentication
   Future<void> _authenticateWithDeviceCredentials() async {
     try {
       setState(() {
@@ -500,7 +496,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showSuccess(String message) {
     if (mounted) {
-      showSuccessToast(context, message); // You might want to create a success toast method
+      showSuccessToast(context, message);
       log('Biometric success: $message');
     }
   }
@@ -518,7 +514,6 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case BiometricStatus.availableButNotEnrolled:
         await _showBiometricEnrollmentDialog();
-
         break;
       case BiometricStatus.notSupported:
         _showError('Biometric authentication is not supported on this device');
@@ -601,8 +596,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   margin: 0,
                   hint: LocaleKeys.phone_number.tr(),
                   title: LocaleKeys.phone_number.tr(),
-                  // Add autofill hints for phone number
-                  // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.telephoneNumber] : null,
                   onChanged: (phone) {
                     log('Phone number changed: $phone');
                   },
@@ -612,16 +605,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       log('Country code changed: $code');
                     });
                   },
-                  // validator: (value) {
-                  //   if (value == null || value.isEmpty) {
-                  //     return LocaleKeys.please_enter_phone_number.tr();
-                  //   }
-                  //   // Check if value contains only digits
-                  //   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                  //     return LocaleKeys.please_enter_phone_number.tr();
-                  //   }
-                  //   return null;
-                  // },
                   selectedCode: '+20',
                 ),
                 16.gap,
@@ -632,8 +615,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: LocaleKeys.password.tr(),
                   obscureText: true,
                   isPassword: true,
-                  // Add autofill hints for password
-                  // autofillHints: sl<MustInvestPreferences>().isRememberedMe() ? [AutofillHints.password] : null,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return LocaleKeys.please_enter_password.tr();
@@ -654,18 +635,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             activeColor: AppColors.secondary,
                             checkColor: AppColors.white,
                             value: isRemembered,
-                            onChanged: (value) {
+                            onChanged: (value) async {
+                              final newValue = value ?? false;
                               setState(() {
-                                isRemembered = value ?? false;
-                                // Trigger autofill context update when remember me changes
-                                if (isRemembered) {
-                                  // Enable autofill context
-                                  _enableAutofillContext();
-                                } else {
-                                  // Disable autofill context
-                                  _disableAutofillContext();
-                                }
+                                isRemembered = newValue;
                               });
+
+                              if (!newValue) {
+                                await BiometricService2.clearRememberedPhone();
+                                _disableAutofillContext();
+                              } else {
+                                _enableAutofillContext();
+                              }
                             },
                           ),
                         ),
@@ -697,6 +678,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) async {
               if (state is AuthSuccess) {
+                // Clear any previously remembered phone
+                await BiometricService2.clearRememberedPhone();
+
+                // Save new phone if remember me is checked (PHONE ONLY, NO PASSWORD)
+                if (isRemembered) {
+                  await BiometricService2.saveRememberedPhone(_phoneController.text);
+                }
+
                 // Commit autofill data on successful login if remember me is checked
                 if (isRemembered) {
                   TextInput.finishAutofillContext(shouldSave: true);
@@ -749,7 +738,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// ==================== BOTTOM SHEET WIDGETS ====================
 // ==================== BOTTOM SHEET WIDGETS ====================
 
 class _QuickLoginBottomSheet extends StatelessWidget {
@@ -1006,20 +994,6 @@ class SocialMediaButtons extends StatelessWidget {
             onPressed: () {},
           ),
         ),
-        // 20.gap,
-        // Expanded(
-        //   child: CustomElevatedButton(
-        //     heroTag: 'facebook',
-        //     height: 48,
-        //     isBordered: true,
-        //     icon: AppIcons.facebook,
-        //     iconColor: null,
-        //     textColor: AppColors.black,
-        //     backgroundColor: AppColors.white,
-        //     title: LocaleKeys.facebook.tr(),
-        //     onPressed: () {},
-        //   ),
-        // ),
       ],
     );
   }

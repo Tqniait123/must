@@ -13,6 +13,7 @@ class BiometricService2 {
   static const String _phoneKey = 'saved_phone';
   static const String _passwordKey = 'saved_password';
   static const String _biometricEnabledKey = 'biometric_enabled';
+  static const String _rememberedPhoneKey = 'remembered_phone'; // New key for remembered phone
 
   // Save credentials to secure storage
   static Future<bool> saveCredentials({required String phone, required String password}) async {
@@ -44,6 +45,50 @@ class BiometricService2 {
       return false;
     }
   }
+
+  // ==================== NEW FUNCTIONS FOR REMEMBERED PHONE ====================
+
+  // Save remembered phone number
+  static Future<bool> saveRememberedPhone(String phone) async {
+    try {
+      final normalizedPhone = _normalizePhone(phone);
+      await _storage.write(key: _rememberedPhoneKey, value: normalizedPhone);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Get remembered phone number
+  static Future<String?> getRememberedPhone() async {
+    try {
+      return await _storage.read(key: _rememberedPhoneKey);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Clear remembered phone number
+  static Future<bool> clearRememberedPhone() async {
+    try {
+      await _storage.delete(key: _rememberedPhoneKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Check if remembered phone exists
+  static Future<bool> hasRememberedPhone() async {
+    try {
+      final phone = await _storage.read(key: _rememberedPhoneKey);
+      return phone != null && phone.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ==================== END OF NEW FUNCTIONS ====================
 
   // Check if biometric authentication is enabled
   static Future<bool> isBiometricEnabled() async {
@@ -326,40 +371,17 @@ extension LocalAuthExtension on BiometricService2 {
 
   // FIXED: Device credential authentication with proper parameters
   Future<AuthenticationResult> authenticateWithDeviceCredentialsResult({
-    // required String phone,
-    // required String password,
     required String localizedReason,
   }) async {
     try {
-      // // Validate input parameters
-      // if (phone.isEmpty || password.isEmpty) {
-      //   return AuthenticationResult(
-      //     success: false,
-      //     message: 'Phone and password are required',
-      //     action: AuthenticationAction.none,
-      //   );
-      // }
-
       final isAuthenticated = await authenticateWithDeviceCredentials(localizedReason: localizedReason);
       final phone = await BiometricService2.getSavedPhone();
       final password = await BiometricService2.getSavedPassword();
 
       if (isAuthenticated) {
-        // Save the credentials after successful device authentication
-        // final saveSuccess = await BiometricService2.saveCredentials(phone: phone, password: password);
-
-        // if (saveSuccess) {
-        //   return AuthenticationResult(
-        //     success: true,
-        //     message: 'Device authentication successful. Biometric authentication enabled.',
-        //     action: AuthenticationAction.none,
-        //     phone: phone,
-        //     password: password,
-        //   );
-        // } else {
         return AuthenticationResult(
           success: true,
-          message: 'Device authentication successful but failed to save credentials.',
+          message: 'Device authentication successful.',
           action: AuthenticationAction.none,
           phone: phone,
           password: password,
