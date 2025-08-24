@@ -20,7 +20,7 @@ extension UserCubitX on BuildContext {
   void checkVerifiedAndGuestOrDo(VoidCallback onVerifiedAction) {
     if (!isLoggedIn) {
       _showGuestModeBottomSheet();
-    } else if (isVerified) {
+    } else if (!isVerified) {
       _showNotVerifiedBottomSheet();
     } else {
       onVerifiedAction();

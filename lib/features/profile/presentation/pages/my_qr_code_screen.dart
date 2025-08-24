@@ -244,11 +244,16 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
           ),
           child: Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary)),
                 16.gap,
-                Text(LocaleKeys.generating_qr_code.tr(), style: context.bodyMedium.copyWith(color: Colors.grey[600])),
+                Text(
+                  LocaleKeys.generating_qr_code.tr(),
+                  style: context.bodyMedium.copyWith(color: Colors.grey[600]),
+                  textAlign: TextAlign.center,
+                ),
               ],
             ),
           ),
