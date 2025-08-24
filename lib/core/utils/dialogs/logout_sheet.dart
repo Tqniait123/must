@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
+import 'package:must_invest/core/extensions/num_extension.dart';
+import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
@@ -10,9 +12,7 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.da
 void showLogoutBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-    ),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
     backgroundColor: Colors.white,
     isScrollControlled: true,
     showDragHandle: true,
@@ -23,24 +23,37 @@ void showLogoutBottomSheet(BuildContext context) {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // AppIcons.signoutIllu.svg(),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(color: AppColors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
+            ),
+            32.gap,
 
-            // Text(
-            //   LocaleKeys.sign_out_confirm.tr(), // "Login Required"
-            //   style: AppStyles.bold16black.copyWith(fontSize: 16.r),
-            //   textAlign: TextAlign.center,
-            // ),
-            // const SizedBox(height: 12),
-            // Text(
-            //   LocaleKeys.please_dont_leave
-            //       .tr(), // "To enjoy full app features, please log in or create an account."
-            //   style: context.theme.textTheme.bodyMedium!.copyWith(
-            //     color: Colors.black54,
-            //     height: 1.5,
-            //     fontSize: 10.r,
-            //   ),
-            //   textAlign: TextAlign.center,
-            // ),
+            // Warning icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+              child: Icon(Icons.logout_rounded, size: 40, color: Colors.red),
+            ),
+            24.gap,
+
+            // Title
+            Text(
+              LocaleKeys.logout_confirmation_title.tr(),
+              style: context.titleLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.black),
+              textAlign: TextAlign.center,
+            ),
+            12.gap,
+
+            // Description
+            Text(
+              LocaleKeys.logout_confirmation_message.tr(),
+              style: context.bodyMedium.copyWith(color: AppColors.grey, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            40.gap,
             const SizedBox(height: 25),
             Row(
               children: [

@@ -134,7 +134,7 @@ class CodegenLoader extends AssetLoader{
   "otp_verification": "OTP Verification",
   "enter_the_new_password": "Enter The New password",
   "new_password": "New Password",
-  "find_an_easy_parking_spot": "Find an easy parking spot",
+  "find_an_easy_parking_spot": "Find parking spot",
   "hola_name": "Hola, {name} 👋🏻",
   "search": "Search",
   "my_points": "My Points",
@@ -1353,7 +1353,9 @@ class CodegenLoader extends AssetLoader{
   "uploadNationalIdBack": "Upload National ID Back Image",
   "uploadDrivingLicenseFront": "Upload Driving License Front Image",
   "verifyNow": "Verify Now",
-  "scroll_to_see_more": "Scroll to see more"
+  "scroll_to_see_more": "Scroll to see more",
+  "logout_confirmation_title": "Logout",
+  "logout_confirmation_message": "Are you sure you want to logout? You'll need to sign in again to access your account."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -1475,7 +1477,7 @@ static const Map<String,dynamic> _ar = {
   "otp_verification": "التحقق من OTP",
   "enter_the_new_password": "أدخل كلمة المرور الجديدة",
   "new_password": "كلمة المرور الجديدة",
-  "find_an_easy_parking_spot": "ابحث عن موقف سيارات بسهولة",
+  "find_an_easy_parking_spot": "ابحث عن موقف سيارات",
   "hola_name": "مرحباً {name} 👋🏻",
   "search": "بحث",
   "my_points": "نقاطي",
@@ -2694,7 +2696,9 @@ static const Map<String,dynamic> _ar = {
   "uploadNationalIdBack": "رفع صورة الهوية الوطنية - الوجه الخلفي",
   "uploadDrivingLicenseFront": "رفع صورة رخصة القيادة - الوجه الأمامي",
   "verifyNow": "توثيق الآن",
-  "scroll_to_see_more": "اسحب لاظهار المزيد"
+  "scroll_to_see_more": "اسحب لاظهار المزيد",
+  "logout_confirmation_title": "تسجيل الخروج",
+  "logout_confirmation_message": "هل أنت متأكد من أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
