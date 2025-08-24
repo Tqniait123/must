@@ -61,11 +61,11 @@ class UserHomeHeaderWidget extends StatelessWidget {
                             context.push(Routes.profile);
                           },
                         ),
-                        10.gap,
-                        Text(
-                          LocaleKeys.find_an_easy_parking_spot.tr(),
-                          style: context.bodyMedium.s16.regular.copyWith(color: AppColors.white.withValues(alpha: 0.5)),
-                        ),
+                        // 10.gap,
+                        // Text(
+                        //   LocaleKeys.find_an_easy_parking_spot.tr(),
+                        //   style: context.bodyMedium.s16.regular.copyWith(color: AppColors.white.withValues(alpha: 0.5)),
+                        // ),
                       ],
                     ),
                   ),
@@ -83,7 +83,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
           isBordered: false,
           margin: 0,
           prefixIC: AppIcons.searchIc.icon(),
-          hint: LocaleKeys.search.tr(),
+          hint: LocaleKeys.find_an_easy_parking_spot.tr(),
           suffixIC: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
