@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
@@ -10,6 +12,7 @@ import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/scrolling_text.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 
 // Design 2: Minimalist Card with Accent (for Timer)
@@ -25,7 +28,7 @@ class ParkingTimerCard extends StatefulWidget {
 class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBindingObserver {
   late Timer _timer;
   String _elapsedTime = "00:00:00";
-  final List<String> _logs = [];
+  List<String> _logs = [];
   DateTime? _lastUpdateTime;
   int _timerTickCount = 0;
   DateTime? _appPausedTime;
@@ -40,13 +43,21 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
     _logEvent("Initial duration difference: ${DateTime.now().difference(widget.startTime)}");
 
     _updateElapsedTime();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _timerTickCount++;
       _updateElapsedTime();
 
-      // Log every 30 seconds to track timer behavior
-      if (_timerTickCount % 30 == 0) {
+      // Log every 30 seconds to track timer behavior, and first 10 ticks for debugging
+      if (_timerTickCount <= 10 || _timerTickCount % 30 == 0) {
         _logEvent("Timer tick #$_timerTickCount - Current elapsed: $_elapsedTime");
+        _logEvent("Timer isActive: ${timer.isActive}");
+      }
+
+      // Log more frequently in first few minutes to catch early resets
+      if (_timerTickCount % 10 == 0 && _timerTickCount <= 300) { // First 5 minutes
+        final now = DateTime.now();
+        final actualElapsed = now.difference(widget.startTime);
+        _logEvent("Tick $_timerTickCount: displayed=$_elapsedTime, actual=${_formatDuration(actualElapsed)}");
       }
     });
 
@@ -78,9 +89,7 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
           final pauseDuration = _appResumedTime!.difference(_appPausedTime!);
           _logEvent("App resumed at: $_appResumedTime");
           _logEvent("App was paused for: ${_formatDuration(pauseDuration)}");
-          _logEvent(
-            "Expected elapsed time after resume: ${_formatDuration(DateTime.now().difference(widget.startTime))}",
-          );
+          _logEvent("Expected elapsed time after resume: ${_formatDuration(DateTime.now().difference(widget.startTime))}");
           _logEvent("Actual displayed time: $_elapsedTime");
         }
         // Force update after resume
@@ -104,9 +113,37 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
     _logs.add(logEntry);
     print("PARKING_TIMER_LOG: $logEntry"); // Also print to console
 
-    // Keep only last 500 logs to prevent memory issues
-    if (_logs.length > 500) {
-      _logs.removeRange(0, _logs.length - 500);
+    // Keep only last 1000 logs to prevent memory issues
+    if (_logs.length > 1000) {
+      _logs.removeRange(0, _logs.length - 1000);
+    }
+  }
+
+  Future<void> _loadPreviousLogs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final storedLogs = prefs.getStringList('parking_timer_logs') ?? [];
+      _logs.addAll(storedLogs);
+
+      // Load session count to track app restarts
+      final sessionCount = prefs.getInt('parking_timer_sessions') ?? 0;
+      await prefs.setInt('parking_timer_sessions', sessionCount + 1);
+      _logEvent("Session #${sessionCount + 1} started");
+
+      if (storedLogs.isNotEmpty) {
+        _logEvent("Loaded ${storedLogs.length} previous log entries");
+      }
+    } catch (e) {
+      _logEvent("ERROR loading previous logs: $e");
+    }
+  }
+
+  Future<void> _saveLogs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('parking_timer_logs', _logs);
+    } catch (e) {
+      _logEvent("ERROR saving logs: $e");
     }
   }
 
@@ -114,6 +151,12 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
     final now = DateTime.now();
     final elapsed = now.difference(widget.startTime);
     final newElapsedTime = _formatDuration(elapsed);
+
+    // Log every update for first 2 minutes to catch early issues
+    if (elapsed.inMinutes < 2 || _timerTickCount % 10 == 0) {
+      _logEvent("Update #$_timerTickCount: now=$now, startTime=${widget.startTime}");
+      _logEvent("Raw elapsed: ${elapsed.inSeconds}s, formatted: $newElapsedTime");
+    }
 
     // Check for unexpected reset
     if (_lastUpdateTime != null) {
@@ -131,14 +174,21 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
       // Check if time appears to have reset
       final previousSeconds = _parseTimeToSeconds(_elapsedTime);
       final currentSeconds = elapsed.inSeconds;
-      if (currentSeconds < previousSeconds - 5) {
-        // 5 second tolerance
+      if (currentSeconds < previousSeconds - 5) { // 5 second tolerance
         _logEvent("CRITICAL: Timer appears to have reset!");
         _logEvent("Previous seconds: $previousSeconds");
         _logEvent("Current seconds: $currentSeconds");
         _logEvent("Start time: ${widget.startTime}");
         _logEvent("Current time: $now");
         _logEvent("Raw difference: ${now.difference(widget.startTime)}");
+        _logEvent("Time since last update: ${_formatDuration(timeSinceLastUpdate)}");
+        _logEvent("Previous _lastUpdateTime: $_lastUpdateTime");
+      }
+
+      // Check if startTime somehow changed (this would be very unusual)
+      final startTimeStr = widget.startTime.toString();
+      if (!_logs.any((log) => log.contains("startTime verification: $startTimeStr"))) {
+        _logEvent("startTime verification: $startTimeStr");
       }
     }
 
@@ -394,9 +444,23 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
                             color: AppColors.primary,
                           ),
                         ),
-
-                        // 8.gap,
+                        8.gap,
                         // Small debug indicator
+                        GestureDetector(
+                          onTap: _shareLogs,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.bug_report,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
