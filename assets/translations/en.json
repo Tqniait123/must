@@ -1394,8 +1394,9 @@
   "verifyNow": "Verify Now",
   "scroll_to_see_more": "Scroll to see more",
   "logout_confirmation_title": "Logout",
-  "logout_confirmation_message": "Are you sure you want to logout? You'll need to sign in again to access your account."
-
+  "logout_confirmation_message": "Are you sure you want to logout? You'll need to sign in again to access your account.",
+  "biometric_enabled":"Biometric authentication enabled successfully!",
+ "biometric_failed":"Failed to enable biometric authentication"
 
 
 }

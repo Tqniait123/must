@@ -89,7 +89,7 @@ class _AnimatedHintsWithScrollDetectionState extends State<_AnimatedHintsWithScr
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            bottom: _showScrollHint ? 16 : -60, // Hide by moving off-screen
+            bottom: _showScrollHint ? 40 : -60, // Hide by moving off-screen
             left: 0,
             right: 0,
             child: AnimatedOpacity(

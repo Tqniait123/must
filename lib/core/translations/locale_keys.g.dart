@@ -1336,5 +1336,7 @@ abstract class  LocaleKeys {
   static const scroll_to_see_more = 'scroll_to_see_more';
   static const logout_confirmation_title = 'logout_confirmation_title';
   static const logout_confirmation_message = 'logout_confirmation_message';
+  static const biometric_enabled = 'biometric_enabled';
+  static const biometric_failed = 'biometric_failed';
 
 }

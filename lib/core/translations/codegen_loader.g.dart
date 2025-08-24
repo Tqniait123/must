@@ -1355,7 +1355,9 @@ class CodegenLoader extends AssetLoader{
   "verifyNow": "Verify Now",
   "scroll_to_see_more": "Scroll to see more",
   "logout_confirmation_title": "Logout",
-  "logout_confirmation_message": "Are you sure you want to logout? You'll need to sign in again to access your account."
+  "logout_confirmation_message": "Are you sure you want to logout? You'll need to sign in again to access your account.",
+  "biometric_enabled": "Biometric authentication enabled successfully!",
+  "biometric_failed": "Failed to enable biometric authentication"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2698,7 +2700,9 @@ static const Map<String,dynamic> _ar = {
   "verifyNow": "توثيق الآن",
   "scroll_to_see_more": "اسحب لاظهار المزيد",
   "logout_confirmation_title": "تسجيل الخروج",
-  "logout_confirmation_message": "هل أنت متأكد من أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك."
+  "logout_confirmation_message": "هل أنت متأكد من أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك.",
+  "biometric_enabled": "تم تفعيل المصادقة البيومترية بنجاح!",
+  "biometric_failed": "فشل في تفعيل المصادقة البيومترية"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

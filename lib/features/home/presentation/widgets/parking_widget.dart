@@ -53,7 +53,7 @@ class ParkingCard extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    parking.nameEn,
+                    parking.getNameByLocale(context),
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2B3085)),
                   ),
                   const SizedBox(height: 4),

@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
@@ -12,8 +10,8 @@ import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/scrolling_text.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Design 2: Minimalist Card with Accent (for Timer)
 class ParkingTimerCard extends StatefulWidget {
@@ -28,7 +26,7 @@ class ParkingTimerCard extends StatefulWidget {
 class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBindingObserver {
   late Timer _timer;
   String _elapsedTime = "00:00:00";
-  List<String> _logs = [];
+  final List<String> _logs = [];
   DateTime? _lastUpdateTime;
   int _timerTickCount = 0;
   DateTime? _appPausedTime;
@@ -43,7 +41,7 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
     _logEvent("Initial duration difference: ${DateTime.now().difference(widget.startTime)}");
 
     _updateElapsedTime();
-          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _timerTickCount++;
       _updateElapsedTime();
 
@@ -54,7 +52,8 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
       }
 
       // Log more frequently in first few minutes to catch early resets
-      if (_timerTickCount % 10 == 0 && _timerTickCount <= 300) { // First 5 minutes
+      if (_timerTickCount % 10 == 0 && _timerTickCount <= 300) {
+        // First 5 minutes
         final now = DateTime.now();
         final actualElapsed = now.difference(widget.startTime);
         _logEvent("Tick $_timerTickCount: displayed=$_elapsedTime, actual=${_formatDuration(actualElapsed)}");
@@ -89,7 +88,9 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
           final pauseDuration = _appResumedTime!.difference(_appPausedTime!);
           _logEvent("App resumed at: $_appResumedTime");
           _logEvent("App was paused for: ${_formatDuration(pauseDuration)}");
-          _logEvent("Expected elapsed time after resume: ${_formatDuration(DateTime.now().difference(widget.startTime))}");
+          _logEvent(
+            "Expected elapsed time after resume: ${_formatDuration(DateTime.now().difference(widget.startTime))}",
+          );
           _logEvent("Actual displayed time: $_elapsedTime");
         }
         // Force update after resume
@@ -174,7 +175,8 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
       // Check if time appears to have reset
       final previousSeconds = _parseTimeToSeconds(_elapsedTime);
       final currentSeconds = elapsed.inSeconds;
-      if (currentSeconds < previousSeconds - 5) { // 5 second tolerance
+      if (currentSeconds < previousSeconds - 5) {
+        // 5 second tolerance
         _logEvent("CRITICAL: Timer appears to have reset!");
         _logEvent("Previous seconds: $previousSeconds");
         _logEvent("Current seconds: $currentSeconds");
@@ -450,15 +452,8 @@ class _ParkingTimerCardState extends State<ParkingTimerCard> with WidgetsBinding
                           onTap: _shareLogs,
                           child: Container(
                             padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Icon(
-                              Icons.bug_report,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
+                            decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(4)),
+                            child: const Icon(Icons.bug_report, size: 16, color: Colors.grey),
                           ),
                         ),
                       ],

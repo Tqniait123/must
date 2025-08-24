@@ -272,13 +272,13 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isBiometricEnabled = true;
         });
-        _showSuccess('Biometric authentication enabled successfully!');
+        _showSuccess(LocaleKeys.biometric_enabled.tr());
       } else {
-        _showError('Failed to enable biometric authentication');
+        _showError(LocaleKeys.biometric_failed.tr());
       }
     } catch (e) {
       log('Error enabling biometric: $e');
-      _showError('Failed to enable biometric authentication');
+      _showError(LocaleKeys.biometric_failed.tr());
     }
   }
 
