@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/app_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/enums/scroll_ux_option.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
@@ -34,7 +35,7 @@ class HomeUser extends StatefulWidget {
   State<HomeUser> createState() => _HomeUserState();
 }
 
-class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver {
+class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteAware {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -47,6 +48,18 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver {
 
   // For different scroll options
   final ScrollUXOption _selectedScrollOption = ScrollUXOption.animatedHints;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    _loadNearestParkings();
+    // Called when coming back to this screen
+    debugPrint("RETURNED TO HOME ✅");
+  }
 
   @override
   void initState() {
@@ -69,6 +82,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _logHomeEvent("HOME SCREEN DISPOSING");
     _saveHomeLogs();
     WidgetsBinding.instance.removeObserver(this);

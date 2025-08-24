@@ -48,6 +48,7 @@ import 'package:must_invest/features/profile/presentation/pages/terms_and_condit
 import 'package:must_invest/features/splash/presentation/pages/splash.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 // Define the AppRouter class
 class AppRouter {
@@ -66,6 +67,7 @@ class AppRouter {
       );
     },
     observers: [
+      routeObserver,
       GoRouterObserver(), // Specify your observer here
     ],
     routes: [
