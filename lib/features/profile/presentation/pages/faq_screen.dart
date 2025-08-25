@@ -86,6 +86,8 @@ class _FAQScreenState extends State<FAQScreen> with TickerProviderStateMixin {
     );
   }
 
+  
+
   Widget _buildSliverAppBar() {
     return SliverAppBar(
       expandedHeight: 200,
