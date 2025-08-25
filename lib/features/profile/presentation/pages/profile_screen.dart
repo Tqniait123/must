@@ -100,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
             title: LocaleKeys.offers.tr(),
             iconPath: AppIcons.offersIc,
             onPressed: () {
-              context.push(Routes.myCards);
+              context.push(Routes.offers);
             },
           ),
           ProfileItemWidget(

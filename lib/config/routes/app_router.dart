@@ -31,6 +31,8 @@ import 'package:must_invest/features/history/presentation/pages/history_screen.d
 import 'package:must_invest/features/home/presentation/pages/home_user.dart';
 import 'package:must_invest/features/my_cards/presentation/pages/my_cards_screen.dart';
 import 'package:must_invest/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:must_invest/features/offers/presentation/cubit/offers_cubit.dart';
+import 'package:must_invest/features/offers/presentation/pages/offers_screen.dart';
 import 'package:must_invest/features/on_boarding/presentation/pages/on_boarding_screen.dart';
 import 'package:must_invest/features/profile/presentation/cubit/cars_cubit.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
@@ -290,6 +292,13 @@ class AppRouter {
         builder: (context, state) {
           // Return the SettingsScreen widget
           return SettingsScreen();
+        },
+      ),
+      GoRoute(
+        path: Routes.offers,
+        builder: (context, state) {
+          // Return the OffersScreen widget
+          return BlocProvider(create: (BuildContext context) => OffersCubit(sl()), child: OffersScreen());
         },
       ),
     ],

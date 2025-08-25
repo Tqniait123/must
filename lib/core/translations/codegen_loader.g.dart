@@ -1363,7 +1363,20 @@ class CodegenLoader extends AssetLoader{
   "delete_account_confirmation_ok": "Delete Account",
   "delete_account_confirmation_cancel": "Cancel",
   "delete_account_confirmation_success": "Account deleted successfully",
-  "offers": "Offers"
+  "search_offers": "Search offers...",
+  "searching_for_offers": "Searching for \"{0}\"",
+  "no_offers_found_for": "No offers found for \"{0}\"",
+  "no_offers_available": "No offers available",
+  "error_loading_offers": "Error loading offers",
+  "starts": "Starts",
+  "expires": "Expires",
+  "expires_today": "Expires today",
+  "expires_in_days": "Expires in {0} days",
+  "active": "Active",
+  "offers": "Offers",
+  "starts_today": "Starts Today",
+  "starts_tomorrow": "Starts Tomorrow",
+  "starts_in_days": "Starts in {} days"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2714,7 +2727,20 @@ static const Map<String,dynamic> _ar = {
   "delete_account_confirmation_ok": "حذف الحساب",
   "delete_account_confirmation_cancel": "إلغاء",
   "delete_account_confirmation_success": "تم حذف الحساب بنجاح",
-  "offers": "العروض"
+  "offers": "العروض",
+  "search_offers": "البحث عن العروض...",
+  "searching_for_offers": "البحث عن \"{0}\"",
+  "no_offers_found_for": "لم يتم العثور على عروض لـ \"{0}\"",
+  "no_offers_available": "لا توجد عروض متاحة",
+  "error_loading_offers": "خطأ في تحميل العروض",
+  "starts": "يبدأ",
+  "expires": "ينتهي",
+  "expires_today": "ينتهي اليوم",
+  "expires_in_days": "ينتهي خلال {0} أيام",
+  "active": "نشط",
+  "starts_today": "يبدأ اليوم",
+  "starts_tomorrow": "يبدأ غداً",
+  "starts_in_days": "يبدأ خلال {} أيام"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

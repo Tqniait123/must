@@ -32,4 +32,5 @@ class Routes {
   static const String contactUs = '/contactUs';
   static const String aboutUs = '/aboutUs';
   static const String settings = '/settings';
+  static const String offers = '/offers';
 }

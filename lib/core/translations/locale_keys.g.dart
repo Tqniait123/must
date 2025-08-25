@@ -1343,6 +1343,19 @@ abstract class  LocaleKeys {
   static const delete_account_confirmation_ok = 'delete_account_confirmation_ok';
   static const delete_account_confirmation_cancel = 'delete_account_confirmation_cancel';
   static const delete_account_confirmation_success = 'delete_account_confirmation_success';
+  static const search_offers = 'search_offers';
+  static const searching_for_offers = 'searching_for_offers';
+  static const no_offers_found_for = 'no_offers_found_for';
+  static const no_offers_available = 'no_offers_available';
+  static const error_loading_offers = 'error_loading_offers';
+  static const starts = 'starts';
+  static const expires = 'expires';
+  static const expires_today = 'expires_today';
+  static const expires_in_days = 'expires_in_days';
+  static const active = 'active';
   static const offers = 'offers';
+  static const starts_today = 'starts_today';
+  static const starts_tomorrow = 'starts_tomorrow';
+  static const starts_in_days = 'starts_in_days';
 
 }
