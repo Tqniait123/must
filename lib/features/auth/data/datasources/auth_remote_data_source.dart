@@ -18,12 +18,8 @@ abstract class AuthRemoteDataSource {
   // Future<ApiResponse> login();
   Future<ApiResponse<User>> autoLogin(String token);
   Future<ApiResponse<AuthModel>> login(LoginParams params);
-  Future<ApiResponse<AuthModel>> loginWithGoogle(
-    LoginWithGoogleParams loginWithGoogleParams,
-  );
-  Future<ApiResponse<AuthModel>> loginWithApple(
-    LoginWithAppleParams loginWithAppleParams,
-  );
+  Future<ApiResponse<AuthModel>> loginWithGoogle(LoginWithGoogleParams loginWithGoogleParams);
+  Future<ApiResponse<AuthModel>> loginWithApple(LoginWithAppleParams loginWithAppleParams);
   Future<ApiResponse<void>> register(RegisterParams params);
   Future<ApiResponse<AuthModel>> verifyRegistration(VerifyParams params);
   Future<ApiResponse<void>> verifyPasswordReset(VerifyParams params);
@@ -33,6 +29,7 @@ abstract class AuthRemoteDataSource {
   Future<ApiResponse<List<Country>>> getCountries();
   Future<ApiResponse<List<Governorate>>> getGovernorates(int countryId);
   Future<ApiResponse<List<City>>> getCities(int governorateId);
+  Future<ApiResponse<void>> deleteAccount(String token);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -97,9 +94,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   ///   A Future that resolves to an ApiResponse containing an AuthModel object with the authenticated
   /// user's data and tokens.
   @override
-  Future<ApiResponse<AuthModel>> loginWithGoogle(
-    LoginWithGoogleParams loginWithGoogleParams,
-  ) async {
+  Future<ApiResponse<AuthModel>> loginWithGoogle(LoginWithGoogleParams loginWithGoogleParams) async {
     // final deviceToken = await fcmService.getDeviceToken();
     return dioClient.request<AuthModel>(
       method: RequestMethod.post,
@@ -123,9 +118,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   ///   A Future that resolves to an ApiResponse containing an AuthModel object with the authenticated
   /// user's data and tokens.
   @override
-  Future<ApiResponse<AuthModel>> loginWithApple(
-    LoginWithAppleParams loginWithAppleParams,
-  ) async {
+  Future<ApiResponse<AuthModel>> loginWithApple(LoginWithAppleParams loginWithAppleParams) async {
     // final deviceToken = await fcmService.getDeviceToken();
     return dioClient.request<AuthModel>(
       method: RequestMethod.post,
@@ -216,12 +209,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     return dioClient.request<List<City>>(
       method: RequestMethod.get,
       EndPoints.cities(governorateId),
-      fromJson:
-          (json) => List<City>.from(
-            (json as List).map(
-              (city) => City.fromJson(city as Map<String, dynamic>),
-            ),
-          ),
+      fromJson: (json) => List<City>.from((json as List).map((city) => City.fromJson(city as Map<String, dynamic>))),
     );
   }
 
@@ -236,11 +224,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       method: RequestMethod.get,
       EndPoints.countries,
       fromJson:
-          (json) => List<Country>.from(
-            (json as List).map(
-              (country) => Country.fromJson(country as Map<String, dynamic>),
-            ),
-          ),
+          (json) =>
+              List<Country>.from((json as List).map((country) => Country.fromJson(country as Map<String, dynamic>))),
     );
   }
 
@@ -261,10 +246,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       EndPoints.governorates(countryId),
       fromJson:
           (json) => List<Governorate>.from(
-            (json as List).map(
-              (governorate) =>
-                  Governorate.fromJson(governorate as Map<String, dynamic>),
-            ),
+            (json as List).map((governorate) => Governorate.fromJson(governorate as Map<String, dynamic>)),
           ),
     );
   }
@@ -310,6 +292,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       method: RequestMethod.post,
       EndPoints.verifyPasswordReset,
       data: params.toJson(),
+      fromJson: (json) => (),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> deleteAccount(String token) {
+    return dioClient.request<void>(
+      method: RequestMethod.get,
+      EndPoints.deleteAccount,
+      options: token.toAuthorizationOptions(),
       fromJson: (json) => (),
     );
   }

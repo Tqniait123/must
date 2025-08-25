@@ -45,6 +45,7 @@ class ForgetPasswordError extends AuthState {
 class ResetPasswordLoading extends AuthState {}
 
 class ResetPasswordSentOTP extends AuthState {}
+
 class ResetPasswordSuccess extends AuthState {}
 
 class ResetPasswordError extends AuthState {
@@ -76,3 +77,16 @@ class ResendOTPError extends AuthState {
 }
 
 // class ResetPasswordSuccess extends AuthState {}
+
+class DeleteAccountLoading extends AuthState {}
+
+class DeleteAccountSuccess extends AuthState {}
+
+class DeleteAccountError extends AuthState {
+  final String message;
+
+  const DeleteAccountError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

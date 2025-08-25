@@ -227,4 +227,21 @@ class AuthCubit extends Cubit<AuthState> {
       emit(ResendOTPError(e.toString()));
     }
   }
+
+  /// The `deleteAccount` function handles the deletion of a user's account by calling the repository
+  /// method and emitting appropriate states based on the response.
+  Future<void> deleteAccount() async {
+    try {
+      emit(DeleteAccountLoading());
+      final response = await _repo.deleteAccount();
+      response.fold(
+        (_) => emit(DeleteAccountSuccess()),
+        (error) => emit(DeleteAccountError(error.message)),
+      );
+    } on AppError catch (e) {
+      emit(DeleteAccountError(e.message));
+    } catch (e) {
+      emit(DeleteAccountError(e.toString()));
+    }
+  }
 }

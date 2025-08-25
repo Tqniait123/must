@@ -35,4 +35,5 @@ class EndPoints {
   static const String history = 'history';
   static const String startParking = 'parking/start';
   static const String offers = 'offers';
+  static const String deleteAccount = 'delete_account';
 }

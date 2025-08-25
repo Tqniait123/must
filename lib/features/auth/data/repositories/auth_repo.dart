@@ -26,6 +26,7 @@ abstract class AuthRepo {
   Future<Either<List<Country>, AppError>> getCountries(); // List<Country>
   Future<Either<List<Governorate>, AppError>> getGovernorates(int countryId); // List<Governorate>
   Future<Either<List<City>, AppError>> getCities(int governorateId); // List<City>
+  Future<Either<void, AppError>> deleteAccount(); // List<City>
 }
 
 class AuthRepoImpl implements AuthRepo {
@@ -246,6 +247,22 @@ class AuthRepoImpl implements AuthRepo {
   Future<Either<void, AppError>> verifyPasswordReset(VerifyParams params) async {
     try {
       final response = await _remoteDataSource.verifyPasswordReset(params);
+
+      if (response.isSuccess) {
+        return const Left(null);
+      } else {
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<void, AppError>> deleteAccount() async {
+    try {
+      final token = _localDataSource.getToken();
+      final response = await _remoteDataSource.deleteAccount(token ?? '');
 
       if (response.isSuccess) {
         return const Left(null);
