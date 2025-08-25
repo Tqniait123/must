@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -60,6 +61,7 @@ void showLogoutBottomSheet(BuildContext context) {
                     withShadow: false,
                     isBordered: true,
                     onPressed: () {
+                      context.userCubit.removeCurrentUser();
                       context.go(Routes.login);
                     },
                   ),

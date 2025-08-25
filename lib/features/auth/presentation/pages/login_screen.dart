@@ -568,7 +568,9 @@ class _LoginScreenState extends State<LoginScreen> {
           _buildLoginForm(),
           40.gap,
           _buildActionButtons(),
-          71.gap,
+          20.gap,
+          _buildGuestButton(), // Add guest button here
+          20.gap, // Reduced gap
           _buildDivider(),
           20.gap,
           const SocialMediaButtons(),
@@ -576,6 +578,23 @@ class _LoginScreenState extends State<LoginScreen> {
           SignUpButton(isLogin: true, onTap: () => context.push(Routes.register)),
           30.gap,
         ],
+      ),
+    );
+  }
+
+  // In your login screen, add the guest button
+  // Add this widget method to _LoginScreenState
+  Widget _buildGuestButton() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextButton(
+        onPressed: () {
+          context.go(Routes.homeUser);
+        },
+        child: Text(
+          LocaleKeys.continue_as_guest.tr(),
+          style: context.bodyMedium.s14.bold.copyWith(color: AppColors.primary, decoration: TextDecoration.underline),
+        ),
       ),
     );
   }

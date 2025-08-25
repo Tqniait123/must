@@ -45,33 +45,35 @@ class ProfileScreen extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      if (context.user.image != null && context.user.image!.isNotEmpty)
-                        CircleAvatar(radius: 43, backgroundImage: NetworkImage(context.user.image ?? '')),
-                      24.gap,
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              LocaleKeys.welcome.tr(),
-                              style: context.bodyMedium.copyWith(
-                                color: AppColors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                      if (context.isLoggedIn) ...[
+                        if (context.user.image != null && context.user.image!.isNotEmpty)
+                          CircleAvatar(radius: 43, backgroundImage: NetworkImage(context.user.image ?? '')),
+                        24.gap,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                LocaleKeys.welcome.tr(),
+                                style: context.bodyMedium.copyWith(
+                                  color: AppColors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            8.gap,
-                            Text(
-                              context.user.name,
-                              style: context.titleLarge.copyWith(
-                                color: AppColors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                              8.gap,
+                              Text(
+                                context.user.name,
+                                style: context.titleLarge.copyWith(
+                                  color: AppColors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -82,20 +84,22 @@ class ProfileScreen extends StatelessWidget {
 
         children: [
           30.gap,
-          ProfileItemWidget(
-            title: LocaleKeys.profile.tr(),
-            iconPath: AppIcons.profileIc,
-            onPressed: () {
-              context.push(Routes.editProfile);
-            },
-          ),
-          ProfileItemWidget(
-            title: LocaleKeys.my_cars.tr(),
-            iconPath: AppIcons.outlinedCarIc,
-            onPressed: () {
-              context.push(Routes.myCars);
-            },
-          ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.profile.tr(),
+              iconPath: AppIcons.profileIc,
+              onPressed: () {
+                context.push(Routes.editProfile);
+              },
+            ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.my_cars.tr(),
+              iconPath: AppIcons.outlinedCarIc,
+              onPressed: () {
+                context.push(Routes.myCars);
+              },
+            ),
           ProfileItemWidget(
             title: LocaleKeys.offers.tr(),
             iconPath: AppIcons.offersIc,
@@ -103,13 +107,14 @@ class ProfileScreen extends StatelessWidget {
               context.push(Routes.offers);
             },
           ),
-          ProfileItemWidget(
-            title: LocaleKeys.my_cards.tr(),
-            iconPath: AppIcons.cardIc,
-            onPressed: () {
-              context.push(Routes.myCards);
-            },
-          ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.my_cards.tr(),
+              iconPath: AppIcons.cardIc,
+              onPressed: () {
+                context.push(Routes.myCards);
+              },
+            ),
           ProfileItemWidget(
             title: LocaleKeys.terms_and_conditions.tr(),
             iconPath: AppIcons.termsIc,
@@ -124,13 +129,14 @@ class ProfileScreen extends StatelessWidget {
               context.push(Routes.privacyPolicy);
             },
           ),
-          ProfileItemWidget(
-            title: LocaleKeys.history.tr(),
-            iconPath: AppIcons.historyIc,
-            onPressed: () {
-              context.push(Routes.history);
-            },
-          ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.history.tr(),
+              iconPath: AppIcons.historyIc,
+              onPressed: () {
+                context.push(Routes.history);
+              },
+            ),
           ProfileItemWidget(
             title: LocaleKeys.faq.tr(),
             iconPath: AppIcons.faqIc,
@@ -152,22 +158,33 @@ class ProfileScreen extends StatelessWidget {
               context.push(Routes.settings);
             },
           ),
-          ProfileItemWidget(
-            title: LocaleKeys.delete_account_confirmation_title.tr(),
-            iconPath: AppIcons.deleteIc,
-            color: Colors.red,
-            onPressed: () {
-              showDeleteAccountBottomSheet(context);
-            },
-          ),
-          ProfileItemWidget(
-            title: LocaleKeys.logout.tr(),
-            iconPath: AppIcons.logout,
-            color: Colors.red,
-            onPressed: () {
-              showLogoutBottomSheet(context);
-            },
-          ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.delete_account_confirmation_title.tr(),
+              iconPath: AppIcons.deleteIc,
+              color: Colors.red,
+              onPressed: () {
+                showDeleteAccountBottomSheet(context);
+              },
+            ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.logout.tr(),
+              iconPath: AppIcons.logout,
+              color: Colors.red,
+              onPressed: () {
+                showLogoutBottomSheet(context);
+              },
+            ),
+          if (!context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.login.tr(),
+              iconPath: AppIcons.loginIc,
+              // color: Colors.red,
+              onPressed: () {
+                context.push(Routes.login);
+              },
+            ),
           20.gap,
           CustomElevatedButton(
             icon: AppIcons.supportIc,

@@ -146,9 +146,17 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
   }
 
   void _checkParkingStatus() {
-    final user = context.user;
-    final isInParking = user.inParking ?? false;
-    final parkingStartTime = user.inParkingFrom;
+    bool isInParking = false;
+    DateTime? parkingStartTime;
+
+    // Check if user is logged in before accessing user
+    if (context.isLoggedIn) {
+      final user = context.user;
+      isInParking = user.inParking ?? false;
+      parkingStartTime = user.inParkingFrom;
+    } else {
+      _logHomeEvent("CHECK PARKING: User is not logged in, skipping user-specific checks");
+    }
 
     _logHomeEvent("Parking status check:");
     _logHomeEvent("  - inParking: $isInParking");
@@ -203,10 +211,18 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         "Platform: ${Platform.operatingSystem}",
         "Platform Version: ${Platform.operatingSystemVersion}",
         "Current Time: ${DateTime.now()}",
-        "User in parking: ${context.user.inParking ?? false}",
-        "Parking start time: ${context.user.inParkingFrom}",
-        "=== HOME LOGS ===",
       ];
+
+      // Only include user-specific info if logged in
+      if (context.isLoggedIn) {
+        final user = context.user;
+        deviceInfo.add("User in parking: ${user.inParking ?? false}");
+        deviceInfo.add("Parking start time: ${user.inParkingFrom}");
+      } else {
+        deviceInfo.add("User in parking: Not logged in");
+        deviceInfo.add("Parking start time: Not logged in");
+      }
+      deviceInfo.add("=== HOME LOGS ===");
 
       final allLogs = [...deviceInfo, ..._homeLogs];
       final logContent = allLogs.join('\n');
@@ -235,9 +251,17 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
 
   @override
   Widget build(BuildContext context) {
-    final user = context.user;
-    final isInParking = user.inParking ?? false;
-    final parkingStartTime = user.inParkingFrom;
+    bool isInParking = false;
+    DateTime? parkingStartTime;
+
+    // Check if user is logged in before accessing user
+    if (context.isLoggedIn) {
+      final user = context.user;
+      isInParking = user.inParking ?? false;
+      parkingStartTime = user.inParkingFrom;
+    } else {
+      _logHomeEvent("BUILD: User is not logged in, skipping user-specific data");
+    }
 
     _logHomeEvent("HOME SCREEN BUILD:");
     _logHomeEvent("  - inParking: $isInParking");
@@ -258,51 +282,52 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         backgroundPatternAssetPath: AppImages.homePattern,
         children: [
           30.gap,
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final cardWidth = constraints.maxWidth / 2 - 8; // Subtract spacing
-              return Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: cardWidth,
-                        minHeight: 150, // Minimum height to ensure consistency
-                      ),
-                      child: MyPointsCardMinimal(),
-                    ),
-                  ),
-                  if (isInParking) ...[
-                    const SizedBox(width: 16),
+          if (context.isLoggedIn)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final cardWidth = constraints.maxWidth / 2 - 8; // Subtract spacing
+                return Row(
+                  children: [
                     Expanded(
                       flex: 1,
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: cardWidth,
-                          minHeight: 150, // Same minimum height as MyPointsCardMinimal
+                          minHeight: 150, // Minimum height to ensure consistency
                         ),
-                        child: Builder(
-                          builder: (context) {
-                            final effectiveStartTime = parkingStartTime ?? DateTime.now();
-
-                            if (parkingStartTime == null) {
-                              _logHomeEvent("CREATING TIMER with NULL startTime - using DateTime.now()");
-                              _logHomeEvent("Fallback time: $effectiveStartTime");
-                            } else {
-                              _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
-                            }
-
-                            return ParkingTimerCard(startTime: effectiveStartTime);
-                          },
-                        ),
+                        child: MyPointsCardMinimal(),
                       ),
                     ),
+                    if (isInParking) ...[
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: cardWidth,
+                            minHeight: 150, // Same minimum height as MyPointsCardMinimal
+                          ),
+                          child: Builder(
+                            builder: (context) {
+                              final effectiveStartTime = parkingStartTime ?? DateTime.now();
+
+                              if (parkingStartTime == null) {
+                                _logHomeEvent("CREATING TIMER with NULL startTime - using DateTime.now()");
+                                _logHomeEvent("Fallback time: $effectiveStartTime");
+                              } else {
+                                _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
+                              }
+
+                              return ParkingTimerCard(startTime: effectiveStartTime);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
-              );
-            },
-          ),
+                );
+              },
+            ),
           32.gap,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -327,6 +352,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
                     option: _selectedScrollOption,
                     state: state,
                     onRefresh: _loadNearestParkings,
+                    height: context.isLoggedIn ? null : 500,
                   ),
             ),
           ),

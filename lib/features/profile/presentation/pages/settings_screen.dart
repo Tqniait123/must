@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
@@ -536,17 +537,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       showLanguageBottomSheet(context);
                     },
                   ),
-                  ProfileItemWidget(
-                    title: LocaleKeys.face_id.tr(),
-                    iconPath: AppIcons.faceIdIc,
-                    trailing:
-                        _isLoading
-                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                            : Switch.adaptive(
-                              value: _isBiometricEnabled && _isBiometricSupported,
-                              onChanged: _isBiometricSupported ? _handleBiometricToggle : null,
-                            ),
-                  ),
+                  if (context.isLoggedIn)
+                    ProfileItemWidget(
+                      title: LocaleKeys.face_id.tr(),
+                      iconPath: AppIcons.faceIdIc,
+                      trailing:
+                          _isLoading
+                              ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                              : Switch.adaptive(
+                                value: _isBiometricEnabled && _isBiometricSupported,
+                                onChanged: _isBiometricSupported ? _handleBiometricToggle : null,
+                              ),
+                    ),
                 ],
               ),
             ),

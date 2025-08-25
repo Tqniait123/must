@@ -1418,7 +1418,8 @@
   "offers": "Offers",
   "starts_today": "Starts Today",
   "starts_tomorrow": "Starts Tomorrow",
-  "starts_in_days": "Starts in {} days"
+  "starts_in_days": "Starts in {} days",
+  "continue_as_guest": "Continue as Guest"
 
 
 }
