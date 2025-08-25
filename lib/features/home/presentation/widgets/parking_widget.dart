@@ -23,27 +23,27 @@ class ParkingCard extends StatelessWidget {
         child: Row(
           children: [
             // Parking Image
-            if (parking.gallery.gallery.isNotEmpty)
-              Hero(
-                tag: '${parking.id}-${parking.gallery.gallery[0].image}',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    parking.gallery.gallery[0].image,
-                    width: 90,
-                    height: 90,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 90,
-                        height: 90,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                      );
-                    },
-                  ),
+            // if (parking.gallery.gallery.isNotEmpty)
+            Hero(
+              tag: '${parking.id}-${parking.mainImage}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  parking.mainImage,
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 90,
+                      height: 90,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                    );
+                  },
                 ),
               ),
+            ),
             const SizedBox(width: 12),
 
             // Parking Information
@@ -112,14 +112,18 @@ class ParkingCard extends StatelessWidget {
                             TextSpan(
                               text: parking.pricePerHour,
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF2B3085),
                               ),
                             ),
                             TextSpan(
                               text: "/${LocaleKeys.hour.tr()}",
-                              style: TextStyle(fontSize: 14, color: Color(0xFF2B3085)),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF2B3085),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),

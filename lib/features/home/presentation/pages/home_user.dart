@@ -56,7 +56,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
 
   @override
   void didPopNext() {
-    _loadNearestParkings();
+    _loadNearestParkings(isFirstTime: false);
     // Called when coming back to this screen
     debugPrint("RETURNED TO HOME ✅");
   }
@@ -74,7 +74,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     // Load previous logs and start monitoring
     _loadHomeLogs();
     _checkParkingStatus();
-    _loadNearestParkings();
+    _loadNearestParkings(isFirstTime: true);
 
     // Start periodic checking for parking status changes
     _startParkingStatusMonitoring();
@@ -234,35 +234,11 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     }
   }
 
-  Future<void> _loadNearestParkings() async {
+  Future<void> _loadNearestParkings({bool isFirstTime = true}) async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-          _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
-          return;
-        }
-      }
-
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 10),
-      );
-
-      setState(() {
-        _currentPosition = position;
-      });
-
-      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
+      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular(), isFirstTime: isFirstTime);
     } catch (e) {
-      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular());
+      _exploreCubit.getAllParkings(filter: FilterModel.mostPopular(), isFirstTime: isFirstTime);
     }
   }
 

@@ -89,7 +89,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                     22.gap,
 
                     // Main Image with Gallery Button
-                    if (widget.parking.gallery.gallery.isNotEmpty)
+                    if (widget.parking.gallery.gallery.isNotEmpty) ...[
                       Stack(
                         clipBehavior: Clip.none,
                         alignment: Alignment.bottomCenter,
@@ -114,7 +114,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                               onTap: _showImageGallery,
                               child: Hero(
                                 key: ValueKey<String>(_currentMainImage),
-                                tag: '${widget.parking.id}-$_currentMainImage',
+                                tag: '${widget.parking.id}-${widget.parking.mainImage}',
                                 child: ClipPath(
                                   clipper: CurveCustomClipper(),
                                   child: SizedBox(
@@ -173,42 +173,43 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                         ],
                       ),
 
-                    30.gap,
+                      30.gap,
 
-                    // Thumbnail Gallery
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        height: 80,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: widget.parking.gallery.gallery.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            final image = widget.parking.gallery.gallery[index].image;
-                            final isSelected = _currentMainImage == image;
+                      // Thumbnail Gallery
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SizedBox(
+                          height: 80,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: widget.parking.gallery.gallery.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            itemBuilder: (context, index) {
+                              final image = widget.parking.gallery.gallery[index].image;
+                              final isSelected = _currentMainImage == image;
 
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: isSelected ? Border.all(color: AppColors.primary, width: 2) : null,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: AnimatedOpacity(
-                                  opacity: isSelected ? 1 : 0.7,
-                                  duration: const Duration(milliseconds: 300),
-                                  child: Image.network(image, width: 129, height: 80, fit: BoxFit.cover),
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: isSelected ? Border.all(color: AppColors.primary, width: 2) : null,
                                 ),
-                              ).withPressEffect(onTap: () => _selectImageFromParkingGallery(image, index)),
-                            );
-                          },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: AnimatedOpacity(
+                                    opacity: isSelected ? 1 : 0.7,
+                                    duration: const Duration(milliseconds: 300),
+                                    child: Image.network(image, width: 129, height: 80, fit: BoxFit.cover),
+                                  ),
+                                ).withPressEffect(onTap: () => _selectImageFromParkingGallery(image, index)),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
 
-                    30.gap,
+                      30.gap,
+                    ],
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -234,7 +235,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(Icons.star, color: AppColors.primary, size: 12),
+                                          Icon(Icons.star_rounded, color: AppColors.primary, size: 12),
                                           SizedBox(width: 2),
                                           Text(
                                             LocaleKeys.mostPopular.tr(),
@@ -259,7 +260,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(Icons.favorite, color: AppColors.primary, size: 12),
+                                          Icon(Icons.local_fire_department_rounded, color: AppColors.primary, size: 12),
                                           SizedBox(width: 2),
                                           Text(
                                             LocaleKeys.mostWanted.tr(),

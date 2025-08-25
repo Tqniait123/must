@@ -142,7 +142,7 @@ class CodegenLoader extends AssetLoader{
   "add_points": "Add Points",
   "nearst_parking_spaces": "Nearst Parking Spaces",
   "see_more": "See More",
-  "explore": "explore",
+  "explore": "Explore",
   "nearst": "Nearst",
   "most_popular": "Most Popular",
   "most_wanted": "Most Wanted",

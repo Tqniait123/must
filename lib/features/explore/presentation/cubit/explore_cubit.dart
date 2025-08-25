@@ -13,9 +13,12 @@ class ExploreCubit extends Cubit<ExploreState> {
 
   static ExploreCubit get(context) => BlocProvider.of<ExploreCubit>(context);
 
-  Future<void> getAllParkings({FilterModel? filter}) async {
+  Future<void> getAllParkings({FilterModel? filter, bool isFirstTime = true}) async {
     try {
+      if (isFirstTime) {
       emit(ParkingsLoading());
+
+      }
       final response = await exploreRepo.getAllParkings(filter: filter);
       response.fold((parkings) => emit(ParkingsSuccess(parkings)), (error) => emit(ParkingsError(error.message)));
     } on AppError catch (e) {

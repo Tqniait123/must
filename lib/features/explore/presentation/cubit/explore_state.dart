@@ -17,7 +17,7 @@ class ParkingsSuccess extends ExploreState {
   const ParkingsSuccess(this.parkings);
 
   @override
-  List<Object> get props => [parkings];
+  List<Object> get props => [identityHashCode(this)];
 }
 
 class ParkingsError extends ExploreState {
