@@ -27,6 +27,7 @@ static const String cameraIc = '$_iconsPath/camera_ic.svg';
 static const String filterIc = '$_iconsPath/filter_ic.svg';
 static const String facebook = '$_iconsPath/facebook.svg';
 static const String eyeSlashIc = '$_iconsPath/eye_slash_ic.svg';
+static const String offersIc = '$_iconsPath/offers_ic.svg';
 static const String google = '$_iconsPath/google.svg';
 static const String onBoarding3 = '$_iconsPath/on_boarding_3.svg';
 static const String searchIc = '$_iconsPath/search_ic.svg';

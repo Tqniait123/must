@@ -219,7 +219,7 @@ class User {
 
     try {
       // Define the format that matches your API response
-      final formatter = DateFormat('dd-MM-yyyy hh:mm a');
+      final formatter = DateFormat('dd-MM-yyyy hh:mm a', 'en_US');
       return formatter.parse(dateString);
     } catch (e) {
       // Fallback to ISO format parsing if custom format fails

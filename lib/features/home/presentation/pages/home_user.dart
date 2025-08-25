@@ -258,12 +258,12 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        onPressed: _shareHomeLogs,
-        backgroundColor: Colors.orange,
-        child: const Icon(Icons.home, color: Colors.white, size: 20),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   mini: true,
+      //   onPressed: _shareHomeLogs,
+      //   backgroundColor: Colors.orange,
+      //   child: const Icon(Icons.home, color: Colors.white, size: 20),
+      // ),
       body: CustomLayout(
         withPadding: true,
         patternOffset: const Offset(-100, -200),

@@ -1401,7 +1401,8 @@
   "delete_account_confirmation_message": "Are you sure you want to delete your account? This action is irreversible.",
   "delete_account_confirmation_ok": "Delete Account",
   "delete_account_confirmation_cancel": "Cancel",
-  "delete_account_confirmation_success": "Account deleted successfully"
+  "delete_account_confirmation_success": "Account deleted successfully",
+  "offers": "Offers"
 
 
 }

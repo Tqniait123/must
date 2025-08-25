@@ -1343,5 +1343,6 @@ abstract class  LocaleKeys {
   static const delete_account_confirmation_ok = 'delete_account_confirmation_ok';
   static const delete_account_confirmation_cancel = 'delete_account_confirmation_cancel';
   static const delete_account_confirmation_success = 'delete_account_confirmation_success';
+  static const offers = 'offers';
 
 }

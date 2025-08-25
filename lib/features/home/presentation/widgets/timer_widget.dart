@@ -92,8 +92,8 @@ class _ParkingTimerView extends StatelessWidget {
                       color: isRunning ? AppColors.primary : Colors.orange,
                     ),
                   ),
-                  8.gap,
-                  _buildDebugButton(context),
+                  // 8.gap,
+                  // _buildDebugButton(context),
                 ],
               ),
             ],
@@ -273,19 +273,19 @@ class _PaymentBottomSheet extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 24),
+          // const SizedBox(height: 24),
 
-          // Share logs button for debugging
-          SizedBox(
-            width: double.infinity,
-            height: 44,
-            child: OutlinedButton.icon(
-              onPressed: onShareLogs,
-              icon: const Icon(Icons.bug_report, size: 18),
-              label: const Text("Share Debug Logs"),
-              style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            ),
-          ),
+          // // Share logs button for debugging
+          // SizedBox(
+          //   width: double.infinity,
+          //   height: 44,
+          //   child: OutlinedButton.icon(
+          //     onPressed: onShareLogs,
+          //     icon: const Icon(Icons.bug_report, size: 18),
+          //     label: const Text("Share Debug Logs"),
+          //     style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          //   ),
+          // ),
         ],
       ),
     );

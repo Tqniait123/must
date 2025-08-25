@@ -1362,7 +1362,8 @@ class CodegenLoader extends AssetLoader{
   "delete_account_confirmation_message": "Are you sure you want to delete your account? This action is irreversible.",
   "delete_account_confirmation_ok": "Delete Account",
   "delete_account_confirmation_cancel": "Cancel",
-  "delete_account_confirmation_success": "Account deleted successfully"
+  "delete_account_confirmation_success": "Account deleted successfully",
+  "offers": "Offers"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2712,7 +2713,8 @@ static const Map<String,dynamic> _ar = {
   "delete_account_confirmation_message": "هل أنت متأكد أنك تريد حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.",
   "delete_account_confirmation_ok": "حذف الحساب",
   "delete_account_confirmation_cancel": "إلغاء",
-  "delete_account_confirmation_success": "تم حذف الحساب بنجاح"
+  "delete_account_confirmation_success": "تم حذف الحساب بنجاح",
+  "offers": "العروض"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

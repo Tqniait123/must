@@ -5,6 +5,7 @@ import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileItemWidget extends StatelessWidget {
   final String title;
@@ -50,5 +51,62 @@ class ProfileItemWidget extends StatelessWidget {
         ],
       ),
     ).withPressEffect(onTap: onPressed);
+  }
+}
+
+class OfferItemWidget extends StatelessWidget {
+  final String title;
+  final String iconPath;
+  final void Function()? onPressed;
+  final Widget? trailing;
+
+  const OfferItemWidget({super.key, required this.title, required this.iconPath, this.onPressed, this.trailing});
+
+  @override
+  Widget build(BuildContext context) {
+    final gradient = const LinearGradient(
+      colors: [Color(0xffFF512F), Color(0xffDD2476)], // 🔥 red → pink
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 38),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        // boxShadow: [BoxShadow(color: Colors.red.withOpacity(0.15), blurRadius: 12, offset: const Offset(0, 6))],
+      ),
+      child: Row(
+        children: [
+          ShaderMask(
+            shaderCallback: (bounds) => gradient.createShader(bounds),
+            child: iconPath.icon(color: Colors.white), // apply gradient
+          ),
+          18.gap,
+          Expanded(
+            child: Shimmer.fromColors(
+              baseColor: Colors.redAccent,
+              highlightColor: Colors.orangeAccent,
+              child: Text(
+                title,
+                style: context.titleMedium.medium.s16.copyWith(
+                  color: Colors.red, // fallback if shimmer not applied
+                ),
+              ),
+            ),
+          ),
+          trailing ??
+              ShaderMask(
+                shaderCallback: (bounds) => gradient.createShader(bounds),
+                child: const Icon(
+                  Icons.local_fire_department_rounded, // 🔥 more "offer" feel
+                  size: 18,
+                  color: Colors.white,
+                ),
+              ),
+        ],
+      ).withPressEffect(onTap: onPressed),
+    );
   }
 }
