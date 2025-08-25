@@ -12,13 +12,11 @@ import 'parking_timer_state.dart';
 
 class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObserver {
   final DateTime startTime;
-  
+
   Timer? _timer;
   final List<String> _logs = [];
   DateTime? _lastUpdateTime;
   int _timerTickCount = 0;
-  DateTime? _appPausedTime;
-  DateTime? _appResumedTime;
 
   ParkingTimerCubit({required this.startTime}) : super(const ParkingTimerInitial()) {
     _initializeTimer();
@@ -26,27 +24,27 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
 
   Future<void> _initializeTimer() async {
     emit(const ParkingTimerLoading());
-    
+
     WidgetsBinding.instance.addObserver(this);
-    
+
     await _loadPreviousLogs();
-    
+
     _logEvent("Timer initialized with startTime: $startTime");
     _logEvent("Current time: ${DateTime.now()}");
     _logEvent("Initial duration difference: ${DateTime.now().difference(startTime)}");
 
     _updateElapsedTime();
     _startTimer();
-    
+
     _logEvent("Timer started successfully");
   }
 
   void _startTimer() {
     _timer?.cancel(); // Cancel any existing timer
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (isClosed) return;
-      
+
       _timerTickCount++;
       _updateElapsedTime();
 
@@ -60,7 +58,9 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
       if (_timerTickCount % 10 == 0 && _timerTickCount <= 300) {
         final now = DateTime.now();
         final actualElapsed = now.difference(startTime);
-        _logEvent("Tick $_timerTickCount: displayed=${_getCurrentElapsedTime()}, actual=${_formatDuration(actualElapsed)}");
+        _logEvent(
+          "Tick $_timerTickCount: displayed=${_getCurrentElapsedTime()}, actual=${_formatDuration(actualElapsed)}",
+        );
       }
     });
   }
@@ -71,10 +71,14 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
 
     switch (lifecycleState) {
       case AppLifecycleState.paused:
-        _handleAppPaused();
+        _logEvent("App paused at: ${DateTime.now()}");
+        _logEvent("Timer continues running in background");
         break;
       case AppLifecycleState.resumed:
-        _handleAppResumed();
+        _logEvent("App resumed at: ${DateTime.now()}");
+        _logEvent("Timer elapsed time: ${_getCurrentElapsedTime()}");
+        // Force update when app resumes to ensure UI is current
+        _updateElapsedTime();
         break;
       case AppLifecycleState.detached:
         _logEvent("App detached at: ${DateTime.now()}");
@@ -88,39 +92,9 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
     }
   }
 
-  void _handleAppPaused() {
-    _appPausedTime = DateTime.now();
-    _logEvent("App paused at: $_appPausedTime");
-    _logEvent("Timer was running for: ${_getCurrentElapsedTime()} when paused");
-    
-    final currentState = state;
-    if (currentState is ParkingTimerRunning) {
-      emit(ParkingTimerPaused(
-        elapsedTime: currentState.elapsedTime,
-        startTime: currentState.startTime,
-        pausedAt: _appPausedTime!,
-        logs: List.from(_logs),
-      ));
-    }
-  }
-
-  void _handleAppResumed() {
-    _appResumedTime = DateTime.now();
-    if (_appPausedTime != null) {
-      final pauseDuration = _appResumedTime!.difference(_appPausedTime!);
-      _logEvent("App resumed at: $_appResumedTime");
-      _logEvent("App was paused for: ${_formatDuration(pauseDuration)}");
-      _logEvent("Expected elapsed time after resume: ${_formatDuration(DateTime.now().difference(startTime))}");
-      _logEvent("Actual displayed time: ${_getCurrentElapsedTime()}");
-    }
-    
-    // Force update after resume and transition back to running state
-    _updateElapsedTime();
-  }
-
   void _updateElapsedTime() {
     if (isClosed) return;
-    
+
     final now = DateTime.now();
     final elapsed = now.difference(startTime);
     final newElapsedTime = _formatDuration(elapsed);
@@ -165,22 +139,15 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
       }
     }
 
-    final currentState = state;
-    if (currentState is ParkingTimerRunning) {
-      emit(currentState.copyWith(
-        elapsedTime: newElapsedTime,
-        timerTickCount: _timerTickCount,
-        logs: List.from(_logs),
-      ));
-    } else if (currentState is! ParkingTimerPaused) {
-      // Emit running state if not paused
-      emit(ParkingTimerRunning(
+    // Always emit running state - no pause state
+    emit(
+      ParkingTimerRunning(
         elapsedTime: newElapsedTime,
         startTime: startTime,
         timerTickCount: _timerTickCount,
         logs: List.from(_logs),
-      ));
-    }
+      ),
+    );
 
     _lastUpdateTime = now;
   }
@@ -188,8 +155,6 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
   String _getCurrentElapsedTime() {
     final currentState = state;
     if (currentState is ParkingTimerRunning) {
-      return currentState.elapsedTime;
-    } else if (currentState is ParkingTimerPaused) {
       return currentState.elapsedTime;
     }
     return "00:00:00";
@@ -315,11 +280,11 @@ class ParkingTimerCubit extends Cubit<ParkingTimerState> with WidgetsBindingObse
   Future<void> close() async {
     _logEvent("Timer disposing - Final tick count: $_timerTickCount");
     _logEvent("Final elapsed time: ${_getCurrentElapsedTime()}");
-    
+
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     await _saveLogs();
-    
+
     return super.close();
   }
 }

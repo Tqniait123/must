@@ -41,23 +41,6 @@ class ParkingTimerRunning extends ParkingTimerState {
   }
 }
 
-class ParkingTimerPaused extends ParkingTimerState {
-  final String elapsedTime;
-  final DateTime startTime;
-  final DateTime pausedAt;
-  final List<String> logs;
-
-  const ParkingTimerPaused({
-    required this.elapsedTime,
-    required this.startTime,
-    required this.pausedAt,
-    required this.logs,
-  });
-
-  @override
-  List<Object?> get props => [elapsedTime, startTime, pausedAt, logs];
-}
-
 class ParkingTimerError extends ParkingTimerState {
   final String message;
   final List<String> logs;

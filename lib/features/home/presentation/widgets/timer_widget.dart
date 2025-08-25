@@ -141,7 +141,7 @@ class _ParkingTimerView extends StatelessWidget {
   String _getElapsedTimeFromState(ParkingTimerState state) {
     return switch (state) {
       ParkingTimerRunning() => state.elapsedTime,
-      ParkingTimerPaused() => state.elapsedTime,
+
       ParkingTimerLoading() => "00:00:00",
       ParkingTimerError() => "00:00:00",
       ParkingTimerInitial() => "00:00:00",
@@ -152,7 +152,7 @@ class _ParkingTimerView extends StatelessWidget {
   String _getStatusText(ParkingTimerState state) {
     return switch (state) {
       ParkingTimerRunning() => LocaleKeys.active_parking.tr(),
-      ParkingTimerPaused() => "Parking Paused", // You might want to add this to LocaleKeys
+
       ParkingTimerLoading() => "Loading...", // You might want to add this to LocaleKeys
       ParkingTimerError() => "Error", // You might want to add this to LocaleKeys
       ParkingTimerInitial() => LocaleKeys.active_parking.tr(),
