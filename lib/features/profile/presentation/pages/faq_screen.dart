@@ -83,7 +83,6 @@ class _FAQScreenState extends State<FAQScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
-      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
@@ -345,20 +344,6 @@ class _FAQScreenState extends State<FAQScreen> with TickerProviderStateMixin {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        // Scroll to top
-        Scrollable.ensureVisible(context, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-      },
-      backgroundColor: Theme.of(context).primaryColor,
-      foregroundColor: Colors.white,
-      elevation: 4,
-      icon: const Icon(Icons.keyboard_arrow_up_rounded),
-      label: Text(LocaleKeys.back_to_top.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
 }
