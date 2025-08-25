@@ -1338,5 +1338,10 @@ abstract class  LocaleKeys {
   static const logout_confirmation_message = 'logout_confirmation_message';
   static const biometric_enabled = 'biometric_enabled';
   static const biometric_failed = 'biometric_failed';
+  static const delete_account_confirmation_title = 'delete_account_confirmation_title';
+  static const delete_account_confirmation_message = 'delete_account_confirmation_message';
+  static const delete_account_confirmation_ok = 'delete_account_confirmation_ok';
+  static const delete_account_confirmation_cancel = 'delete_account_confirmation_cancel';
+  static const delete_account_confirmation_success = 'delete_account_confirmation_success';
 
 }

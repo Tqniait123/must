@@ -146,6 +146,14 @@ class ProfileScreen extends StatelessWidget {
             },
           ),
           ProfileItemWidget(
+            title: LocaleKeys.delete_account_confirmation_title.tr(),
+            iconPath: AppIcons.deleteIc,
+            color: Colors.red,
+            onPressed: () {
+              showDeleteAccountBottomSheet(context);
+            },
+          ),
+          ProfileItemWidget(
             title: LocaleKeys.logout.tr(),
             iconPath: AppIcons.logout,
             color: Colors.red,

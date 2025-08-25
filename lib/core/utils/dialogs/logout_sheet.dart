@@ -23,13 +23,6 @@ void showLogoutBottomSheet(BuildContext context) {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(color: AppColors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
-            ),
-            32.gap,
-
             // Warning icon
             Container(
               width: 80,
@@ -75,6 +68,93 @@ void showLogoutBottomSheet(BuildContext context) {
                 Expanded(
                   child: CustomElevatedButton(
                     title: LocaleKeys.back.tr(),
+                    isFilled: false,
+                    textColor: AppColors.black,
+                    withShadow: false,
+                    isBordered: true,
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void showDeleteAccountBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+    backgroundColor: Colors.white,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Warning icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle),
+              child: const Icon(Icons.delete_forever_rounded, size: 40, color: Colors.red),
+            ),
+            24.gap,
+
+            // Title
+            Text(
+              LocaleKeys.delete_account_confirmation_title.tr(),
+              style: context.titleLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.black),
+              textAlign: TextAlign.center,
+            ),
+            12.gap,
+
+            // Description
+            Text(
+              LocaleKeys.delete_account_confirmation_message.tr(),
+              style: context.bodyMedium.copyWith(color: AppColors.grey, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            40.gap,
+
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: CustomElevatedButton(
+                    title: LocaleKeys.delete_account_confirmation_ok.tr(),
+                    isFilled: true,
+                    textColor: AppColors.white,
+                    backgroundColor: AppColors.redD7,
+                    withShadow: false,
+                    isBordered: true,
+                    onPressed: () {
+                      // TODO: Add delete account logic here
+                      // Example: Call API -> clear storage -> navigate to login
+                      context.go(Routes.login);
+
+                      // Optionally show success snackbar or dialog
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(LocaleKeys.delete_account_confirmation_success.tr()),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: CustomElevatedButton(
+                    title: LocaleKeys.delete_account_confirmation_cancel.tr(),
                     isFilled: false,
                     textColor: AppColors.black,
                     withShadow: false,

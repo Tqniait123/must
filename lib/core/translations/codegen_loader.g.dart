@@ -1357,7 +1357,12 @@ class CodegenLoader extends AssetLoader{
   "logout_confirmation_title": "Logout",
   "logout_confirmation_message": "Are you sure you want to logout? You'll need to sign in again to access your account.",
   "biometric_enabled": "Biometric authentication enabled successfully!",
-  "biometric_failed": "Failed to enable biometric authentication"
+  "biometric_failed": "Failed to enable biometric authentication",
+  "delete_account_confirmation_title": "Delete Account",
+  "delete_account_confirmation_message": "Are you sure you want to delete your account? This action is irreversible.",
+  "delete_account_confirmation_ok": "Delete Account",
+  "delete_account_confirmation_cancel": "Cancel",
+  "delete_account_confirmation_success": "Account deleted successfully"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2702,7 +2707,12 @@ static const Map<String,dynamic> _ar = {
   "logout_confirmation_title": "تسجيل الخروج",
   "logout_confirmation_message": "هل أنت متأكد من أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك.",
   "biometric_enabled": "تم تفعيل المصادقة البيومترية بنجاح!",
-  "biometric_failed": "فشل في تفعيل المصادقة البيومترية"
+  "biometric_failed": "فشل في تفعيل المصادقة البيومترية",
+  "delete_account_confirmation_title": "حذف الحساب",
+  "delete_account_confirmation_message": "هل أنت متأكد أنك تريد حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.",
+  "delete_account_confirmation_ok": "حذف الحساب",
+  "delete_account_confirmation_cancel": "إلغاء",
+  "delete_account_confirmation_success": "تم حذف الحساب بنجاح"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
