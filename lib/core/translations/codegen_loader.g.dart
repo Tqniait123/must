@@ -1377,7 +1377,8 @@ class CodegenLoader extends AssetLoader{
   "starts_today": "Starts Today",
   "starts_tomorrow": "Starts Tomorrow",
   "starts_in_days": "Starts in {} days",
-  "continue_as_guest": "Continue as Guest"
+  "continue_as_guest": "Continue as Guest",
+  "password_not_match": "Password does not match"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2742,7 +2743,8 @@ static const Map<String,dynamic> _ar = {
   "starts_today": "يبدأ اليوم",
   "starts_tomorrow": "يبدأ غداً",
   "starts_in_days": "يبدأ خلال {} أيام",
-  "continue_as_guest": "المتابعة كزائر"
+  "continue_as_guest": "المتابعة كزائر",
+  "password_not_match": "كلمة المرور غير متطابقة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

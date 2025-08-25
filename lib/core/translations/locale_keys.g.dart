@@ -1358,5 +1358,6 @@ abstract class  LocaleKeys {
   static const starts_tomorrow = 'starts_tomorrow';
   static const starts_in_days = 'starts_in_days';
   static const continue_as_guest = 'continue_as_guest';
+  static const password_not_match = 'password_not_match';
 
 }

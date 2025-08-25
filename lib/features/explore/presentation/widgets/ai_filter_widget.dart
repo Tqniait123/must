@@ -161,8 +161,8 @@ class _AIFilterOptionWidgetState extends State<AIFilterOptionWidget> with Ticker
                         ClipPath(
                           clipper: CurveCustomClipper(),
                           child: Container(
-                            width: 120, // Fixed: Explicitly set width
-                            height: 70, // Fixed: Explicitly set height
+                            width: 100, // Fixed: Explicitly set width
+                            height: 60, // Fixed: Explicitly set height
                             decoration: BoxDecoration(
                               gradient: widget.isSelected || widget.isAIThinking ? _buildAIGradient() : null,
                               color: widget.isSelected || widget.isAIThinking ? null : Colors.transparent,

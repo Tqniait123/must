@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' hide PermissionStatus, LocationAccuracy;
 import 'package:must_invest/config/routes/routes.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/string_extensions.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
@@ -1224,7 +1225,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     Expanded(
                       child: CustomElevatedButton(
                         title: LocaleKeys.map_button_show_route.tr(),
-                        onPressed: _currentLocation != null ? _showRouteToParking : null,
+                        onPressed:
+                            _currentLocation != null
+                                ? () {
+                                  context.checkVerifiedAndGuestOrDo(() => _showRouteToParking);
+                                }
+                                : null,
                       ),
                     ),
                     const SizedBox(width: 12),

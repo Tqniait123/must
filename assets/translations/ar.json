@@ -1419,7 +1419,8 @@
   "starts_today": "يبدأ اليوم",
   "starts_tomorrow": "يبدأ غداً",
   "starts_in_days": "يبدأ خلال {} أيام",
-  "continue_as_guest": "المتابعة كزائر"
+  "continue_as_guest": "المتابعة كزائر",
+  "password_not_match": "كلمة المرور غير متطابقة"
 
 
 

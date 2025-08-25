@@ -279,6 +279,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       title: LocaleKeys.password_confirmation.tr(),
                       obscureText: true,
                       isPassword: true,
+                      validator:
+                          (password) =>
+                              _passwordController.text != password ? LocaleKeys.password_not_match.tr() : null,
                     ),
                     19.gap,
                   ],
@@ -312,6 +315,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (selectedCityId == null) {
                             showErrorToast(context, LocaleKeys.city.tr());
                           }
+
+                          // if (_passwordController.text != _confirmPasswordController.text) {
+                          //   showErrorToast(context, LocaleKeys.password_not_match.tr());
+                          // }
                           if (_formKey.currentState!.validate()) {
                             AuthCubit.get(context).register(
                               RegisterParams(
