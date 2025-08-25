@@ -48,6 +48,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
 
   // For different scroll options
   final ScrollUXOption _selectedScrollOption = ScrollUXOption.animatedHints;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -57,7 +58,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
   @override
   void didPopNext() {
     _loadNearestParkings(isFirstTime: false);
-    // Called when coming back to this screen
     debugPrint("RETURNED TO HOME ✅");
   }
 
@@ -71,12 +71,9 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     _logHomeEvent("Platform: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}");
     _logHomeEvent("Screen initialization time: ${DateTime.now()}");
 
-    // Load previous logs and start monitoring
     _loadHomeLogs();
     _checkParkingStatus();
     _loadNearestParkings(isFirstTime: true);
-
-    // Start periodic checking for parking status changes
     _startParkingStatusMonitoring();
   }
 
@@ -114,7 +111,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     _homeLogs.add(logEntry);
     print("HOME_PARKING_LOG: $logEntry");
 
-    // Keep only last 500 logs
     if (_homeLogs.length > 500) {
       _homeLogs.removeRange(0, _homeLogs.length - 500);
     }
@@ -167,7 +163,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         final timeDiff = DateTime.now().difference(parkingStartTime);
         _logHomeEvent("  - Time since parking started: ${_formatDuration(timeDiff)}");
 
-        // Check if startTime changed unexpectedly
         if (_lastLoggedStartTime != null && _lastLoggedStartTime != parkingStartTime) {
           _logHomeEvent("WARNING: Parking start time changed!");
           _logHomeEvent("  - Previous: $_lastLoggedStartTime");
@@ -177,7 +172,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
 
         _lastLoggedStartTime = parkingStartTime;
 
-        // Check for suspiciously recent start times (potential resets)
         if (timeDiff.inMinutes < 1 && _homeLogs.any((log) => log.contains("Time since parking started:"))) {
           _logHomeEvent("SUSPICIOUS: Start time is very recent, possible reset!");
         }
@@ -186,7 +180,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
       _logHomeEvent("User is not in parking - timer should not be displayed");
     }
 
-    // Save logs every 10 checks (50 seconds) on Android, every 20 checks on iOS
     final saveInterval = Platform.isAndroid ? 10 : 20;
     if (_parkingCheckTimer?.tick != null && _parkingCheckTimer!.tick % saveInterval == 0) {
       _saveHomeLogs();
@@ -218,8 +211,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
       final allLogs = [...deviceInfo, ..._homeLogs];
       final logContent = allLogs.join('\n');
 
-      // For now, just copy to clipboard and show snackbar
-      // You can implement file sharing like in the timer widget
       await Clipboard.setData(ClipboardData(text: logContent));
 
       if (mounted) {
@@ -248,7 +239,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     final isInParking = user.inParking ?? false;
     final parkingStartTime = user.inParkingFrom;
 
-    // Log every rebuild to track when timer widget appears/disappears
     _logHomeEvent("HOME SCREEN BUILD:");
     _logHomeEvent("  - inParking: $isInParking");
     _logHomeEvent("  - startTime: $parkingStartTime");
@@ -258,12 +248,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     }
 
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   mini: true,
-      //   onPressed: _shareHomeLogs,
-      //   backgroundColor: Colors.orange,
-      //   child: const Icon(Icons.home, color: Colors.white, size: 20),
-      // ),
       body: CustomLayout(
         withPadding: true,
         patternOffset: const Offset(-100, -200),
@@ -274,30 +258,50 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         backgroundPatternAssetPath: AppImages.homePattern,
         children: [
           30.gap,
-          Row(
-            children: [
-              Flexible(flex: 1, child: MyPointsCardMinimal()),
-              if (isInParking) ...[
-                SizedBox(width: 16),
-                Flexible(
-                  flex: 1,
-                  child: Builder(
-                    builder: (context) {
-                      final effectiveStartTime = parkingStartTime ?? DateTime.now();
-
-                      if (parkingStartTime == null) {
-                        _logHomeEvent("CREATING TIMER with NULL startTime - using DateTime.now()");
-                        _logHomeEvent("Fallback time: $effectiveStartTime");
-                      } else {
-                        _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
-                      }
-
-                      return ParkingTimerCard(startTime: effectiveStartTime);
-                    },
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = constraints.maxWidth / 2 - 8; // Subtract spacing
+              return Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: cardWidth,
+                        minHeight: 150, // Minimum height to ensure consistency
+                      ),
+                      child: MyPointsCardMinimal(),
+                    ),
                   ),
-                ),
-              ],
-            ],
+                  if (isInParking) ...[
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 1,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: cardWidth,
+                          minHeight: 150, // Same minimum height as MyPointsCardMinimal
+                        ),
+                        child: Builder(
+                          builder: (context) {
+                            final effectiveStartTime = parkingStartTime ?? DateTime.now();
+
+                            if (parkingStartTime == null) {
+                              _logHomeEvent("CREATING TIMER with NULL startTime - using DateTime.now()");
+                              _logHomeEvent("Fallback time: $effectiveStartTime");
+                            } else {
+                              _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
+                            }
+
+                            return ParkingTimerCard(startTime: effectiveStartTime);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
           32.gap,
           Row(
@@ -314,17 +318,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
               ),
             ],
           ),
-
-          // // Option Selector for Testing (Remove in production)
-          // 16.gap,
-          // ScrollUXSelector(
-          //   selectedOption: _selectedScrollOption,
-          //   onOptionSelected: (option) {
-          //     setState(() {
-          //       _selectedScrollOption = option;
-          //     });
-          //   },
-          // ),
           16.gap,
           BlocProvider.value(
             value: _exploreCubit,
