@@ -1392,7 +1392,11 @@ class CodegenLoader extends AssetLoader{
     "device_authentication_successful": "Device authentication successful.",
     "device_authentication_failed": "Device authentication failed or cancelled",
     "device_authentication_error": "Device authentication error"
-  }
+  },
+  "location_permission_required": "Location Permission Required",
+  "location_permission_denied_message": "Location access is needed to find nearby parking spots. Please grant location permission to continue.",
+  "location_permission_permanently_denied_message": "Location permission has been permanently denied. Please enable location access in app settings to use this feature.",
+  "location_services_disabled_message": "Location services are disabled. Please enable them in your device settings to find nearby parking spots."
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2772,7 +2776,10 @@ static const Map<String,dynamic> _ar = {
     "device_authentication_successful": "تمت مصادقة الجهاز بنجاح.",
     "device_authentication_failed": "فشلت مصادقة الجهاز أو تم إلغاؤها",
     "device_authentication_error": "خطأ في مصادقة الجهاز"
-  }
+  },
+  "location_permission_denied_message": "يلزم الوصول إلى الموقع للعثور على مواقف السيارات القريبة. يرجى منح إذن الموقع للمتابعة.",
+  "location_permission_permanently_denied_message": "تم رفض إذن الموقع بشكل دائم. يرجى تمكين الوصول إلى الموقع في إعدادات التطبيق لاستخدام هذه الميزة.",
+  "location_services_disabled_message": "خدمات الموقع معطلة. يرجى تمكينها في إعدادات جهازك للعثور على مواقف السيارات القريبة."
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

@@ -25,6 +25,7 @@ import 'package:must_invest/features/explore/presentation/widgets/ai_filter_widg
 import 'package:must_invest/features/explore/presentation/widgets/ai_thinking_widget.dart';
 import 'package:must_invest/features/explore/presentation/widgets/filter_option_widget.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -167,31 +168,102 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   Future<bool> _checkLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
     // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      _showLocationDialog(LocaleKeys.location_services_disabled.tr());
+      _showLocationServiceDialog();
       return false;
     }
 
-    permission = await Geolocator.checkPermission();
+    // Check current permission status
+    LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
+      // Request permission
       permission = await Geolocator.requestPermission();
+
       if (permission == LocationPermission.denied) {
-        _showLocationDialog(LocaleKeys.location_permissions_denied.tr());
+        _showPermissionDialog(
+          title: LocaleKeys.location_permission_required.tr(),
+          message: LocaleKeys.location_permission_denied_message.tr(),
+          showSettings: false,
+        );
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      _showLocationDialog(LocaleKeys.location_permissions_permanently_denied.tr());
+      // Permission denied forever, show settings dialog
+      _showPermissionDialog(
+        title: LocaleKeys.location_permission_required.tr(),
+        message: LocaleKeys.location_permission_permanently_denied_message.tr(),
+        showSettings: true,
+      );
       return false;
     }
 
-    return true;
+    return permission == LocationPermission.whileInUse || permission == LocationPermission.always;
+  }
+
+  void _showLocationServiceDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: Text(LocaleKeys.location_services_disabled.tr()),
+            content: Text(LocaleKeys.location_services_disabled_message.tr()),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.cancel.tr())),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await Geolocator.openLocationSettings();
+                },
+                child: Text(LocaleKeys.open_settings.tr()),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showPermissionDialog({required String title, required String message, required bool showSettings}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.cancel.tr())),
+              if (showSettings)
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    await _openAppSettings();
+                  },
+                  child: Text(LocaleKeys.open_settings.tr()),
+                )
+              else
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _getCurrentLocation(); // Try again
+                  },
+                  child: Text(LocaleKeys.try_again.tr()),
+                ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _openAppSettings() async {
+    final opened = await openAppSettings();
+    if (!opened) {
+      // Fallback to Geolocator's app settings
+      await Geolocator.openAppSettings();
+    }
   }
 
   void _showLocationDialog(String message) {

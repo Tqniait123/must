@@ -1434,7 +1434,11 @@
     "device_authentication_successful": "Device authentication successful.",
     "device_authentication_failed": "Device authentication failed or cancelled",
     "device_authentication_error": "Device authentication error"
-  }
+  },
+  "location_permission_required": "Location Permission Required",
+  "location_permission_denied_message": "Location access is needed to find nearby parking spots. Please grant location permission to continue.",
+  "location_permission_permanently_denied_message": "Location permission has been permanently denied. Please enable location access in app settings to use this feature.",
+  "location_services_disabled_message": "Location services are disabled. Please enable them in your device settings to find nearby parking spots."
 
 
 }

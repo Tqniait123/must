@@ -1372,5 +1372,9 @@ abstract class  LocaleKeys {
   static const biometric_messages_device_authentication_failed = 'biometric_messages.device_authentication_failed';
   static const biometric_messages_device_authentication_error = 'biometric_messages.device_authentication_error';
   static const biometric_messages = 'biometric_messages';
+  static const location_permission_required = 'location_permission_required';
+  static const location_permission_denied_message = 'location_permission_denied_message';
+  static const location_permission_permanently_denied_message = 'location_permission_permanently_denied_message';
+  static const location_services_disabled_message = 'location_services_disabled_message';
 
 }

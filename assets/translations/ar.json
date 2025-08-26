@@ -1434,7 +1434,10 @@
     "device_authentication_successful": "تمت مصادقة الجهاز بنجاح.",
     "device_authentication_failed": "فشلت مصادقة الجهاز أو تم إلغاؤها",
     "device_authentication_error": "خطأ في مصادقة الجهاز"
-  }
+  },
+  "location_permission_denied_message": "يلزم الوصول إلى الموقع للعثور على مواقف السيارات القريبة. يرجى منح إذن الموقع للمتابعة.",
+  "location_permission_permanently_denied_message": "تم رفض إذن الموقع بشكل دائم. يرجى تمكين الوصول إلى الموقع في إعدادات التطبيق لاستخدام هذه الميزة.",
+  "location_services_disabled_message": "خدمات الموقع معطلة. يرجى تمكينها في إعدادات جهازك للعثور على مواقف السيارات القريبة."
 
 
 
