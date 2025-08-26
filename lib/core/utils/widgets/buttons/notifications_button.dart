@@ -12,17 +12,14 @@ class NotificationsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: "notifications",
-      child: CustomIconButton(
-        iconAsset: AppIcons.notificationsIc,
-        iconColor: iconColor,
-        color: color ?? Color(0xff6468AC),
-        onPressed: () {
-          context.checkVerifiedAndGuestOrDo(() => context.push(Routes.notifications));
-          // context.push(Routes.notifications);
-        },
-      ),
+    return CustomIconButton(
+      iconAsset: AppIcons.notificationsIc,
+      iconColor: iconColor,
+      color: color ?? Color(0xff6468AC),
+      onPressed: () {
+        context.checkVerifiedAndGuestOrDo(() => context.push(Routes.notifications));
+        // context.push(Routes.notifications);
+      },
     );
   }
 }

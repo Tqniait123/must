@@ -994,6 +994,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           context.setCurrentUser(state.user);
                           showSuccessToast(context, LocaleKeys.profile_updated_successfully.tr());
                         } else {
+                          showSuccessToast(context, state.message, seconds: 15);
                           context.go(
                             Routes.otpScreen,
                             extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},

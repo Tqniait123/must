@@ -47,6 +47,10 @@ class UserHomeHeaderWidget extends StatelessWidget {
                     color: Color(0xff6468AC),
                     onPressed: () {
                       context.push(Routes.profile);
+                      // close opened keyboard first
+                      // FocusManager.instance.primaryFocus?.unfocus();
+                      // Future.delayed(Duration(milliseconds: 500), () {
+                      // });
                     },
                   ),
                   15.gap,

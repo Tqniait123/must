@@ -13,8 +13,9 @@ class ProfileLoading extends ProfileState {}
 
 class ProfileSuccess extends ProfileState {
   final dynamic user;
+  final String message;
 
-  const ProfileSuccess(this.user);
+  const ProfileSuccess(this.user, this.message);
 
   @override
   List<Object> get props => [user];

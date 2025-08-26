@@ -18,7 +18,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     try {
       emit(ProfileLoading());
       final response = await _repository.updateProfile(params);
-      response.fold((user) => emit(ProfileSuccess(user)), (error) => emit(ProfileError(error.message)));
+      response.fold(
+        (userWithMessage) => emit(ProfileSuccess(userWithMessage.user, userWithMessage.message)),
+        (error) => emit(ProfileError(error.message)),
+      );
     } on AppError catch (e) {
       emit(ProfileError(e.message));
     } catch (e) {
