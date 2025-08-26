@@ -1378,7 +1378,21 @@ class CodegenLoader extends AssetLoader{
   "starts_tomorrow": "Starts Tomorrow",
   "starts_in_days": "Starts in {} days",
   "continue_as_guest": "Continue as Guest",
-  "password_not_match": "Password does not match"
+  "password_not_match": "Password does not match",
+  "biometric_messages": {
+    "authenticate_reason": "Please authenticate with biometrics",
+    "not_enabled": "Biometric authentication is not enabled",
+    "no_saved_credentials": "No saved credentials found. Please login with password first.",
+    "not_supported": "Biometric authentication is not supported on this device",
+    "not_enrolled": "Biometric authentication is available but not enrolled. Please enroll your biometrics.",
+    "authentication_successful": "Authentication successful",
+    "authentication_failed": "Biometric authentication failed or cancelled",
+    "status_error": "Error checking biometric status",
+    "authentication_error": "Authentication error",
+    "device_authentication_successful": "Device authentication successful.",
+    "device_authentication_failed": "Device authentication failed or cancelled",
+    "device_authentication_error": "Device authentication error"
+  }
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2744,7 +2758,21 @@ static const Map<String,dynamic> _ar = {
   "starts_tomorrow": "يبدأ غداً",
   "starts_in_days": "يبدأ خلال {} أيام",
   "continue_as_guest": "المتابعة كزائر",
-  "password_not_match": "كلمة المرور غير متطابقة"
+  "password_not_match": "كلمة المرور غير متطابقة",
+  "biometric_messages": {
+    "authenticate_reason": "يرجى المصادقة باستخدام القياسات الحيوية",
+    "not_enabled": "لم يتم تفعيل المصادقة باستخدام القياسات الحيوية",
+    "no_saved_credentials": "لم يتم العثور على بيانات اعتماد محفوظة. يرجى تسجيل الدخول بكلمة المرور أولاً.",
+    "not_supported": "المصادقة باستخدام القياسات الحيوية غير مدعومة على هذا الجهاز",
+    "not_enrolled": "المصادقة باستخدام القياسات الحيوية متاحة ولكن لم يتم تسجيلها. يرجى تسجيل القياسات الحيوية الخاصة بك.",
+    "authentication_successful": "تمت المصادقة بنجاح",
+    "authentication_failed": "فشلت المصادقة باستخدام القياسات الحيوية أو تم إلغاؤها",
+    "status_error": "خطأ في فحص حالة القياسات الحيوية",
+    "authentication_error": "خطأ في المصادقة",
+    "device_authentication_successful": "تمت مصادقة الجهاز بنجاح.",
+    "device_authentication_failed": "فشلت مصادقة الجهاز أو تم إلغاؤها",
+    "device_authentication_error": "خطأ في مصادقة الجهاز"
+  }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

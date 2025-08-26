@@ -1,6 +1,8 @@
 import 'package:app_settings/app_settings.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 class BiometricService2 {
   static final LocalAuthentication _localAuth = LocalAuthentication();
@@ -12,7 +14,7 @@ class BiometricService2 {
   // Keys for secure storage
   static const String _phoneKey = 'saved_phone';
   static const String _passwordKey = 'saved_password';
-  static const String _biometricEnabledKey = 'biometric_enabled';
+  static const String _biometricEnabledKey = 'biometric_messages_enabled';
   static const String _rememberedPhoneKey = 'remembered_phone'; // New key for remembered phone
 
   // Save credentials to secure storage
@@ -259,7 +261,7 @@ extension LocalAuthExtension on BiometricService2 {
 
         if (biometricStatus == BiometricStatus.available) {
           final isAuthenticated = await authenticateWithBiometrics(
-            localizedReason: 'Please authenticate with biometrics',
+            localizedReason: LocaleKeys.biometric_messages_authenticate_reason.tr(),
           );
           if (isAuthenticated) {
             final savedPhone = await BiometricService2.getSavedPhone();
@@ -287,7 +289,7 @@ extension LocalAuthExtension on BiometricService2 {
       if (!isBiometricEnabled) {
         return AuthenticationResult(
           success: false,
-          message: 'Biometric authentication is not enabled',
+          message: LocaleKeys.biometric_messages_not_enabled.tr(),
           action: AuthenticationAction.none,
         );
       }
@@ -297,7 +299,7 @@ extension LocalAuthExtension on BiometricService2 {
       if (!hasSavedCredentials) {
         return AuthenticationResult(
           success: false,
-          message: 'No saved credentials found. Please login with password first.',
+          message: LocaleKeys.no_saved_credentials.tr(),
           action: AuthenticationAction.usePassword,
         );
       }
@@ -308,20 +310,20 @@ extension LocalAuthExtension on BiometricService2 {
         case BiometricStatus.notSupported:
           return AuthenticationResult(
             success: false,
-            message: 'Biometric authentication is not supported on this device',
+            message: LocaleKeys.biometric_messages_not_supported.tr(),
             action: AuthenticationAction.none,
           );
 
         case BiometricStatus.availableButNotEnrolled:
           return AuthenticationResult(
             success: false,
-            message: 'Biometric authentication is available but not enrolled. Please enroll your biometrics.',
+            message: LocaleKeys.biometric_messages_not_enrolled.tr(),
             action: AuthenticationAction.openSettings,
           );
 
         case BiometricStatus.available:
           final isAuthenticated = await authenticateWithBiometrics(
-            localizedReason: 'Please authenticate with biometrics',
+            localizedReason: LocaleKeys.biometric_messages_authenticate_reason.tr(),
           );
 
           if (isAuthenticated) {
@@ -331,7 +333,7 @@ extension LocalAuthExtension on BiometricService2 {
             if (savedPhone == null || savedPassword == null) {
               return AuthenticationResult(
                 success: false,
-                message: 'No saved credentials found. Please login with password first.',
+                message: LocaleKeys.no_saved_credentials.tr(),
                 action: AuthenticationAction.usePassword,
               );
             }
@@ -340,7 +342,7 @@ extension LocalAuthExtension on BiometricService2 {
             // instead of comparing with input credentials
             return AuthenticationResult(
               success: true,
-              message: 'Authentication successful',
+              message: LocaleKeys.authentication_successful.tr(),
               action: AuthenticationAction.none,
               phone: savedPhone,
               password: savedPassword,
@@ -348,7 +350,7 @@ extension LocalAuthExtension on BiometricService2 {
           } else {
             return AuthenticationResult(
               success: false,
-              message: 'Biometric authentication failed or cancelled',
+              message: LocaleKeys.biometric_messages_authentication_failed.tr(),
               action: AuthenticationAction.retry,
             );
           }
@@ -356,23 +358,21 @@ extension LocalAuthExtension on BiometricService2 {
         case BiometricStatus.error:
           return AuthenticationResult(
             success: false,
-            message: 'Error checking biometric status',
+            message: LocaleKeys.biometric_messages_status_error.tr(),
             action: AuthenticationAction.none,
           );
       }
     } catch (e) {
       return AuthenticationResult(
         success: false,
-        message: 'Authentication error: ${e.toString()}',
+        message: '${LocaleKeys.biometric_messages_authentication_error.tr()}: ${e.toString()}',
         action: AuthenticationAction.none,
       );
     }
   }
 
   // FIXED: Device credential authentication with proper parameters
-  Future<AuthenticationResult> authenticateWithDeviceCredentialsResult({
-    required String localizedReason,
-  }) async {
+  Future<AuthenticationResult> authenticateWithDeviceCredentialsResult({required String localizedReason}) async {
     try {
       final isAuthenticated = await authenticateWithDeviceCredentials(localizedReason: localizedReason);
       final phone = await BiometricService2.getSavedPhone();
@@ -381,7 +381,7 @@ extension LocalAuthExtension on BiometricService2 {
       if (isAuthenticated) {
         return AuthenticationResult(
           success: true,
-          message: 'Device authentication successful.',
+          message: LocaleKeys.biometric_messages_device_authentication_successful.tr(),
           action: AuthenticationAction.none,
           phone: phone,
           password: password,
@@ -389,14 +389,14 @@ extension LocalAuthExtension on BiometricService2 {
       } else {
         return AuthenticationResult(
           success: false,
-          message: 'Device authentication failed or cancelled',
+          message: LocaleKeys.device_authentication_failed.tr(),
           action: AuthenticationAction.retry,
         );
       }
     } catch (e) {
       return AuthenticationResult(
         success: false,
-        message: 'Device authentication error: ${e.toString()}',
+        message: '${LocaleKeys.biometric_messages_device_authentication_error.tr()}: ${e.toString()}',
         action: AuthenticationAction.none,
       );
     }

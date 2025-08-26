@@ -1359,5 +1359,18 @@ abstract class  LocaleKeys {
   static const starts_in_days = 'starts_in_days';
   static const continue_as_guest = 'continue_as_guest';
   static const password_not_match = 'password_not_match';
+  static const biometric_messages_authenticate_reason = 'biometric_messages.authenticate_reason';
+  static const biometric_messages_not_enabled = 'biometric_messages.not_enabled';
+  static const biometric_messages_no_saved_credentials = 'biometric_messages.no_saved_credentials';
+  static const biometric_messages_not_supported = 'biometric_messages.not_supported';
+  static const biometric_messages_not_enrolled = 'biometric_messages.not_enrolled';
+  static const biometric_messages_authentication_successful = 'biometric_messages.authentication_successful';
+  static const biometric_messages_authentication_failed = 'biometric_messages.authentication_failed';
+  static const biometric_messages_status_error = 'biometric_messages.status_error';
+  static const biometric_messages_authentication_error = 'biometric_messages.authentication_error';
+  static const biometric_messages_device_authentication_successful = 'biometric_messages.device_authentication_successful';
+  static const biometric_messages_device_authentication_failed = 'biometric_messages.device_authentication_failed';
+  static const biometric_messages_device_authentication_error = 'biometric_messages.device_authentication_error';
+  static const biometric_messages = 'biometric_messages';
 
 }
