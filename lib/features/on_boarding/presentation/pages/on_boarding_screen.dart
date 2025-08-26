@@ -25,11 +25,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController();
   final MustInvestPreferences preferences = sl<MustInvestPreferences>();
   int _currentPage = 0;
-  List<String> images = [
-    AppIcons.onBoarding1,
-    AppIcons.onBoarding2,
-    AppIcons.onBoarding3,
-  ];
+  List<String> images = [AppIcons.onBoarding1, AppIcons.onBoarding2, AppIcons.onBoarding3];
 
   @override
   void initState() {
@@ -68,9 +64,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       },
                       child: Text(
                         LocaleKeys.skip.tr(),
-                        style: context.textTheme.bodyMedium!.copyWith(
-                          color: AppColors.primary.withValues(alpha: 0.5),
-                        ),
+                        style: context.textTheme.bodyMedium!.copyWith(color: AppColors.primary.withValues(alpha: 0.5)),
                       ),
                     ),
                   ),
@@ -81,17 +75,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   height: MediaQuery.of(context).size.height * 0.35,
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 600),
-                    transitionBuilder: (
-                      Widget child,
-                      Animation<double> animation,
-                    ) {
+                    transitionBuilder: (Widget child, Animation<double> animation) {
                       return FadeTransition(opacity: animation, child: child);
                     },
-                    child: SvgPicture.asset(
-                      key: ValueKey(_currentPage),
-                      fit: BoxFit.fitWidth,
-                      images[_currentPage],
-                    ),
+                    child: SvgPicture.asset(key: ValueKey(_currentPage), fit: BoxFit.fitWidth, images[_currentPage]),
                   ),
                 ),
 
@@ -100,10 +87,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 // Page content
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.2,
-                  child: CustomPageView(
-                    currentPage: _currentPage,
-                    pageController: _pageController,
-                  ),
+                  child: CustomPageView(currentPage: _currentPage, pageController: _pageController),
                 ),
 
                 // Indicators
@@ -133,16 +117,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   child: Column(
                     children: [
                       CustomElevatedButton(
-                        title: LocaleKeys.login.tr(),
+                        title: _currentPage < 2 ? LocaleKeys.next.tr() : LocaleKeys.login.tr(),
                         // _currentPage == 2
                         //     ? LocaleKeys.get_started.tr()
                         //     : LocaleKeys.next.tr(),
                         onPressed: () {
                           if (_currentPage < 2) {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeIn,
-                            );
+                            _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                           } else {
                             preferences.setOnBoardingCompleted();
                             context.pushReplacement(Routes.login);

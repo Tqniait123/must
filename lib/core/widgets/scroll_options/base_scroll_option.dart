@@ -4,12 +4,7 @@ import 'package:flutter/material.dart';
 
 /// Base class for all scroll option widgets
 abstract class BaseScrollOption extends StatelessWidget {
-  const BaseScrollOption({
-    super.key,
-    required this.state,
-    required this.onRefresh,
-    this.height,
-  });
+  const BaseScrollOption({super.key, required this.state, required this.onRefresh, this.height});
 
   final dynamic state; // ExploreState
   final RefreshCallback onRefresh;
@@ -19,11 +14,8 @@ abstract class BaseScrollOption extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final defaultHeight = screenHeight * 0.35;
-    
-    return SizedBox(
-      height: height ?? defaultHeight,
-      child: buildContent(context),
-    );
+
+    return SizedBox(height: height ?? defaultHeight, child: buildContent(context));
   }
 
   Widget buildContent(BuildContext context);

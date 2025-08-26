@@ -193,10 +193,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(widget.radius)),
               ),
-              // errorStyle: const TextStyle(
-              //   height: 0.05,
-              //   fontSize: 15,
-              // ),
+              errorStyle: const TextStyle(fontSize: 12),
               errorMaxLines: 3,
               hintText: widget.hint,
               // labelText: widget.title,

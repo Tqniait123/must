@@ -555,9 +555,7 @@ class _LoginScreenState extends State<LoginScreen> {
               27.gap,
               Text(
                 LocaleKeys.login_to_your_account.tr(),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge!.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.white),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 20, color: AppColors.white),
                 textAlign: TextAlign.center,
               ),
             ],

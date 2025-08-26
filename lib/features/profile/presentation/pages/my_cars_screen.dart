@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:must_invest/core/extensions/context_extensions.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -163,19 +164,25 @@ class _MyCarsScreenState extends State<MyCarsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size(context.width, kToolbarHeight + 5),
+        child: Container(
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomBackButton(),
+              Text(LocaleKeys.my_cars.tr(), style: context.titleLarge.copyWith()),
+              NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
+            ],
+          ).withSafeArea().paddingHorizontal(24).paddingBottom(10),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomBackButton(),
-                Text(LocaleKeys.my_cars.tr(), style: context.titleLarge.copyWith()),
-                NotificationsButton(color: Color(0xffEAEAF3), iconColor: AppColors.primary),
-              ],
-            ),
             Expanded(
               child: BlocConsumer<CarCubit, CarState>(
                 listener: (context, state) {

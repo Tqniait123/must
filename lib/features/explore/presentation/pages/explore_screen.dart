@@ -298,6 +298,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: _filters.length,
+                  clipBehavior: Clip.none,
                   separatorBuilder: (context, index) => 10.gap,
                   itemBuilder: (context, index) {
                     final filter = _filters[index];

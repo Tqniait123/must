@@ -193,6 +193,7 @@ class ProfileScreen extends StatelessWidget {
             },
             title: LocaleKeys.how_can_we_help_you.tr(),
           ),
+          40.gap,
         ],
       ),
     );

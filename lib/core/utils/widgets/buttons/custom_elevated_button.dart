@@ -65,8 +65,7 @@ class CustomElevatedButton extends StatefulWidget {
   _CustomElevatedButtonState createState() => _CustomElevatedButtonState();
 }
 
-class _CustomElevatedButtonState extends State<CustomElevatedButton>
-    with SingleTickerProviderStateMixin {
+class _CustomElevatedButtonState extends State<CustomElevatedButton> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   bool _isPressed = false;
@@ -75,12 +74,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
   void initState() {
     super.initState();
 
-    
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.95,
@@ -135,24 +129,17 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
                     border:
                         widget.isBordered
                             ? Border.all(
-                              color:
-                                  widget.isDisabled
-                                      ? AppColors.disableColor
-                                      : AppColors.greyED,
+                              color: widget.isDisabled ? AppColors.disableColor : AppColors.greyED,
                               width: 1.0,
                             )
                             : null,
 
-                    borderRadius:
-                        widget.borderRadius ?? BorderRadius.circular(15),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(15),
 
                     color:
-                    
                         widget.isDisabled
                             ? AppColors.disableColor
-                            : (widget.isFilled
-                                ? (widget.backgroundColor ?? AppColors.primary)
-                                : AppColors.whiteEA),
+                            : (widget.isFilled ? (widget.backgroundColor ?? AppColors.primary) : AppColors.whiteEA),
                     boxShadow:
                         widget.withShadow
                             ? [
@@ -168,10 +155,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (child, animation) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: ScaleTransition(scale: animation, child: child),
-                      );
+                      return FadeTransition(opacity: animation, child: ScaleTransition(scale: animation, child: child));
                     },
                     child:
                         widget.loading
@@ -186,17 +170,12 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (widget.icon != null &&
-                                    (widget.iconType == IconType.leading ||
-                                        widget.iconType ==
-                                            IconType.center)) ...[
+                                    (widget.iconType == IconType.leading || widget.iconType == IconType.center)) ...[
                                   SvgPicture.asset(
                                     widget.icon!,
                                     colorFilter:
                                         widget.iconColor != null
-                                            ? ColorFilter.mode(
-                                              widget.iconColor!,
-                                              BlendMode.srcIn,
-                                            )
+                                            ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
                                             : null,
                                   ),
                                   7.pw,
@@ -204,15 +183,11 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
                                 Expanded(
                                   child: AutoSizeText(
                                     widget.title.tr(),
-                                    style: context.theme.textTheme.bodyLarge!
-                                        .copyWith(
-                                          color:
-                                              widget.textColor ??
-                                              (widget.isFilled
-                                                  ? AppColors.white
-                                                  : Color(0xff2D2D2D)),
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                    style: context.theme.textTheme.bodySmall!.copyWith(
+                                      color:
+                                          widget.textColor ?? (widget.isFilled ? AppColors.white : Color(0xff2D2D2D)),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                     maxLines: 1,
                                     minFontSize: 10,
                                     overflow: TextOverflow.ellipsis,
@@ -220,19 +195,14 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
                                   ),
                                 ),
                                 if (widget.icon != null &&
-                                    (widget.iconType == IconType.trailing ||
-                                        widget.iconType ==
-                                            IconType.center)) ...[
+                                    (widget.iconType == IconType.trailing || widget.iconType == IconType.center)) ...[
                                   7.pw,
                                   if (widget.withFlipIcon) ...[
                                     SvgPicture.asset(
                                       widget.icon!,
                                       colorFilter:
                                           widget.iconColor != null
-                                              ? ColorFilter.mode(
-                                                widget.iconColor!,
-                                                BlendMode.srcIn,
-                                              )
+                                              ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
                                               : null,
                                     ).flippedForLocale(context),
                                   ] else ...[
@@ -240,10 +210,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton>
                                       widget.icon!,
                                       colorFilter:
                                           widget.iconColor != null
-                                              ? ColorFilter.mode(
-                                                widget.iconColor!,
-                                                BlendMode.srcIn,
-                                              )
+                                              ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
                                               : null,
                                     ),
                                   ],

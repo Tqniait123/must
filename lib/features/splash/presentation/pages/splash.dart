@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _logoFadeController.forward();
 
     // Wait 2 seconds before showing welcome message and moving logo
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     // Start both animations simultaneously
     _fadeController.forward();

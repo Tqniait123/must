@@ -16,6 +16,7 @@ import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/string_extensions.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -425,11 +426,11 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           const SizedBox(height: 8),
           Text(error, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
           const SizedBox(height: 24),
-          ElevatedButton.icon(
+          CustomElevatedButton(
             onPressed: _refreshData,
-            icon: const Icon(Icons.refresh),
-            label: Text(LocaleKeys.common_retry.tr()),
-          ),
+            // icon: const Icon(Icons.refresh),
+            title: LocaleKeys.common_retry.tr(),
+          ).paddingHorizontal(40),
         ],
       ),
     );
