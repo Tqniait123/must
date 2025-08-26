@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     final pref = MustInvestPreferences(sl());
     final bool isOnBoardingCompleted = pref.isOnBoardingCompleted();
 
-    if (!isOnBoardingCompleted) {
+    if (isOnBoardingCompleted) {
       // Navigate to onboarding if not completed
       context.go(Routes.onBoarding1);
     } else {

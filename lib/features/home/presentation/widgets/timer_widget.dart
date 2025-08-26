@@ -83,7 +83,7 @@ class _ParkingTimerView extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+                // mainAxisSize: MainAxisSize.min,
                 children: [
                   ScrollingText(
                     _getStatusText(state),
@@ -95,20 +95,16 @@ class _ParkingTimerView extends StatelessWidget {
                     // textAlign: TextAlign.start,
                   ),
                   4.gap,
-                  Row(
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          elapsedTime,
-                          style: context.bodyMedium.copyWith(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: isRunning ? AppColors.primary : Colors.orange,
-                          ),
-                        ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      elapsedTime,
+                      style: context.bodyMedium.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: isRunning ? AppColors.primary : Colors.orange,
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -57,6 +58,17 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   final ScrollController _parkingListController = ScrollController();
   final MapController _mapController = MapController();
 
+  // Route line animation
+  late AnimationController _routeAnimationController;
+  late Animation<double> _routeAnimation;
+  List<LatLng> _animatedRoutePoints = [];
+
+  // Map zoom animation
+  late AnimationController _zoomAnimationController;
+  late Animation<double> _zoomAnimation;
+  LatLng? _targetCenter;
+  double? _targetZoom;
+
   // List view state - UPDATED: Default collapsed state when parking is selected
   bool _isListExpanded = true;
   double _listHeight = 220.0;
@@ -75,6 +87,20 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       end: 1.0,
     ).animate(CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut));
 
+    // Initialize route animation controller
+    _routeAnimationController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
+    _routeAnimation = CurvedAnimation(parent: _routeAnimationController, curve: Curves.easeInOut);
+    _routeAnimation.addListener(() {
+      _updateAnimatedRoute();
+    });
+
+    // Initialize zoom animation controller
+    _zoomAnimationController = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this);
+    _zoomAnimation = CurvedAnimation(parent: _zoomAnimationController, curve: Curves.easeInOut);
+    _zoomAnimation.addListener(() {
+      _updateMapPosition();
+    });
+
     // Start the animation when screen loads
     _listAnimationController.forward();
   }
@@ -82,6 +108,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _listAnimationController.dispose();
+    _routeAnimationController.dispose();
+    _zoomAnimationController.dispose();
     _parkingListController.dispose();
     super.dispose();
   }
@@ -126,7 +154,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     return earthRadius * c;
   }
 
-  // Get route from OSRM API
+  // Get route from OSRM API - Updated with auto-zoom
   Future<void> _getRouteFromOSRM(LatLng start, LatLng end) async {
     setState(() {
       _isRouteLoading = true;
@@ -157,6 +185,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
           setState(() {
             _routePoints = routePoints;
+            _animatedRoutePoints = [];
             _currentRouteInfo = RouteInfo(
               distance: distance,
               duration: duration,
@@ -165,6 +194,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
             _isRouteLoading = false;
             _showRoute = true;
           });
+
+          // Auto-zoom to fit both locations with animation
+          _fitMapToShowRouteAnimated(start, end);
+
+          // Start route line animation
+          _routeAnimationController.forward();
         }
       } else {
         // Fallback to straight line
@@ -183,6 +218,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
     setState(() {
       _routePoints = [start, end];
+      _animatedRoutePoints = [];
       _currentRouteInfo = RouteInfo(
         distance: distance,
         duration: estimatedDuration,
@@ -190,6 +226,130 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       );
       _isRouteLoading = false;
       _showRoute = true;
+    });
+
+    // Auto-zoom to fit both locations with animation
+    _fitMapToShowRouteAnimated(start, end);
+
+    // Start route line animation
+    _routeAnimationController.forward();
+  }
+
+  // Animated method to fit map bounds to show both current location and parking
+  void _fitMapToShowRouteAnimated(LatLng start, LatLng end) {
+    // Calculate bounds that include both points
+    final double minLat = math.min(start.latitude, end.latitude);
+    final double maxLat = math.max(start.latitude, end.latitude);
+    final double minLng = math.min(start.longitude, end.longitude);
+    final double maxLng = math.max(start.longitude, end.longitude);
+
+    // Add more padding around the bounds to account for UI elements
+    final double latPadding = (maxLat - minLat) * 0.9;
+    final double lngPadding = (maxLng - minLng) * 0.9;
+
+    final LatLng southwest = LatLng(minLat - latPadding, minLng - lngPadding);
+    final LatLng northeast = LatLng(maxLat + latPadding, maxLng + lngPadding);
+
+    // Adjust center point to account for bottom sheet by shifting up
+    final LatLng center = LatLng((minLat + maxLat) / 2 + (latPadding * -0.4), (minLng + maxLng) / 2);
+
+    // Calculate appropriate zoom level with more conservative values
+    final double targetZoom = _calculateZoomLevel(southwest, northeast) - 1.0;
+
+    // Set target values and animate
+    _targetCenter = center;
+    _targetZoom = targetZoom;
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _zoomAnimationController.forward();
+      }
+    });
+  }
+
+  // Method to update animated route points with slower animation
+  void _updateAnimatedRoute() {
+    if (_routePoints.isEmpty) return;
+
+    // Slow down animation by using a smaller fraction of the route points
+    final double slowdownFactor = 0.5; // Adjust this value to control animation speed
+    final int targetCount = (_routePoints.length * _routeAnimation.value * slowdownFactor).round();
+
+    // Only update if target count has changed
+    if (targetCount != _animatedRoutePoints.length) {
+      setState(() {
+        // Add points gradually
+        _animatedRoutePoints = _routePoints.take(targetCount).toList();
+      });
+    }
+
+    // If animation is complete, ensure all points are shown
+    if (_routeAnimation.value == 1.0 && _animatedRoutePoints.length != _routePoints.length) {
+      setState(() {
+        _animatedRoutePoints = List.from(_routePoints);
+      });
+    }
+  }
+
+  // Method to update map position during animation
+  void _updateMapPosition() {
+    if (_targetCenter == null || _targetZoom == null || !mounted) return;
+
+    final currentCenter = _mapController.camera.center;
+    final currentZoom = _mapController.camera.zoom;
+
+    // Interpolate between current and target positions
+    final interpolatedLat =
+        currentCenter.latitude + (_targetCenter!.latitude - currentCenter.latitude) * _zoomAnimation.value;
+    final interpolatedLng =
+        currentCenter.longitude + (_targetCenter!.longitude - currentCenter.longitude) * _zoomAnimation.value;
+    final interpolatedZoom = currentZoom + (_targetZoom! - currentZoom) * _zoomAnimation.value;
+
+    _mapController.move(LatLng(interpolatedLat, interpolatedLng), interpolatedZoom);
+  }
+
+  // Helper method to calculate appropriate zoom level
+  double _calculateZoomLevel(LatLng southwest, LatLng northeast) {
+    // Calculate the distance between the bounds
+    final double latDiff = northeast.latitude - southwest.latitude;
+    final double lngDiff = northeast.longitude - southwest.longitude;
+
+    // Use the larger difference to determine zoom
+    final double maxDiff = math.max(latDiff, lngDiff);
+
+    // Rough zoom calculation - you may need to adjust these values
+    if (maxDiff > 0.5) return 10.0;
+    if (maxDiff > 0.1) return 12.0;
+    if (maxDiff > 0.05) return 13.0;
+    if (maxDiff > 0.01) return 15.0;
+    if (maxDiff > 0.005) return 16.0;
+    return 17.0;
+  }
+
+  // Alternative method using fitCamera (if you prefer bounds-based approach)
+  void _fitMapToShowRouteWithBounds(LatLng start, LatLng end) {
+    // This is an alternative approach using bounds
+    final bounds = LatLngBounds(
+      LatLng(math.min(start.latitude, end.latitude), math.min(start.longitude, end.longitude)),
+      LatLng(math.max(start.latitude, end.latitude), math.max(start.longitude, end.longitude)),
+    );
+
+    // Add some padding
+    final paddedBounds = LatLngBounds(
+      LatLng(
+        bounds.south - 0.01, // Add padding
+        bounds.west - 0.01,
+      ),
+      LatLng(
+        bounds.north + 0.01, // Add padding
+        bounds.east + 0.01,
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _mapController.fitCamera(CameraFit.bounds(bounds: paddedBounds, padding: const EdgeInsets.all(50)));
+      }
     });
   }
 
@@ -199,8 +359,13 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   }
 
   void _clearRoute() {
+    _routeAnimationController.reset();
+    _zoomAnimationController.reset();
+    _targetCenter = null;
+    _targetZoom = null;
     setState(() {
       _routePoints = [];
+      _animatedRoutePoints = [];
       _showRoute = false;
       _currentRouteInfo = null;
       _showRouteDetails = false;
@@ -708,12 +873,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           children: [
             _getTileLayer(),
 
-            // Route polyline layer
-            if (_showRoute && _routePoints.isNotEmpty)
+            // Route polyline layer with animation
+            if (_showRoute && _animatedRoutePoints.isNotEmpty)
               PolylineLayer(
                 polylines: [
                   Polyline(
-                    points: _routePoints,
+                    points: _animatedRoutePoints,
                     strokeWidth: 4.0,
                     color: AppColors.primary,
                     borderStrokeWidth: 2.0,
@@ -1229,7 +1394,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         onPressed:
                             _currentLocation != null
                                 ? () {
-                                  context.checkVerifiedAndGuestOrDo(() => _showRouteToParking);
+                                  context.checkVerifiedAndGuestOrDo(() => _showRouteToParking());
                                 }
                                 : null,
                       ),
