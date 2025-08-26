@@ -95,7 +95,15 @@ class _AnimatedHintsWithScrollDetectionState extends State<_AnimatedHintsWithScr
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
               opacity: _showScrollHint ? 1.0 : 0.0,
-              child: const Center(child: AnimatedScrollHint()),
+              child: GestureDetector(
+                onTap:
+                    () => _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                    ),
+                child: const Center(child: AnimatedScrollHint()),
+              ),
             ),
           ),
       ],
