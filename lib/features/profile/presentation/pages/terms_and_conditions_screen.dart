@@ -7,7 +7,6 @@ import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/profile/data/models/terms_and_conditions_model.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_state.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TermsAndConditionsScreen extends StatefulWidget {
@@ -335,24 +334,6 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> wit
 
   void _scrollToTop() {
     _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-  }
-
-  void _shareTerms() {
-    Share.share(
-      'Check out our Terms & Conditions', // You can customize this message
-      subject: LocaleKeys.terms_and_conditions.tr(),
-    );
-  }
-
-  void _handleMenuAction(String action) {
-    switch (action) {
-      case 'copy':
-        // _copyToClipboard();
-        break;
-      case 'refresh':
-        PagesCubit.get(context).getTermsAndConditions(lang: widget.language);
-        break;
-    }
   }
 
   Future<void> _launchUrl(String url) async {

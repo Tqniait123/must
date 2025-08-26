@@ -21,8 +21,7 @@ class RegisterStepThreeScreen extends StatefulWidget {
   const RegisterStepThreeScreen({super.key});
 
   @override
-  State<RegisterStepThreeScreen> createState() =>
-      _RegisterStepThreeScreenState();
+  State<RegisterStepThreeScreen> createState() => _RegisterStepThreeScreenState();
 }
 
 class _RegisterStepThreeScreenState extends State<RegisterStepThreeScreen> {
@@ -32,8 +31,7 @@ class _RegisterStepThreeScreenState extends State<RegisterStepThreeScreen> {
   final TextEditingController _carModelController = TextEditingController();
   final TextEditingController _modelYearController = TextEditingController();
 
-  final TextEditingController _carPlateNumberController =
-      TextEditingController();
+  final TextEditingController _carPlateNumberController = TextEditingController();
 
   PlatformFile? _frontIdImage;
   PlatformFile? _backIdImage;
@@ -72,11 +70,9 @@ class _RegisterStepThreeScreenState extends State<RegisterStepThreeScreen> {
               27.gap,
               Text(
                 LocaleKeys.register.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.white,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge!.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.white),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -178,28 +174,27 @@ class _RegisterStepThreeScreenState extends State<RegisterStepThreeScreen> {
                     }
                   },
                   builder:
-                      (BuildContext context, AuthState state) =>
-                          CustomElevatedButton(
-                            heroTag: 'button',
-                            loading: state is AuthLoading,
-                            title: LocaleKeys.next.tr(),
-                            onPressed: () {
-                              // if (_formKey.currentState!.validate()) {
-                              // AuthCubit.get(context).register(
-                              //   RegisterParams(
-                              //     email: _modelYearController.text,
-                              //     password: _carPlateNumberController.text,
-                              //     name: _numberOfCarController.text,
-                              //     phone: _carNameController.text,
-                              //     passwordConfirmation:
-                              //         _carPlateNumberController.text,
+                      (BuildContext context, AuthState state) => CustomElevatedButton(
+                        heroTag: 'button',
+                        loading: state is AuthLoading,
+                        title: LocaleKeys.next.tr(),
+                        onPressed: () {
+                          // if (_formKey.currentState!.validate()) {
+                          // AuthCubit.get(context).register(
+                          //   RegisterParams(
+                          //     email: _modelYearController.text,
+                          //     password: _carPlateNumberController.text,
+                          //     name: _numberOfCarController.text,
+                          //     phone: _carNameController.text,
+                          //     passwordConfirmation:
+                          //         _carPlateNumberController.text,
 
-                              //     // address : _AddressController.text,
-                              //   ),
-                              // );
-                              // }
-                            },
-                          ),
+                          //     // address : _AddressController.text,
+                          //   ),
+                          // );
+                          // }
+                        },
+                      ),
                 ),
               ),
             ],
