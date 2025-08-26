@@ -1376,5 +1376,8 @@ abstract class  LocaleKeys {
   static const location_permission_denied_message = 'location_permission_denied_message';
   static const location_permission_permanently_denied_message = 'location_permission_permanently_denied_message';
   static const location_services_disabled_message = 'location_services_disabled_message';
+  static const account_verification_required = 'account_verification_required';
+  static const account_verification_message = 'account_verification_message';
+  static const verify_now = 'verify_now';
 
 }

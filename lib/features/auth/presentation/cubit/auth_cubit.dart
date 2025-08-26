@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:must_invest/core/api/response/response.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
@@ -22,10 +23,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final response = await _repo.autoLogin();
-      response.fold(
-        (user) => emit(AuthSuccess(user)),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((user) => emit(AuthSuccess(user)), (error) => emit(AuthError(error.message)));
     } on AppError catch (e) {
       emit(AuthError(e.message));
     } catch (e) {
@@ -41,16 +39,24 @@ class AuthCubit extends Cubit<AuthState> {
   /// likely contains the necessary information for the login process, such as username, password, or any
   /// other credentials required for authentication. The method then attempts to log in using the provided
   /// parameters and handles different scenarios based on the
+  // auth_cubit.dart
   Future<void> login(LoginParams params) async {
     try {
       emit(AuthLoading());
       final response = await _repo.login(params);
-      response.fold(
-        (authModel) => emit(AuthSuccess(authModel.user)),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((authModel) => emit(AuthSuccess(authModel.user)), (error) {
+        if (error.apiResponse?.statusCode == ApiStatusCode.forbidden) {
+          emit(AuthUnverified(error.message)); // New state for unverified users
+        } else {
+          emit(AuthError(error.message));
+        }
+      });
     } on AppError catch (e) {
-      emit(AuthError(e.message));
+      if (e.apiResponse?.statusCode == ApiStatusCode.forbidden) {
+        emit(AuthUnverified(e.message));
+      } else {
+        emit(AuthError(e.message));
+      }
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -67,10 +73,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final response = await _repo.loginWithGoogle();
-      response.fold(
-        (authModel) => emit(AuthSuccess(authModel.user)),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((authModel) => emit(AuthSuccess(authModel.user)), (error) => emit(AuthError(error.message)));
     } on AppError catch (e) {
       emit(AuthError(e.message));
     } catch (e) {
@@ -89,10 +92,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final response = await _repo.loginWithApple();
-      response.fold(
-        (authModel) => emit(AuthSuccess(authModel.user)),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((authModel) => emit(AuthSuccess(authModel.user)), (error) => emit(AuthError(error.message)));
     } on AppError catch (e) {
       emit(AuthError(e.message));
     } catch (e) {
@@ -132,10 +132,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(ForgetPasswordLoading());
       final response = await _repo.forgetPassword(email);
-      response.fold(
-        (function) => emit(ForgetPasswordSentOTP()),
-        (error) => emit(ForgetPasswordError(error.message)),
-      );
+      response.fold((function) => emit(ForgetPasswordSentOTP()), (error) => emit(ForgetPasswordError(error.message)));
     } on AppError catch (e) {
       emit(ForgetPasswordError(e.message));
     } catch (e) {
@@ -155,10 +152,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(ResetPasswordLoading());
       final response = await _repo.resetPassword(params);
-      response.fold(
-        (function) => emit(ResetPasswordSuccess()),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((function) => emit(ResetPasswordSuccess()), (error) => emit(AuthError(error.message)));
     } on AppError catch (e) {
       emit(ResetPasswordError(e.message));
     } catch (e) {
@@ -176,10 +170,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final response = await _repo.verifyRegistration(params);
-      response.fold(
-        (authModel) => emit(AuthSuccess(authModel.user)),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((authModel) => emit(AuthSuccess(authModel.user)), (error) => emit(AuthError(error.message)));
     } on AppError catch (e) {
       emit(AuthError(e.message));
     } catch (e) {
@@ -197,10 +188,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final response = await _repo.verifyPasswordReset(params);
-      response.fold(
-        (authModel) => emit(ResetPasswordSentOTP()),
-        (error) => emit(AuthError(error.message)),
-      );
+      response.fold((authModel) => emit(ResetPasswordSentOTP()), (error) => emit(AuthError(error.message)));
     } on AppError catch (e) {
       emit(AuthError(e.message));
     } catch (e) {
@@ -217,10 +205,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(ResendOTPLoading());
       final response = await _repo.resendOTP(phone);
-      response.fold(
-        (_) => emit(ResendOTPSuccess()),
-        (error) => emit(ResendOTPError(error.message)),
-      );
+      response.fold((message) => emit(ResendOTPSuccess( message)), (error) => emit(ResendOTPError(error.message)));
     } on AppError catch (e) {
       emit(ResendOTPError(e.message));
     } catch (e) {
@@ -234,10 +219,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(DeleteAccountLoading());
       final response = await _repo.deleteAccount();
-      response.fold(
-        (_) => emit(DeleteAccountSuccess()),
-        (error) => emit(DeleteAccountError(error.message)),
-      );
+      response.fold((_) => emit(DeleteAccountSuccess()), (error) => emit(DeleteAccountError(error.message)));
     } on AppError catch (e) {
       emit(DeleteAccountError(e.message));
     } catch (e) {

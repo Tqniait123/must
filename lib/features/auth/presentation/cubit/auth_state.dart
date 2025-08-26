@@ -65,7 +65,11 @@ class RegisterSuccess extends AuthState {
 
 class ResendOTPLoading extends AuthState {}
 
-class ResendOTPSuccess extends AuthState {}
+class ResendOTPSuccess extends AuthState {
+  final String message;
+
+  const ResendOTPSuccess(this.message);
+}
 
 class ResendOTPError extends AuthState {
   final String message;
@@ -89,4 +93,10 @@ class DeleteAccountError extends AuthState {
 
   @override
   List<Object> get props => [message];
+}
+
+class AuthUnverified extends AuthState {
+  final String message;
+
+  AuthUnverified(this.message);
 }

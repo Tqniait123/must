@@ -1396,7 +1396,10 @@ class CodegenLoader extends AssetLoader{
   "location_permission_required": "Location Permission Required",
   "location_permission_denied_message": "Location access is needed to find nearby parking spots. Please grant location permission to continue.",
   "location_permission_permanently_denied_message": "Location permission has been permanently denied. Please enable location access in app settings to use this feature.",
-  "location_services_disabled_message": "Location services are disabled. Please enable them in your device settings to find nearby parking spots."
+  "location_services_disabled_message": "Location services are disabled. Please enable them in your device settings to find nearby parking spots.",
+  "account_verification_required": "Account Verification Required",
+  "account_verification_message": "Your account needs to be verified before you can login. Please verify your account to continue.",
+  "verify_now": "Verify Now"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2779,7 +2782,10 @@ static const Map<String,dynamic> _ar = {
   },
   "location_permission_denied_message": "يلزم الوصول إلى الموقع للعثور على مواقف السيارات القريبة. يرجى منح إذن الموقع للمتابعة.",
   "location_permission_permanently_denied_message": "تم رفض إذن الموقع بشكل دائم. يرجى تمكين الوصول إلى الموقع في إعدادات التطبيق لاستخدام هذه الميزة.",
-  "location_services_disabled_message": "خدمات الموقع معطلة. يرجى تمكينها في إعدادات جهازك للعثور على مواقف السيارات القريبة."
+  "location_services_disabled_message": "خدمات الموقع معطلة. يرجى تمكينها في إعدادات جهازك للعثور على مواقف السيارات القريبة.",
+  "account_verification_required": "مطلوب التحقق من الحساب",
+  "account_verification_message": "يجب التحقق من حسابك قبل تسجيل الدخول. يرجى التحقق من حسابك للمتابعة.",
+  "verify_now": "تحقق الآن"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }
