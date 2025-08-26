@@ -1119,7 +1119,7 @@ class _RoutingParkingScreenState extends State<RoutingParkingScreen> with Ticker
                   _currentLocation != null
                       ? LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!)
                       : LatLng(0, 0),
-              initialZoom: 15.0,
+              initialZoom: 10.0,
               maxZoom: 18.0,
               minZoom: 5.0,
             ),
