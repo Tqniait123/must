@@ -454,17 +454,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 const SizedBox(width: 6),
                                 // Remove Button
-                                GestureDetector(
-                                  onTap: () => _removeImage(currentFile, existingImageUrl),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red.withOpacity(0.8),
-                                      borderRadius: BorderRadius.circular(6),
+                                if (currentFile != null)
+                                  GestureDetector(
+                                    onTap: () => _removeImage(currentFile, existingImageUrl),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.8),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
                                     ),
-                                    child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
                                   ),
-                                ),
                               ],
                             ),
                           ),
