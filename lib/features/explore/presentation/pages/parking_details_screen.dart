@@ -418,21 +418,120 @@ class FullScreenGallery extends StatefulWidget {
   State<FullScreenGallery> createState() => _FullScreenGalleryState();
 }
 
-class _FullScreenGalleryState extends State<FullScreenGallery> {
+class _FullScreenGalleryState extends State<FullScreenGallery> with TickerProviderStateMixin {
   late PageController _pageController;
   late int _currentIndex;
+
+  // Controllers for each image's InteractiveViewer
+  late List<TransformationController> _transformationControllers;
+
+  // Track zoom states to control PageView scrolling
+  late List<bool> _isZoomedList;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+
+    // Initialize transformation controllers for each image
+    _transformationControllers = List.generate(widget.images.length, (index) => TransformationController());
+
+    // Initialize zoom state tracking
+    _isZoomedList = List.generate(widget.images.length, (index) => false);
+
+    // Add listeners to track zoom changes
+    for (int i = 0; i < _transformationControllers.length; i++) {
+      _transformationControllers[i].addListener(() => _onTransformationChanged(i));
+    }
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    // Dispose all transformation controllers
+    for (var controller in _transformationControllers) {
+      controller.dispose();
+    }
     super.dispose();
+  }
+
+  void _onTransformationChanged(int index) {
+    final scale = _transformationControllers[index].value.getMaxScaleOnAxis();
+    final wasZoomed = _isZoomedList[index];
+    final isNowZoomed = scale > 1.1;
+
+    if (wasZoomed != isNowZoomed) {
+      setState(() {
+        _isZoomedList[index] = isNowZoomed;
+      });
+    }
+  }
+
+  void _handleDoubleTap(int imageIndex) {
+    final controller = _transformationControllers[imageIndex];
+
+    // Check current scale
+    final currentScale = controller.value.getMaxScaleOnAxis();
+
+    if (currentScale > 1.1) {
+      // If zoomed in, zoom out to fit with animation
+      _animateZoom(controller, Matrix4.identity());
+    } else {
+      // If at normal scale, zoom in to 2x at center with animation
+      final double scale = 2.0;
+      final Matrix4 zoomedMatrix = Matrix4.identity()..scale(scale);
+      _animateZoom(controller, zoomedMatrix);
+    }
+  }
+
+  void _handleDoubleTapWithPosition(int imageIndex, Offset tapPosition) {
+    final controller = _transformationControllers[imageIndex];
+
+    // Check current scale
+    final currentScale = controller.value.getMaxScaleOnAxis();
+
+    if (currentScale > 1.1) {
+      // If zoomed in, zoom out to fit with animation
+      _animateZoom(controller, Matrix4.identity());
+    } else {
+      // If at normal scale, zoom in to 2x centered on tap position
+      final double scale = 2.0;
+      final Size screenSize = MediaQuery.of(context).size;
+
+      // Calculate the center of the screen
+      final Offset screenCenter = Offset(screenSize.width / 2, screenSize.height / 2);
+
+      // Create zoom matrix centered on screen
+      final Matrix4 zoomedMatrix =
+          Matrix4.identity()
+            ..translate(screenCenter.dx, screenCenter.dy)
+            ..scale(scale)
+            ..translate(-screenCenter.dx, -screenCenter.dy);
+
+      _animateZoom(controller, zoomedMatrix);
+    }
+  }
+
+  void _animateZoom(TransformationController controller, Matrix4 targetMatrix) {
+    final AnimationController animationController = AnimationController(
+      duration: Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    final Matrix4 beginMatrix = controller.value;
+    final Animation<Matrix4> animation = Matrix4Tween(
+      begin: beginMatrix,
+      end: targetMatrix,
+    ).animate(CurvedAnimation(parent: animationController, curve: Curves.easeInOut));
+
+    animation.addListener(() {
+      controller.value = animation.value;
+    });
+
+    animationController.forward().then((_) {
+      animationController.dispose();
+    });
   }
 
   @override
@@ -445,23 +544,34 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
           PageView.builder(
             controller: _pageController,
             itemCount: widget.images.length,
+            // Disable page scrolling when current image is zoomed
+            physics: _isZoomedList[_currentIndex] ? NeverScrollableScrollPhysics() : PageScrollPhysics(),
             onPageChanged: (index) {
               setState(() {
                 _currentIndex = index;
               });
             },
             itemBuilder: (context, index) {
-              return InteractiveViewer(
-                minScale: 0.5,
-                maxScale: 4.0,
-                child: Center(
-                  child: Hero(
-                    tag: 'gallery-${widget.images[index]}',
-                    child: Image.network(
-                      widget.images[index],
-                      fit: BoxFit.contain,
-                      width: double.infinity,
-                      height: double.infinity,
+              return GestureDetector(
+                onDoubleTapDown: (details) {
+                  // Store tap position for zoom location
+                  _handleDoubleTapWithPosition(index, details.localPosition);
+                },
+                child: InteractiveViewer(
+                  transformationController: _transformationControllers[index],
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  // Constrain interactions to prevent conflicts with PageView
+                  boundaryMargin: EdgeInsets.all(20),
+                  child: Center(
+                    child: Hero(
+                      tag: 'gallery-${widget.images[index]}',
+                      child: Image.network(
+                        widget.images[index],
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
                     ),
                   ),
                 ),
