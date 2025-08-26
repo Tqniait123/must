@@ -183,7 +183,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       permission = await Geolocator.requestPermission();
 
       if (permission == LocationPermission.denied) {
-        _showPermissionDialog(
+        _showPermissionBottomSheet(
           title: LocaleKeys.location_permission_required.tr(),
           message: LocaleKeys.location_permission_denied_message.tr(),
           showSettings: false,
@@ -194,7 +194,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
     if (permission == LocationPermission.deniedForever) {
       // Permission denied forever, show settings dialog
-      _showPermissionDialog(
+      _showPermissionBottomSheet(
         title: LocaleKeys.location_permission_required.tr(),
         message: LocaleKeys.location_permission_permanently_denied_message.tr(),
         showSettings: true,
@@ -227,34 +227,49 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  void _showPermissionDialog({required String title, required String message, required bool showSettings}) {
-    showDialog(
+  void _showPermissionBottomSheet({required String title, required String message, required bool showSettings}) {
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => AlertDialog(
-            title: Text(title),
-            content: Text(message),
-            actions: [
-              TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.cancel.tr())),
-              if (showSettings)
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    await _openAppSettings();
-                  },
-                  child: Text(LocaleKeys.open_settings.tr()),
-                )
-              else
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _getCurrentLocation(); // Try again
-                  },
-                  child: Text(LocaleKeys.try_again.tr()),
-                ),
+      isDismissible: false,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Text(message, style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.cancel.tr())),
+                  const SizedBox(width: 8),
+                  if (showSettings)
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        await _openAppSettings();
+                      },
+                      child: Text(LocaleKeys.open_settings.tr()),
+                    )
+                  else
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _getCurrentLocation(); // Try again
+                      },
+                      child: Text(LocaleKeys.try_again.tr()),
+                    ),
+                ],
+              ),
             ],
           ),
+        );
+      },
     );
   }
 
