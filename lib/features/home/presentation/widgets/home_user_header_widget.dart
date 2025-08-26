@@ -67,6 +67,15 @@ class UserHomeHeaderWidget extends StatelessWidget {
                               context.push(Routes.profile);
                             },
                           ),
+                        if (!context.isLoggedIn)
+                          Text(
+                            LocaleKeys.hola_name.tr(namedArgs: {"name": LocaleKeys.guest.tr()}),
+                            style: context.bodyMedium.s24.bold.copyWith(color: AppColors.white),
+                          ).withPressEffect(
+                            onTap: () {
+                              context.push(Routes.profile);
+                            },
+                          ),
                         // 10.gap,
                         // Text(
                         //   LocaleKeys.find_an_easy_parking_spot.tr(),
