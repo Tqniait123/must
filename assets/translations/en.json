@@ -1441,6 +1441,9 @@
   "location_services_disabled_message": "Location services are disabled. Please enable them in your device settings to find nearby parking spots.",
   "account_verification_required": "Account Verification Required",
   "account_verification_message": "Your account needs to be verified before you can login. Please verify your account to continue.",
-  "verify_now": "Verify Now"
+  "verify_now": "Verify Now",
+  "no_parking_spots_found": "No parking spots found",
+  "try_different_location": "Try a different location",
+  "something_went_wrong": "Something went wrong"
 
 }

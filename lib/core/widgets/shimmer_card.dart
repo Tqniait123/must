@@ -1,18 +1,33 @@
-// lib/core/widgets/shimmer_card.dart
-
 import 'package:flutter/material.dart';
 
 class ShimmerLoadingWidget extends StatelessWidget {
-  const ShimmerLoadingWidget({super.key});
+  final bool isSliver;
+
+  const ShimmerLoadingWidget({super.key, this.isSliver = true});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
-      itemBuilder: (context, index) => const ShimmerCard(),
-    );
+    if (isSliver) {
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        sliver: SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) =>
+                Padding(padding: EdgeInsets.only(bottom: index == 4 ? 0 : 16), child: const ShimmerCard()),
+            childCount: 5,
+          ),
+        ),
+      );
+    } else {
+      return ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: 3,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
+        itemBuilder: (context, index) => const ShimmerCard(),
+      );
+    }
   }
 }
 
@@ -23,17 +38,14 @@ class ShimmerCard extends StatefulWidget {
   State<ShimmerCard> createState() => _ShimmerCardState();
 }
 
-class _ShimmerCardState extends State<ShimmerCard>
-    with SingleTickerProviderStateMixin {
+class _ShimmerCardState extends State<ShimmerCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-        duration: const Duration(milliseconds: 1500), vsync: this)
-      ..repeat();
+    _controller = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this)..repeat();
     _animation = Tween<double>(
       begin: -1.0,
       end: 2.0,
@@ -44,8 +56,7 @@ class _ShimmerCardState extends State<ShimmerCard>
   Widget build(BuildContext context) {
     return Container(
       height: 120,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12), color: Colors.grey[300]),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: Colors.grey[300]),
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {

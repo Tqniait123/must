@@ -595,9 +595,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
 
   Widget _buildParkingList(ExploreState state) {
     if (state is ParkingsLoading) {
-      return const SliverToBoxAdapter(
-        child: Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: ShimmerLoadingWidget()),
-      );
+      return ShimmerLoadingWidget(isSliver: true);
     }
 
     if (state is! ParkingsSuccess || (state).parkings.isEmpty) {

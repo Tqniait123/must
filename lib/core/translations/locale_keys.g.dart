@@ -1379,5 +1379,8 @@ abstract class  LocaleKeys {
   static const account_verification_required = 'account_verification_required';
   static const account_verification_message = 'account_verification_message';
   static const verify_now = 'verify_now';
+  static const no_parking_spots_found = 'no_parking_spots_found';
+  static const try_different_location = 'try_different_location';
+  static const something_went_wrong = 'something_went_wrong';
 
 }

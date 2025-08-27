@@ -1399,7 +1399,10 @@ class CodegenLoader extends AssetLoader{
   "location_services_disabled_message": "Location services are disabled. Please enable them in your device settings to find nearby parking spots.",
   "account_verification_required": "Account Verification Required",
   "account_verification_message": "Your account needs to be verified before you can login. Please verify your account to continue.",
-  "verify_now": "Verify Now"
+  "verify_now": "Verify Now",
+  "no_parking_spots_found": "No parking spots found",
+  "try_different_location": "Try a different location",
+  "something_went_wrong": "Something went wrong"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2785,7 +2788,10 @@ static const Map<String,dynamic> _ar = {
   "location_services_disabled_message": "خدمات الموقع معطلة. يرجى تمكينها في إعدادات جهازك للعثور على مواقف السيارات القريبة.",
   "account_verification_required": "مطلوب التحقق من الحساب",
   "account_verification_message": "يجب التحقق من حسابك قبل تسجيل الدخول. يرجى التحقق من حسابك للمتابعة.",
-  "verify_now": "تحقق الآن"
+  "verify_now": "تحقق الآن",
+  "no_parking_spots_found": "لا توجد أماكن انتظار متاحة",
+  "try_different_location": "جرّب موقعًا آخر",
+  "something_went_wrong": "حدث خطأ ما"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

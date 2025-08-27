@@ -1440,5 +1440,8 @@
   "location_services_disabled_message": "خدمات الموقع معطلة. يرجى تمكينها في إعدادات جهازك للعثور على مواقف السيارات القريبة.",
    "account_verification_required": "مطلوب التحقق من الحساب",
   "account_verification_message": "يجب التحقق من حسابك قبل تسجيل الدخول. يرجى التحقق من حسابك للمتابعة.",
-  "verify_now": "تحقق الآن"
+  "verify_now": "تحقق الآن",
+  "no_parking_spots_found": "لا توجد أماكن انتظار متاحة",
+  "try_different_location": "جرّب موقعًا آخر",
+  "something_went_wrong": "حدث خطأ ما"
 }
