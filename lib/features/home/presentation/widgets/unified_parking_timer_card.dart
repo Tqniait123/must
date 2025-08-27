@@ -4,157 +4,75 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
-import 'package:must_invest/core/utils/widgets/scrolling_text.dart';
+import 'package:must_invest/features/home/presentation/widgets/unified_card_widget.dart';
 
 import '../cubit/parking_timer_cubit.dart';
 import '../cubit/parking_timer_state.dart';
 
-class ParkingTimerCard extends StatelessWidget {
+class UnifiedParkingTimerCard extends StatelessWidget {
   final DateTime startTime;
   final bool isCollapsed;
 
-  const ParkingTimerCard({super.key, required this.startTime, this.isCollapsed = false});
+  const UnifiedParkingTimerCard({super.key, required this.startTime, this.isCollapsed = false});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ParkingTimerCubit(startTime: startTime),
-      child: _ParkingTimerView(isCollapsed: isCollapsed),
+      child: _UnifiedParkingTimerView(isCollapsed: isCollapsed),
     );
   }
 }
 
-class _ParkingTimerView extends StatelessWidget {
+class _UnifiedParkingTimerView extends StatelessWidget {
   final bool isCollapsed;
 
-  const _ParkingTimerView({required this.isCollapsed});
+  const _UnifiedParkingTimerView({required this.isCollapsed});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          constraints: BoxConstraints(maxWidth: constraints.maxWidth, minHeight: isCollapsed ? 80 : 150),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(isCollapsed ? 12 : 16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.2),
-                spreadRadius: 0,
-                blurRadius: isCollapsed ? 15 : 20,
-                offset: Offset(0, isCollapsed ? 3 : 4),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(isCollapsed ? 12 : 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTimerContent(context),
-                if (!isCollapsed) ...[SizedBox(height: 20), _buildActionButton(context)],
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildTimerContent(BuildContext context) {
     return BlocBuilder<ParkingTimerCubit, ParkingTimerState>(
       builder: (context, state) {
         final elapsedTime = _getElapsedTimeFromState(state);
         final isRunning = state is ParkingTimerRunning;
+        final accentColor = isRunning ? AppColors.primary : Colors.orange;
 
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: isCollapsed ? 3 : 4,
-              height: isCollapsed ? 36 : 48,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    isRunning ? AppColors.primary : Colors.orange,
-                    isRunning ? AppColors.primary : Colors.orange,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            SizedBox(width: isCollapsed ? 12 : 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ScrollingText(
-                    _getStatusText(state),
-                    style: context.bodyMedium.copyWith(
-                      fontSize: isCollapsed ? 12 : 14,
-                      color: isRunning ? AppColors.primary : Colors.orange,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: isCollapsed ? 2 : 4),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      elapsedTime,
-                      style: context.bodyMedium.copyWith(
-                        fontSize: isCollapsed ? 18 : 24,
-                        fontWeight: FontWeight.bold,
-                        color: isRunning ? AppColors.primary : Colors.orange,
+        return UnifiedCard(
+          isCollapsed: isCollapsed,
+          backgroundColor: Colors.white,
+          child: UnifiedCardContent(
+            isCollapsed: isCollapsed,
+            title: _getStatusText(state),
+            mainText: elapsedTime,
+            accentColor: accentColor,
+            icon: Icons.timer,
+            actionButton:
+                !isCollapsed && isRunning
+                    ? Container(
+                      width: double.infinity,
+                      height: 44,
+                      decoration: BoxDecoration(color: accentColor, borderRadius: BorderRadius.circular(12)),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => _showPaymentBottomSheet(context),
+                          child: Center(
+                            child: Text(
+                              LocaleKeys.details.tr(),
+                              style: context.bodyMedium.copyWith(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildActionButton(BuildContext context) {
-    return BlocBuilder<ParkingTimerCubit, ParkingTimerState>(
-      builder: (context, state) {
-        return ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: SizedBox(
-            width: double.infinity,
-            height: 44,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: state is ParkingTimerRunning ? AppColors.primary : Colors.grey,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: state is ParkingTimerRunning ? () => _showPaymentBottomSheet(context) : null,
-                  child: Center(
-                    child: Text(
-                      LocaleKeys.details.tr(),
-                      style: context.bodyMedium.copyWith(
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+                    )
+                    : null,
           ),
         );
       },

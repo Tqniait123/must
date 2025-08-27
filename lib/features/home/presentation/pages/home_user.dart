@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
@@ -28,7 +27,7 @@ import 'package:must_invest/features/explore/presentation/cubit/explore_cubit.da
 import 'package:must_invest/features/home/presentation/widgets/home_user_header_widget.dart';
 import 'package:must_invest/features/home/presentation/widgets/my_points_card.dart';
 import 'package:must_invest/features/home/presentation/widgets/parking_widget.dart';
-import 'package:must_invest/features/home/presentation/widgets/timer_widget.dart';
+import 'package:must_invest/features/home/presentation/widgets/unified_parking_timer_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeUser extends StatefulWidget {
@@ -277,114 +276,29 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     }
   }
 
-  // Build persistent header content
+  // Build persistent header content (collapsed state)
   Widget _buildPersistentHeaderContent({required bool isInParking, required DateTime? parkingStartTime}) {
     return Container(
       color: AppColors.white,
       child: Column(
         children: [
-          // Compact Cards Row
+          // Collapsed Cards Row using actual widgets
           if (context.isLoggedIn) ...[
             Container(
               margin: const EdgeInsets.fromLTRB(24, 16, 24, 16),
               child: Row(
                 children: [
-                  // Compact Points Card
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 1)),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.stars, color: AppColors.primary, size: 16),
-                          6.gap,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  LocaleKeys.points.tr(),
-                                  style: context.bodySmall.copyWith(
-                                    fontSize: 10,
-                                    color: AppColors.primary.withOpacity(0.6),
-                                  ),
-                                ),
-                                Text(
-                                  context.user.points.toString(),
-                                  style: context.bodyMedium.bold.copyWith(fontSize: 12, color: AppColors.primary),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Collapsed Points Card
+                  Expanded(child: MyPointsCardMinimal(isCollapsed: true)),
                   if (isInParking) ...[
-                    8.gap,
-                    // Compact Timer Card
+                    const SizedBox(width: 8),
+                    // Collapsed Timer Card
                     Expanded(
-                      child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.2),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.timer, color: AppColors.white, size: 16),
-                            6.gap,
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    LocaleKeys.active_parking.tr(),
-                                    style: context.bodySmall.copyWith(
-                                      fontSize: 10,
-                                      color: AppColors.white.withOpacity(0.8),
-                                    ),
-                                  ),
-                                  StreamBuilder<DateTime>(
-                                    stream: Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now()),
-                                    builder: (context, snapshot) {
-                                      final now = snapshot.data ?? DateTime.now();
-                                      final effectiveStartTime = parkingStartTime ?? now;
-                                      final duration = now.difference(effectiveStartTime);
-
-                                      return Text(
-                                        _formatDuration(duration),
-                                        style: context.bodyMedium.bold.copyWith(fontSize: 12, color: AppColors.white),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          final effectiveStartTime = parkingStartTime ?? DateTime.now();
+                          return UnifiedParkingTimerCard(startTime: effectiveStartTime, isCollapsed: true);
+                        },
                       ),
                     ),
                   ],
@@ -437,7 +351,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
           },
         ),
         backgroundPatternAssetPath: AppImages.homePattern,
-
         children: [
           // Replace the entire content with CustomScrollView
           Expanded(
@@ -451,45 +364,33 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
                         controller: _scrollController,
                         physics: const BouncingScrollPhysics(),
                         slivers: [
-                          context.isLoggedIn
-                              ? SliverAppBar(
-                                expandedHeight: MediaQuery.of(context).size.height * 0.25, // 25% of screen
-                                collapsedHeight: MediaQuery.of(context).size.height * 0.11, // 12%
-                                pinned: true,
-                                flexibleSpace: LayoutBuilder(
-                                  builder: (context, constrains) {
-                                    final currentHeight = constrains.biggest.height;
-                                    final bool isCollapsed = currentHeight <= MediaQuery.of(context).size.height * 0.25;
-
-                                    log("isCollapsed: $isCollapsed", name: "_PersistentHeaderDelegate");
-                                    return FlexibleSpaceBar(
-                                      collapseMode: CollapseMode.parallax,
-                                      centerTitle: true,
-                                      title:
-                                          isCollapsed
-                                              ? _buildPersistentHeaderContent(
-                                                isInParking: isInParking,
-                                                parkingStartTime: parkingStartTime,
-                                              )
-                                              : null,
-                                      background: _buildBiggerChild(isInParking, parkingStartTime),
-                                    );
-                                  },
-                                ),
-                              )
-                              : const SliverToBoxAdapter(child: SizedBox.shrink()),
-                          // Pinned MostPopularRowSection for non-logged-in users
-                          context.isLoggedIn
-                              ? const SliverToBoxAdapter(child: SizedBox.shrink())
-                              : SliverAppBar(
-                                forceElevated: false,
-                                pinned: true,
-                                toolbarHeight: kToolbarHeight / 5, // Adjust height as needed
-                                automaticallyImplyLeading: false,
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
-                                flexibleSpace: Container(child: MostPopularRowSection(context: context)),
+                          // Use SliverPersistentHeader for logged-in users
+                          if (context.isLoggedIn)
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: AdaptiveHeaderDelegate(
+                                minExtentValue: MediaQuery.of(context).size.height * 0.17, // Same as collapsedHeight
+                                maxExtentValue: MediaQuery.of(context).size.height * 0.30, // Same as expandedHeight
+                                expandedBuilder: (context) => _buildBiggerChild(isInParking, parkingStartTime),
+                                collapsedBuilder:
+                                    (context) => _buildPersistentHeaderContent(
+                                      isInParking: isInParking,
+                                      parkingStartTime: parkingStartTime,
+                                    ),
                               ),
+                            )
+                          else
+                            // Pinned MostPopularRowSection for non-logged-in users
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: AdaptiveHeaderDelegate(
+                                minExtentValue: kToolbarHeight / 8,
+                                maxExtentValue: kToolbarHeight / 3,
+                                expandedBuilder: (context) => MostPopularRowSection(context: context),
+                                collapsedBuilder: (context) => MostPopularRowSection(context: context),
+                              ),
+                            ),
+
                           // Parking list
                           _buildParkingList(state),
 
@@ -544,26 +445,24 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     return Column(
       children: [
         Container(
+          color: Colors.white,
           margin: const EdgeInsets.symmetric(horizontal: 24),
           padding: const EdgeInsets.only(top: 30, bottom: 16),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final cardWidth = constraints.maxWidth / 2 - 8;
+              final aspectRatio = 1.10; // Width:Height ratio (171/150)
               return Row(
                 children: [
                   Expanded(
                     flex: 1,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: cardWidth, minHeight: 150, maxHeight: 180),
-                      child: MyPointsCardMinimal(),
-                    ),
+                    child: AspectRatio(aspectRatio: aspectRatio, child: MyPointsCardMinimal(isCollapsed: false)),
                   ),
                   if (isInParking) ...[
                     const SizedBox(width: 16),
                     Expanded(
                       flex: 1,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: cardWidth, minHeight: 150, maxHeight: 180),
+                      child: AspectRatio(
+                        aspectRatio: aspectRatio,
                         child: Builder(
                           builder: (context) {
                             final effectiveStartTime = parkingStartTime ?? DateTime.now();
@@ -575,7 +474,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
                               _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
                             }
 
-                            return ParkingTimerCard(startTime: effectiveStartTime);
+                            return UnifiedParkingTimerCard(startTime: effectiveStartTime, isCollapsed: false);
                           },
                         ),
                       ),

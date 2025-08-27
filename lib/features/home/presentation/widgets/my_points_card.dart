@@ -10,6 +10,7 @@ import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
+import 'package:must_invest/features/home/presentation/widgets/unified_card_widget.dart';
 
 // Design 1: Gradient Card with Floating Action
 class MyPointsCardGradient extends StatelessWidget {
@@ -135,122 +136,52 @@ class MyPointsCardGradient extends StatelessWidget {
 
 // Design 2: Minimalist Card with Accent
 class MyPointsCardMinimal extends StatelessWidget {
-  const MyPointsCardMinimal({super.key});
+  final bool isCollapsed;
+  
+  const MyPointsCardMinimal({super.key, this.isCollapsed = false});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserCubit, UserState>(
-      builder:
-          (BuildContext context, UserState state) => Container(
+      builder: (BuildContext context, UserState state) => UnifiedCard(
+        isCollapsed: isCollapsed,
+        backgroundColor: Colors.white,
+        child: UnifiedCardContent(
+          isCollapsed: isCollapsed,
+          title: LocaleKeys.my_points.tr(),
+          mainText: context.user.points.toString(),
+          subtitle: LocaleKeys.point.tr(),
+          accentColor: AppColors.primary,
+          icon: Icons.stars,
+          actionButton: !isCollapsed ? Container(
+            width: double.infinity,
+            height: 44,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              // border: Border.all(color: AppColors.primary, width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.2),
-                  spreadRadius: 0,
-                  blurRadius: 20,
-                  offset: Offset(0, 4),
-                ),
-              ],
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
             ),
-            padding: const EdgeInsets.all(20),
-            width: MediaQuery.sizeOf(context).width,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 4,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [AppColors.primary, AppColors.primary],
-                        ),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    16.gap,
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            LocaleKeys.my_points.tr(),
-                            style: context.bodyMedium.s14.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          4.gap,
-                          Row(
-                            children: [
-                              Text(
-                                context.user.points.toString(),
-                                style: context.bodyMedium.copyWith(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                              8.gap,
-                              Text(
-                                LocaleKeys.point.tr(),
-                                style: context.bodyMedium.s14.copyWith(color: AppColors.primary),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    //   decoration: BoxDecoration(
-                    //     color: AppColors.primary.withOpacity(0.1),
-                    //     borderRadius: BorderRadius.circular(12),
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       Icon(Icons.arrow_upward, color: AppColors.primary, size: 14),
-                    //       2.gap,
-                    //       Text(
-                    //         "15%",
-                    //         style: context.bodyMedium.s12.copyWith(
-                    //           color: AppColors.primary,
-                    //           fontWeight: FontWeight.w600,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                  ],
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => context.checkVerifiedAndGuestOrDo(
+                  () => context.push(Routes.myCards),
                 ),
-                20.gap,
-                Container(
-                  width: double.infinity,
-                  height: 44,
-                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () => context.checkVerifiedAndGuestOrDo(() => context.push(Routes.myCards)),
-                      child: Center(
-                        child: Text(
-                          LocaleKeys.add_points.tr(),
-                          style: context.bodyMedium.s14.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                      ),
+                child: Center(
+                  child: Text(
+                    LocaleKeys.add_points.tr(),
+                    style: context.bodyMedium.copyWith(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ) : null,
+        ),
+      ),
     );
   }
 }
