@@ -101,8 +101,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (text == null || text.isEmpty) {
                           return LocaleKeys.please_enter_full_name.tr();
                         }
-                        // Check if text contains special characters
-                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(text)) {
+                        // Check if text contains special characters or numbers
+                        if (!RegExp(r'^[\p{L}\s]+$', unicode: true).hasMatch(text)) {
                           return LocaleKeys.name_should_not_contain_special_characters.tr();
                         }
                         return null;
