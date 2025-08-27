@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +49,9 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
   Timer? _parkingCheckTimer;
   DateTime? _lastLoggedStartTime;
 
-  // For scroll control
+  // For scroll control and animated hints
   final ScrollController _scrollController = ScrollController();
+  bool _showScrollHint = true;
 
   @override
   void didChangeDependencies() {
@@ -77,6 +79,28 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     _checkParkingStatus();
     _loadNearestParkings(isFirstTime: true);
     _startParkingStatusMonitoring();
+
+    // Add scroll listener for animated hints
+    _scrollController.addListener(_scrollListener);
+  }
+
+  // Add scroll listener method
+  void _scrollListener() {
+    if (_scrollController.hasClients) {
+      // Check if we're near the end of the scroll view
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.position.pixels;
+
+      // Hide hint when user is within 100 pixels of the bottom
+      final threshold = 100.0;
+      final shouldShow = (maxScroll - currentScroll) > threshold;
+
+      if (_showScrollHint != shouldShow) {
+        setState(() {
+          _showScrollHint = shouldShow;
+        });
+      }
+    }
   }
 
   @override
@@ -86,6 +110,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     _saveHomeLogs();
     WidgetsBinding.instance.removeObserver(this);
     _parkingCheckTimer?.cancel();
+    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _exploreCubit.close();
     _searchController.dispose();
@@ -369,30 +394,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
           ],
 
           // Most Popular Section
-          Container(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              border: Border(bottom: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  LocaleKeys.most_popular.tr(),
-                  style: context.bodyMedium.bold.s16.copyWith(color: AppColors.primary),
-                ),
-                Text(
-                  LocaleKeys.see_more.tr(),
-                  style: context.bodyMedium.regular.s14.copyWith(color: AppColors.primary.withValues(alpha: 0.5)),
-                ).withPressEffect(
-                  onTap: () {
-                    context.push(Routes.explore);
-                  },
-                ),
-              ],
-            ),
-          ),
+          MostPopularRowSection(context: context),
         ],
       ),
     );
@@ -437,44 +439,61 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
               value: _exploreCubit,
               child: BlocBuilder<ExploreCubit, ExploreState>(
                 builder: (context, state) {
-                  return CustomScrollView(
-                    controller: _scrollController,
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      // Initial expanded cards section
-                      // if (context.isLoggedIn)
-                      //   SliverToBoxAdapter(child: _buildBiggerChild(isInParking, parkingStartTime)),
-                      SliverAppBar(
-                        expandedHeight: 220,
-                        collapsedHeight: 100,
-                        pinned: true,
-                        flexibleSpace: LayoutBuilder(
-                          builder: (context, constrains) {
-                            final currentHeight = constrains.biggest.height;
-                            final bool isCollapsed = currentHeight <= 220;
+                  return Stack(
+                    children: [
+                      CustomScrollView(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        slivers: [
+                          context.isLoggedIn
+                              ? SliverAppBar(
+                                expandedHeight: MediaQuery.of(context).size.height * 0.25, // 25% of screen
+                                collapsedHeight: MediaQuery.of(context).size.height * 0.11, // 12%
+                                pinned: true,
+                                flexibleSpace: LayoutBuilder(
+                                  builder: (context, constrains) {
+                                    final currentHeight = constrains.biggest.height;
+                                    final bool isCollapsed = currentHeight <= MediaQuery.of(context).size.height * 0.25;
 
-                            log("isCollapsed: $isCollapsed", name: "_PersistentHeaderDelegate");
-                            return FlexibleSpaceBar(
-                              collapseMode: CollapseMode.parallax,
-                              centerTitle: true,
-                              title:
-                                  isCollapsed
-                                      ? _buildPersistentHeaderContent(
-                                        isInParking: isInParking,
-                                        parkingStartTime: parkingStartTime,
-                                      )
-                                      : null,
-                              background: _buildBiggerChild(isInParking, parkingStartTime),
-                            );
-                          },
-                        ),
+                                    log("isCollapsed: $isCollapsed", name: "_PersistentHeaderDelegate");
+                                    return FlexibleSpaceBar(
+                                      collapseMode: CollapseMode.parallax,
+                                      centerTitle: true,
+                                      title:
+                                          isCollapsed
+                                              ? _buildPersistentHeaderContent(
+                                                isInParking: isInParking,
+                                                parkingStartTime: parkingStartTime,
+                                              )
+                                              : null,
+                                      background: _buildBiggerChild(isInParking, parkingStartTime),
+                                    );
+                                  },
+                                ),
+                              )
+                              : const SliverToBoxAdapter(child: SizedBox.shrink()),
+                          // Pinned MostPopularRowSection for non-logged-in users
+                          context.isLoggedIn
+                              ? const SliverToBoxAdapter(child: SizedBox.shrink())
+                              : SliverAppBar(
+                                forceElevated: false,
+                                pinned: true,
+                                toolbarHeight: kToolbarHeight / 5, // Adjust height as needed
+                                automaticallyImplyLeading: false,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                flexibleSpace: Container(child: MostPopularRowSection(context: context)),
+                              ),
+                          // Parking list
+                          _buildParkingList(state),
+
+                          // Bottom spacing
+                          SliverToBoxAdapter(child: 30.gap),
+                        ],
                       ),
 
-                      // Parking list
-                      _buildParkingList(state),
-
-                      // Bottom spacing
-                      SliverToBoxAdapter(child: 30.gap),
+                      // Add animated scroll hint
+                      _buildAnimatedScrollHint(state),
                     ],
                   );
                 },
@@ -482,6 +501,35 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Add the animated scroll hint widget
+  Widget _buildAnimatedScrollHint(ExploreState state) {
+    // Only show if we have parkings and there are more than 2 items
+    if (state is! ParkingsSuccess || (state).parkings.isEmpty || (state).parkings.length <= 2) {
+      return const SizedBox.shrink();
+    }
+
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      bottom: _showScrollHint ? 40 : -60, // Hide by moving off-screen
+      left: 0,
+      right: 0,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: _showScrollHint ? 1.0 : 0.0,
+        child: GestureDetector(
+          onTap:
+              () => _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              ),
+          child: const Center(child: AnimatedScrollHint()),
+        ),
       ),
     );
   }
@@ -534,27 +582,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         ),
 
         // Most Popular Section
-        Container(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            border: Border(bottom: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(LocaleKeys.most_popular.tr(), style: context.bodyMedium.bold.s16.copyWith(color: AppColors.primary)),
-              Text(
-                LocaleKeys.see_more.tr(),
-                style: context.bodyMedium.regular.s14.copyWith(color: AppColors.primary.withValues(alpha: 0.5)),
-              ).withPressEffect(
-                onTap: () {
-                  context.push(Routes.explore);
-                },
-              ),
-            ],
-          ),
-        ),
+        MostPopularRowSection(context: context),
       ],
     );
   }
@@ -583,4 +611,214 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
       }, childCount: parkings.length),
     );
   }
+}
+
+class MostPopularRowSection extends StatelessWidget {
+  const MostPopularRowSection({super.key, required this.context});
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border: Border(bottom: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(LocaleKeys.most_popular.tr(), style: context.bodyMedium.bold.s16.copyWith(color: AppColors.primary)),
+          Text(
+            LocaleKeys.see_more.tr(),
+            style: context.bodyMedium.regular.s14.copyWith(color: AppColors.primary.withValues(alpha: 0.5)),
+          ).withPressEffect(
+            onTap: () {
+              context.push(Routes.explore);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Add the AnimatedScrollHint widget
+class AnimatedScrollHint extends StatefulWidget {
+  const AnimatedScrollHint({super.key});
+
+  @override
+  State<AnimatedScrollHint> createState() => _AnimatedScrollHintState();
+}
+
+class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProviderStateMixin {
+  late AnimationController _bounceController;
+  late AnimationController _pulseController;
+  late Animation<double> _bounceAnimation;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Bounce animation - optimized duration
+    _bounceController = AnimationController(duration: const Duration(milliseconds: 1200), vsync: this);
+
+    // Pulse animation for glass effect
+    _pulseController = AnimationController(duration: const Duration(milliseconds: 2000), vsync: this);
+
+    _bounceAnimation = Tween<double>(begin: 0.0, end: 8.0).animate(
+      CurvedAnimation(
+        parent: _bounceController,
+        curve: Curves.easeInOutSine, // Smoother curve for better performance
+      ),
+    );
+
+    _pulseAnimation = Tween<double>(
+      begin: 0.3,
+      end: 0.6,
+    ).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
+
+    // Start animations
+    _bounceController.repeat(reverse: true);
+    _pulseController.repeat(reverse: true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_bounceAnimation, _pulseAnimation]),
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _bounceAnimation.value),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                // Outer glow
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 2),
+                ),
+                // Inner shadow for depth
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  blurRadius: 1,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    // Liquid glass gradient
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primary.withValues(alpha: _pulseAnimation.value * 0.25),
+                        AppColors.primary.withValues(alpha: _pulseAnimation.value * 0.15),
+                        AppColors.primary.withValues(alpha: _pulseAnimation.value * 0.08),
+                      ],
+                    ),
+                    // Glass border
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: _pulseAnimation.value * 0.4),
+                      width: 0.8,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Container(
+                    // Inner highlight for glass effect
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.15),
+                          Colors.white.withValues(alpha: 0.05),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.3, 1.0],
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ShaderMask(
+                          shaderCallback:
+                              (bounds) => LinearGradient(
+                                colors: [
+                                  AppColors.primary.withValues(alpha: 0.9),
+                                  AppColors.primary.withValues(alpha: 0.7),
+                                ],
+                              ).createShader(bounds),
+                          child: Icon(Icons.keyboard_double_arrow_down, color: Colors.white, size: 18),
+                        ),
+                        const SizedBox(height: 2),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _bounceController.dispose();
+    _pulseController.dispose();
+    super.dispose();
+  }
+}
+
+class AdaptiveHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minExtentValue;
+  final double maxExtentValue;
+  final Widget Function(BuildContext context) expandedBuilder;
+  final Widget Function(BuildContext context) collapsedBuilder;
+
+  AdaptiveHeaderDelegate({
+    required this.minExtentValue,
+    required this.maxExtentValue,
+    required this.expandedBuilder,
+    required this.collapsedBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // shrinkOffset = مقدار الانكماش الحالي
+    final percentage = shrinkOffset / (maxExtent - minExtent);
+
+    if (percentage > 0.7) {
+      // 👇 لو انضغط كتير (قريب من collapse)
+      return collapsedBuilder(context);
+    } else {
+      // 👇 لسه Expanded
+      return expandedBuilder(context);
+    }
+  }
+
+  @override
+  double get maxExtent => maxExtentValue;
+
+  @override
+  double get minExtent => minExtentValue;
+
+  @override
+  bool shouldRebuild(covariant AdaptiveHeaderDelegate oldDelegate) => true;
 }
