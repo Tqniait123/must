@@ -704,14 +704,11 @@ class AdaptiveHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    // shrinkOffset = مقدار الانكماش الحالي
     final percentage = shrinkOffset / (maxExtent - minExtent);
 
     if (percentage > 0.7) {
-      // 👇 لو انضغط كتير (قريب من collapse)
       return collapsedBuilder(context);
     } else {
-      // 👇 لسه Expanded
       return expandedBuilder(context);
     }
   }
