@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
@@ -137,51 +138,51 @@ class MyPointsCardGradient extends StatelessWidget {
 // Design 2: Minimalist Card with Accent
 class MyPointsCardMinimal extends StatelessWidget {
   final bool isCollapsed;
-  
+
   const MyPointsCardMinimal({super.key, this.isCollapsed = false});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserCubit, UserState>(
-      builder: (BuildContext context, UserState state) => UnifiedCard(
-        isCollapsed: isCollapsed,
-        backgroundColor: Colors.white,
-        child: UnifiedCardContent(
-          isCollapsed: isCollapsed,
-          title: LocaleKeys.my_points.tr(),
-          mainText: context.user.points.toString(),
-          subtitle: LocaleKeys.point.tr(),
-          accentColor: AppColors.primary,
-          icon: Icons.stars,
-          actionButton: !isCollapsed ? Container(
-            width: double.infinity,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(12),
+      builder:
+          (BuildContext context, UserState state) => UnifiedCard(
+            aspectRatio: isCollapsed ? null : 0.9.r,
+            isCollapsed: isCollapsed,
+            backgroundColor: Colors.white,
+            child: UnifiedCardContent(
+              isCollapsed: isCollapsed,
+              title: LocaleKeys.my_points.tr(),
+              mainText: context.user.points.toString(),
+              subtitle: LocaleKeys.point.tr(),
+              accentColor: AppColors.primary,
+              icon: Icons.stars,
+              actionButton:
+                  !isCollapsed
+                      ? Container(
+                        width: double.infinity,
+                        height: 44,
+                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () => context.checkVerifiedAndGuestOrDo(() => context.push(Routes.myCards)),
+                            child: Center(
+                              child: Text(
+                                LocaleKeys.add_points.tr(),
+                                style: context.bodyMedium.copyWith(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      : null,
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () => context.checkVerifiedAndGuestOrDo(
-                  () => context.push(Routes.myCards),
-                ),
-                child: Center(
-                  child: Text(
-                    LocaleKeys.add_points.tr(),
-                    style: context.bodyMedium.copyWith(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ) : null,
-        ),
-      ),
+          ),
     );
   }
 }

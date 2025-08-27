@@ -8,6 +8,7 @@ class UnifiedCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? backgroundColor;
   final List<Color>? gradientColors;
+  final double? aspectRatio; // New parameter for aspect ratio control
 
   const UnifiedCard({
     super.key,
@@ -16,11 +17,12 @@ class UnifiedCard extends StatelessWidget {
     this.onTap,
     this.backgroundColor,
     this.gradientColors,
+    this.aspectRatio, // Optional aspect ratio (width/height)
   });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedScale(
+    Widget cardContent = AnimatedScale(
       scale: isCollapsed ? 0.97 : 1.0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -52,6 +54,13 @@ class UnifiedCard extends StatelessWidget {
         ),
       ),
     );
+
+    // Wrap with AspectRatio if aspectRatio is provided
+    if (aspectRatio != null) {
+      return AspectRatio(aspectRatio: aspectRatio!, child: cardContent);
+    }
+
+    return cardContent;
   }
 }
 
@@ -81,6 +90,7 @@ class UnifiedCardContent extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
         children: [
           Row(
             children: [

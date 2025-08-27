@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -39,6 +40,7 @@ class _UnifiedParkingTimerView extends StatelessWidget {
 
         return UnifiedCard(
           isCollapsed: isCollapsed,
+          aspectRatio: isCollapsed ? null : 0.9.r,
           backgroundColor: Colors.white,
           child: UnifiedCardContent(
             isCollapsed: isCollapsed,
