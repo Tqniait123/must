@@ -379,15 +379,19 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
                               ),
                             )
                           else
-                            // Pinned MostPopularRowSection for non-logged-in users
-                            SliverPersistentHeader(
+                            SliverAppBar(
                               pinned: true,
-                              delegate: AdaptiveHeaderDelegate(
-                                minExtentValue: kToolbarHeight / 8,
-                                maxExtentValue: kToolbarHeight / 3,
-                                builder:
-                                    (context, isCollapsed) =>
-                                        _buildChild(isInParking, parkingStartTime, isCollapsed: isCollapsed),
+                              automaticallyImplyLeading: false,
+                              toolbarHeight: kToolbarHeight,
+                              backgroundColor: AppColors.white,
+                              elevation: 0,
+                              flexibleSpace: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1),
+                                  ),
+                                ),
+                                child: MostPopularRowSection(context: context),
                               ),
                             ),
 

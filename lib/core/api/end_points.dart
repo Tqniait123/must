@@ -22,9 +22,9 @@ class EndPoints {
   static const String parkingInUserCity = 'parking_in_user_city';
   static const String notifications = 'notifications';
   static const String faqs = 'faqs';
-  static String aboutUs(String lang) => 'about_us/$lang';
-  static String terms(String lang) => 'terms/$lang';
-  static String privacyPolicy(String lang) => 'privacy_policy/$lang';
+  static String aboutUs(String lang) => 'about_us';
+  static String terms(String lang) => 'terms';
+  static String privacyPolicy(String lang) => 'privacy_policy';
   static const String contactUs = 'contact_info';
   static const String cars = 'cars';
   static const String addCar = 'cars/store';
