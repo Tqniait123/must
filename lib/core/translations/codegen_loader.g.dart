@@ -2791,7 +2791,8 @@ static const Map<String,dynamic> _ar = {
   "verify_now": "تحقق الآن",
   "no_parking_spots_found": "لا توجد أماكن انتظار متاحة",
   "try_different_location": "جرّب موقعًا آخر",
-  "something_went_wrong": "حدث خطأ ما"
+  "something_went_wrong": "حدث خطأ ما",
+  "location_permission_required": "إذن الموقع مطلوب"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

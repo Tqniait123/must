@@ -16,6 +16,7 @@ import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
 import 'package:must_invest/core/utils/widgets/inputs/custom_form_field.dart';
 import 'package:must_invest/core/utils/widgets/long_press_effect.dart';
@@ -187,6 +188,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           title: LocaleKeys.location_permission_required.tr(),
           message: LocaleKeys.location_permission_denied_message.tr(),
           showSettings: false,
+          context: context,
         );
         return false;
       }
@@ -198,6 +200,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         title: LocaleKeys.location_permission_required.tr(),
         message: LocaleKeys.location_permission_permanently_denied_message.tr(),
         showSettings: true,
+        context: context,
       );
       return false;
     }
@@ -227,45 +230,71 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  void _showPermissionBottomSheet({required String title, required String message, required bool showSettings}) {
+  void _showPermissionBottomSheet({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required bool showSettings,
+  }) {
     showModalBottomSheet(
       context: context,
       isDismissible: false,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
+        return Container(
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Text(message, style: Theme.of(context).textTheme.bodyMedium),
+              Icon(showSettings ? Icons.settings : Icons.location_on, size: 64, color: AppColors.primary),
               const SizedBox(height: 16),
+              Text(
+                title.tr(),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineSmall?.copyWith(color: AppColors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.grey, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(LocaleKeys.cancel.tr())),
-                  const SizedBox(width: 8),
-                  if (showSettings)
-                    ElevatedButton(
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                        LocaleKeys.cancel.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.grey, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomElevatedButton(
                       onPressed: () async {
                         Navigator.of(context).pop();
-                        await _openAppSettings();
+                        if (showSettings) {
+                          await _openAppSettings();
+                        } else {
+                          _getCurrentLocation();
+                        }
                       },
-                      child: Text(LocaleKeys.open_settings.tr()),
-                    )
-                  else
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _getCurrentLocation(); // Try again
-                      },
-                      child: Text(LocaleKeys.try_again.tr()),
+                      title: showSettings ? LocaleKeys.open_settings.tr() : LocaleKeys.try_again.tr(),
+                      backgroundColor: AppColors.primary,
+                      textColor: AppColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      height: 48,
                     ),
+                  ),
                 ],
               ),
+              const SizedBox(height: 20),
             ],
           ),
         );
