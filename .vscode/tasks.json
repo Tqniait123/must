@@ -2,6 +2,41 @@
     "version": "2.0.0",
     "tasks": [
 
+
+     {
+      "label": "Generate Daily AI Report",
+      "type": "shell",
+      "command": "./scripts/ai_reporter.sh",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+
+      {
+  "label": "Daily Report (PRETTY) (No Build)",
+  "type": "shell",
+  "command": "git log --since=\"yesterday\" --until=\"today\" --author=\"$(git config user.name)\" --pretty=format:\"%s\" --date=short | grep -v '\\[build\\] \\[apk\\]'"
+},
+       {
+      "label": "Daily Report",
+      "type": "shell",
+      "command": "git log --since=\"yesterday\" --until=\"today\" --author=\"$(git config user.name)\" --pretty=format:\"%ad%n%B%n------------------------\" --date=short",
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": []
+    },
+
 {
     "label": "Generate Flutter Feature Structure",
     "type": "shell",

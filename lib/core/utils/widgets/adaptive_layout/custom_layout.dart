@@ -101,8 +101,7 @@ class CustomLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     // Set system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(
-      systemUiOverlayStyle ??
-          const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+      systemUiOverlayStyle ?? const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
     );
 
     final screenSize = MediaQuery.sizeOf(context);
@@ -130,9 +129,7 @@ class CustomLayout extends StatelessWidget {
                         // Use only width OR height, not both
                         width: patternWidth ?? screenSize.width * 1.4,
                         // Remove height to maintain aspect ratio
-                        fit:
-                            BoxFit
-                                .contain, // This ensures the image fits within the bounds
+                        fit: BoxFit.contain, // This ensures the image fits within the bounds
                       ),
                     ),
                   ),
@@ -162,16 +159,12 @@ class CustomLayout extends StatelessWidget {
   }
 
   bool _shouldShowDefaultPattern() {
-    return backgroundPattern ==
-        null; // Show default pattern if no custom pattern
+    return backgroundPattern == null; // Show default pattern if no custom pattern
   }
 
   Widget _buildHeader(BuildContext context) {
     if (customHeader != null) {
-      return Padding(
-        padding: upperContentPadding ?? const EdgeInsets.all(16.0),
-        child: customHeader!,
-      );
+      return Padding(padding: upperContentPadding ?? const EdgeInsets.all(16.0), child: customHeader!);
     }
 
     if (title != null) {
@@ -185,19 +178,13 @@ class CustomLayout extends StatelessWidget {
                 tag: 'title',
                 child: Text(
                   title!,
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.white,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge!.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.white),
                 ),
               ),
             ),
-            if (showNotification)
-              GestureDetector(
-                onTap: onNotificationTap,
-                child: AppIcons.notificationsIc.icon(),
-              ),
+            if (showNotification) GestureDetector(onTap: onNotificationTap, child: AppIcons.notificationsIc.icon()),
           ],
         ),
       );
@@ -207,40 +194,25 @@ class CustomLayout extends StatelessWidget {
   }
 
   Widget _buildUpperContent() {
-    return Padding(
-      padding:
-          upperContentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0),
-      child: upperContent!,
-    );
+    return Padding(padding: upperContentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0), child: upperContent!);
   }
 
   Widget _buildMainContent() {
     return Expanded(
       child: AnimatedContainer(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         width: double.infinity,
         decoration: BoxDecoration(
           color: containerColor ?? AppColors.white,
           borderRadius:
               containerBorderRadius ??
-              const BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
-              ),
+              const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
           boxShadow:
               containerShadows ??
-              [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -3),
-                ),
-              ],
+              [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -3))],
         ),
         duration: animationDuration ?? const Duration(milliseconds: 700),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16),
-          child: _buildContentByScrollType(),
-        ),
+        child: Padding(padding: const EdgeInsets.only(top: 16), child: _buildContentByScrollType()),
       ),
     );
   }
@@ -250,21 +222,13 @@ class CustomLayout extends StatelessWidget {
 
     switch (scrollType) {
       case ScrollType.scrollable:
-        return SingleChildScrollView(
-          controller: scrollController,
-          physics: scrollPhysics,
-          child: content,
-        );
+        return SingleChildScrollView(controller: scrollController, physics: scrollPhysics, child: content);
 
       case ScrollType.nonScrollable:
         return content;
 
       case ScrollType.custom:
-        return SingleChildScrollView(
-          controller: scrollController,
-          physics: scrollPhysics,
-          child: content,
-        );
+        return SingleChildScrollView(controller: scrollController, physics: scrollPhysics, child: content);
     }
   }
 
@@ -314,10 +278,7 @@ extension CustomLayoutPresets on CustomLayout {
       upperContent: upperContent,
       spacerHeight: 100,
       scrollType: scrollType,
-      containerBorderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(30),
-        topRight: Radius.circular(30),
-      ),
+      containerBorderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
       children: children,
     );
   }
