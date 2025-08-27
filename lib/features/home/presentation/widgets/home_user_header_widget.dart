@@ -22,12 +22,16 @@ import 'package:must_invest/features/profile/presentation/cubit/cars_cubit.dart'
 import 'package:must_invest/features/profile/presentation/widgets/car_widget.dart';
 
 class UserHomeHeaderWidget extends StatelessWidget {
-  const UserHomeHeaderWidget({super.key, required TextEditingController searchController, this.onChooseCar})
-    : _searchController = searchController;
+  const UserHomeHeaderWidget({
+    super.key,
+    required TextEditingController searchController,
+    this.onChooseCar,
+    this.onSearchChanged,
+  }) : _searchController = searchController;
 
   final TextEditingController _searchController;
   final void Function(Car car)? onChooseCar;
-
+  final void Function(String value)? onSearchChanged;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -99,6 +103,9 @@ class UserHomeHeaderWidget extends StatelessWidget {
           margin: 0,
           prefixIC: AppIcons.searchIc.icon(),
           hint: LocaleKeys.find_an_easy_parking_spot.tr(),
+          waitTyping: true,
+
+          onChanged: onSearchChanged,
           suffixIC: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

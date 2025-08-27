@@ -430,8 +430,14 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         topPadding: 70,
         contentPadding: EdgeInsets.zero, // Remove padding since CustomScrollView will handle it
         scrollType: ScrollType.nonScrollable, // Important: disable default scrolling
-        upperContent: UserHomeHeaderWidget(searchController: _searchController),
+        upperContent: UserHomeHeaderWidget(
+          searchController: _searchController,
+          onSearchChanged: (query) {
+            _exploreCubit.getAllParkings(filter: FilterModel.withName(query));
+          },
+        ),
         backgroundPatternAssetPath: AppImages.homePattern,
+
         children: [
           // Replace the entire content with CustomScrollView
           Expanded(
