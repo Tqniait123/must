@@ -29,6 +29,7 @@ class ShimmerLoadingWidget extends StatelessWidget {
       );
     }
   }
+  
 }
 
 class ShimmerCard extends StatefulWidget {
