@@ -93,7 +93,7 @@ class ParkingDetailsCard extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   _infoChip(
                                     icon: Icons.attach_money,
-                                    text: '${parking.pricePerHour} ${LocaleKeys.egp_per_hour.tr()}',
+                                    text: '${parking.pricePerHour} ',
                                     background: Colors.green.shade50,
                                     iconColor: Colors.green.shade600,
                                     textColor: Colors.green.shade700,
@@ -135,8 +135,17 @@ class ParkingDetailsCard extends StatelessWidget {
                     ),
                     20.gap,
                     CustomElevatedButton(
-                      title: isNavigating ? LocaleKeys.stop_navigation.tr() : LocaleKeys.start_navigation.tr(),
-                      onPressed: isLoadingRoute ? null : (isNavigating ? onStopNavigation : onStartNavigation),
+                      isDisabled: parking.isBusy,
+                      title:
+                          parking.isBusy
+                              ? LocaleKeys.map_button_parking_full.tr()
+                              : LocaleKeys.map_button_start_navigation.tr(),
+                      onPressed:
+                          parking.isBusy
+                              ? null
+                              : () {
+                                onStartNavigation();
+                              },
                     ),
                   ],
                 ),
@@ -161,8 +170,8 @@ class ParkingDetailsCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: iconColor),
-          const SizedBox(width: 4),
+          // Icon(icon, size: 14, color: iconColor),
+          // const SizedBox(width: 4),
           Text(text, style: TextStyle(fontSize: 11, color: textColor, fontWeight: FontWeight.w600)),
         ],
       ),
