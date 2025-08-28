@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -60,7 +61,7 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
         _selectedExpiryDate = _parseToDateTime(widget.car!.licenseExpiryDate);
         if (_selectedExpiryDate != null) {
           // Always display in user-friendly format but store as YYYY-MM-DD
-          _licenseExpiryDateController.text = DateFormat('dd/MM/yyyy').format(_selectedExpiryDate!);
+          _licenseExpiryDateController.text = DateFormat('dd/MM/yyyy', 'en').format(_selectedExpiryDate!);
         }
       } catch (e) {
         _selectedExpiryDate = null;
@@ -128,12 +129,29 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
   }
 
   DateTime? _parseToDateTime(String dateText) {
-    if (dateText.isEmpty) return null;
+    if (dateText.isEmpty) {
+      log('Date text is empty');
+      return null;
+    }
+
+    // Clean the input string - remove any whitespace or hidden characters
+    String cleanDateText = dateText.trim();
 
     try {
       // First, try the backend's expected format (yyyy-MM-dd)
-      return DateFormat('yyyy-MM-dd').parseStrict(dateText);
+      log('Attempting to parse date in primary format yyyy-MM-dd: $cleanDateText');
+      return DateFormat('yyyy-MM-dd', 'en').parseStrict(cleanDateText);
     } catch (e) {
+      log('Failed to parse date in primary format: $e');
+
+      // Try without parseStrict first
+      try {
+        log('Attempting to parse date in primary format yyyy-MM-dd without strict: $cleanDateText');
+        return DateFormat('yyyy-MM-dd', 'en').parse(cleanDateText);
+      } catch (e) {
+        log('Failed to parse date in primary format without strict: $e');
+      }
+
       // If the primary format fails, try other common formats as fallback
       List<String> fallbackFormats = [
         'dd/MM/yyyy', // 12/07/2025
@@ -142,18 +160,45 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
         'M/d/yyyy', // 7/12/2025
         'yyyy/MM/dd', // 2025/07/12
         'dd-MM-yyyy', // 12-07-2025
+        'yyyy-M-d', // 2026-8-25 (single digit months/days)
+        'yyyy-MM-d', // 2026-08-5 (single digit days)
+        'yyyy-M-dd', // 2026-8-25 (single digit months)
       ];
 
       for (String format in fallbackFormats) {
         try {
-          return DateFormat(format).parseStrict(dateText);
+          log('Attempting to parse date with format $format: $cleanDateText');
+          return DateFormat(format, 'en').parseStrict(cleanDateText);
         } catch (e) {
+          log('Failed to parse date with format $format: $e');
           continue; // Try the next format
         }
       }
 
+      // Try fallback formats without strict parsing
+      for (String format in fallbackFormats) {
+        try {
+          log('Attempting to parse date with format $format (non-strict): $cleanDateText');
+          return DateFormat(format, 'en').parse(cleanDateText);
+        } catch (e) {
+          log('Failed to parse date with format $format (non-strict): $e');
+          continue; // Try the next format
+        }
+      }
+
+      // Last resort: try DateTime.parse() which handles ISO 8601 formats
+      try {
+        log('Attempting to parse date with DateTime.parse(): $cleanDateText');
+        return DateTime.parse(cleanDateText);
+      } catch (e) {
+        log('Failed to parse date with DateTime.parse(): $e');
+      }
+
       // Log the error for debugging
-      debugPrint('Failed to parse date: $dateText');
+      log('Failed to parse date with all formats: $cleanDateText');
+      log('Original date text: "$dateText"');
+      log('Date text length: ${dateText.length}');
+      log('Date text runes: ${dateText.runes.toList()}'); // This will show any hidden characters
       return null;
     }
   }
@@ -165,7 +210,8 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
 
   // Method to format DateTime for user display
   String _formatForDisplay(DateTime date) {
-    return DateFormat('dd/MM/yyyy').format(date);
+    log('Checking controller : ${_licenseExpiryDateController.text}');
+    return DateFormat('dd/MM/yyyy', 'en').format(date);
   }
 
   Future<void> _selectExpiryDate() async {
