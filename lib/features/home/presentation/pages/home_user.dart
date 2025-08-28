@@ -6,12 +6,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:must_invest/config/routes/app_router.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
-import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/services/di.dart';
@@ -48,8 +48,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
   Timer? _parkingCheckTimer;
   DateTime? _lastLoggedStartTime;
   bool isCollapsed = false;
-
-  // For scroll control and animated hints
   final ScrollController _scrollController = ScrollController();
   bool _showScrollHint = true;
 
@@ -80,18 +78,13 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     _loadNearestParkings(isFirstTime: true);
     _startParkingStatusMonitoring();
 
-    // Add scroll listener for animated hints
     _scrollController.addListener(_scrollListener);
   }
 
-  // Add scroll listener method
   void _scrollListener() {
     if (_scrollController.hasClients) {
-      // Check if we're near the end of the scroll view
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;
-
-      // Hide hint when user is within 100 pixels of the bottom
       final threshold = 100.0;
       final shouldShow = (maxScroll - currentScroll) > threshold;
 
@@ -120,10 +113,7 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
     _logHomeEvent("HOME SCREEN: App lifecycle changed to $state at ${DateTime.now()}");
-
     if (state == AppLifecycleState.resumed) {
       _logHomeEvent("HOME SCREEN: App resumed - checking parking status");
       _checkParkingStatus();
@@ -149,7 +139,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
       final prefs = await SharedPreferences.getInstance();
       final storedLogs = prefs.getStringList('home_parking_logs') ?? [];
       _homeLogs.addAll(storedLogs);
-
       if (storedLogs.isNotEmpty) {
         _logHomeEvent("Loaded ${storedLogs.length} previous home logs");
       }
@@ -177,7 +166,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     bool isInParking = false;
     DateTime? parkingStartTime;
 
-    // Check if user is logged in before accessing user
     if (context.isLoggedIn) {
       final user = context.user;
       isInParking = user.inParking ?? false;
@@ -241,7 +229,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         "Current Time: ${DateTime.now()}",
       ];
 
-      // Only include user-specific info if logged in
       if (context.isLoggedIn) {
         final user = context.user;
         deviceInfo.add("User in parking: ${user.inParking ?? false}");
@@ -277,50 +264,11 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     }
   }
 
-  // // Build persistent header content (collapsed state)
-  // Widget _buildPersistentHeaderContent({required bool isInParking, required DateTime? parkingStartTime}) {
-  //   return Container(
-  //     color: AppColors.white,
-  //     child: Column(
-  //       children: [
-  //         // Collapsed Cards Row using actual widgets
-  //         if (context.isLoggedIn) ...[
-  //           Container(
-  //             margin: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-  //             child: Row(
-  //               children: [
-  //                 // Collapsed Points Card
-  //                 Expanded(child: MyPointsCardMinimal(isCollapsed: true)),
-  //                 if (isInParking) ...[
-  //                   const SizedBox(width: 8),
-  //                   // Collapsed Timer Card
-  //                   Expanded(
-  //                     child: Builder(
-  //                       builder: (context) {
-  //                         final effectiveStartTime = parkingStartTime ?? DateTime.now();
-  //                         return UnifiedParkingTimerCard(startTime: effectiveStartTime, isCollapsed: true);
-  //                       },
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-
-  //         // Most Popular Section
-  //         MostPopularRowSection(context: context),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     bool isInParking = false;
     DateTime? parkingStartTime;
 
-    // Check if user is logged in before accessing user
     if (context.isLoggedIn) {
       final user = context.user;
       isInParking = user.inParking ?? false;
@@ -343,8 +291,8 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         patternOffset: const Offset(-100, -200),
         spacerHeight: 35,
         topPadding: 70,
-        contentPadding: EdgeInsets.zero, // Remove padding since CustomScrollView will handle it
-        scrollType: ScrollType.nonScrollable, // Important: disable default scrolling
+        contentPadding: EdgeInsets.zero,
+        scrollType: ScrollType.nonScrollable,
         upperContent: UserHomeHeaderWidget(
           searchController: _searchController,
           onSearchChanged: (query) {
@@ -353,7 +301,6 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
         ),
         backgroundPatternAssetPath: AppImages.homePattern,
         children: [
-          // Replace the entire content with CustomScrollView
           Expanded(
             child: BlocProvider.value(
               value: _exploreCubit,
@@ -361,49 +308,30 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
                 builder: (context, state) {
                   return Stack(
                     children: [
-                      CustomScrollView(
+                      NestedScrollView(
                         controller: _scrollController,
                         physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          // Use SliverPersistentHeader for logged-in users
-                          if (context.isLoggedIn)
-                            SliverPersistentHeader(
-                              pinned: true,
-                              delegate: AdaptiveHeaderDelegate(
-                                minExtentValue: MediaQuery.of(context).size.height * 0.18, // Same as collapsedHeight
-                                maxExtentValue: MediaQuery.of(context).size.height * 0.30, // Same as expandedHeight
-                                builder:
-                                    (context, isCollapsed) =>
-                                        _buildChild(isInParking, parkingStartTime, isCollapsed: isCollapsed),
-                                // collapsedBuilder: (context) => _buildChild(isInParking, parkingStartTime),
-                              ),
-                            )
-                          else
-                            SliverAppBar(
-                              pinned: true,
-                              automaticallyImplyLeading: false,
-                              toolbarHeight: kToolbarHeight,
-                              backgroundColor: AppColors.white,
-                              elevation: 0,
-                              flexibleSpace: Container(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1),
-                                  ),
+                        headerSliverBuilder:
+                            (context, innerBoxIsScrolled) => [
+                              SliverPersistentHeader(
+                                pinned: true,
+                                delegate: AdaptiveHeaderDelegate(
+                                  minExtentValue:
+                                      (!context.isLoggedIn)
+                                          ? MediaQuery.of(context).size.height * 0.10
+                                          : MediaQuery.of(context).size.height * 0.20,
+                                  maxExtentValue:
+                                      !context.isLoggedIn
+                                          ? MediaQuery.of(context).size.height * 0.10
+                                          : MediaQuery.of(context).size.height * 0.30,
+                                  builder:
+                                      (context, isExpanded) =>
+                                          _buildHeader(context, isInParking, parkingStartTime, isExpanded: isExpanded),
                                 ),
-                                child: MostPopularRowSection(context: context),
                               ),
-                            ),
-
-                          // Parking list
-                          _buildParkingList(state),
-
-                          // Bottom spacing
-                          SliverToBoxAdapter(child: 30.gap),
-                        ],
+                            ],
+                        body: _buildParkingListWidget(state),
                       ),
-
-                      // Add animated scroll hint
                       _buildAnimatedScrollHint(state),
                     ],
                   );
@@ -416,17 +344,15 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     );
   }
 
-  // Add the animated scroll hint widget
   Widget _buildAnimatedScrollHint(ExploreState state) {
-    // Only show if we have parkings and there are more than 2 items
-    if (state is! ParkingsSuccess || (state).parkings.isEmpty || (state).parkings.length <= 2) {
+    if (state is! ParkingsSuccess || state.parkings.isEmpty || state.parkings.length <= 2) {
       return const SizedBox.shrink();
     }
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      bottom: _showScrollHint ? 40 : -60, // Hide by moving off-screen
+      bottom: _showScrollHint ? 40 : -60,
       left: 0,
       right: 0,
       child: AnimatedOpacity(
@@ -445,70 +371,70 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     );
   }
 
-  Column _buildChild(bool isInParking, DateTime? parkingStartTime, {bool isCollapsed = false}) {
+  Widget _buildHeader(BuildContext context, bool isInParking, DateTime? parkingStartTime, {required bool isExpanded}) {
     return Column(
       children: [
-        Container(
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.only(top: 30, bottom: 16),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Row(
-                children: [
-                  Expanded(flex: 1, child: MyPointsCardMinimal(isCollapsed: !isCollapsed)),
-                  if (isInParking) ...[
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 1,
-                      child: Builder(
-                        builder: (context) {
-                          final effectiveStartTime = parkingStartTime ?? DateTime.now();
-
-                          if (parkingStartTime == null) {
-                            _logHomeEvent("CREATING TIMER with NULL startTime - using DateTime.now()");
-                            _logHomeEvent("Fallback time: $effectiveStartTime");
-                          } else {
-                            _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
-                          }
-
-                          return UnifiedParkingTimerCard(startTime: effectiveStartTime, isCollapsed: !isCollapsed);
-                        },
+        if (context.isLoggedIn)
+          Container(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.only(top: 30.h, bottom: 16.h),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Row(
+                  children: [
+                    Expanded(flex: 1, child: MyPointsCardMinimal(isCollapsed: !isExpanded)),
+                    if (isInParking) ...[
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        flex: 1,
+                        child: Builder(
+                          builder: (context) {
+                            final effectiveStartTime = parkingStartTime ?? DateTime.now();
+                            if (parkingStartTime == null) {
+                              _logHomeEvent("CREATING TIMER with NULL startTime - using DateTime.now()");
+                              _logHomeEvent("Fallback time: $effectiveStartTime");
+                            } else {
+                              _logHomeEvent("CREATING TIMER with startTime: $effectiveStartTime");
+                            }
+                            return UnifiedParkingTimerCard(startTime: effectiveStartTime, isCollapsed: !isExpanded);
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-
-        // Most Popular Section
         MostPopularRowSection(context: context),
       ],
     );
   }
 
-  Widget _buildParkingList(ExploreState state) {
+  Widget _buildParkingListWidget(ExploreState state) {
     if (state is ParkingsLoading) {
-      return ShimmerLoadingWidget(isSliver: true);
+      return ShimmerLoadingWidget(isSliver: false);
     }
 
-    if (state is! ParkingsSuccess || (state).parkings.isEmpty) {
-      return const SliverToBoxAdapter(
-        child: Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: EmptyStateWidget()),
-      );
+    if (state is! ParkingsSuccess || state.parkings.isEmpty) {
+      return Padding(padding: EdgeInsets.symmetric(horizontal: 24.w), child: const EmptyStateWidget());
     }
 
-    final parkings = (state).parkings;
+    final parkings = state.parkings;
 
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
+    return ListView.builder(
+      padding: EdgeInsets.zero,
+      itemCount: parkings.length + 1,
+      itemBuilder: (context, index) {
+        if (index == parkings.length) {
+          return SizedBox(height: 30.h);
+        }
         return Padding(
-          padding: EdgeInsets.only(left: 24, right: 24, bottom: index == parkings.length - 1 ? 0 : 16),
+          padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 16.h),
           child: ParkingCard(parking: parkings[index]),
         );
-      }, childCount: parkings.length),
+      },
     );
   }
 }
@@ -521,7 +447,7 @@ class MostPopularRowSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+      padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 16.h),
       decoration: BoxDecoration(
         color: AppColors.white,
         border: Border(bottom: BorderSide(color: AppColors.primary.withOpacity(0.1), width: 1)),
@@ -544,7 +470,6 @@ class MostPopularRowSection extends StatelessWidget {
   }
 }
 
-// Add the AnimatedScrollHint widget
 class AnimatedScrollHint extends StatefulWidget {
   const AnimatedScrollHint({super.key});
 
@@ -561,26 +486,16 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
   @override
   void initState() {
     super.initState();
-
-    // Bounce animation - optimized duration
     _bounceController = AnimationController(duration: const Duration(milliseconds: 1200), vsync: this);
-
-    // Pulse animation for glass effect
     _pulseController = AnimationController(duration: const Duration(milliseconds: 2000), vsync: this);
-
-    _bounceAnimation = Tween<double>(begin: 0.0, end: 8.0).animate(
-      CurvedAnimation(
-        parent: _bounceController,
-        curve: Curves.easeInOutSine, // Smoother curve for better performance
-      ),
-    );
-
+    _bounceAnimation = Tween<double>(
+      begin: 0.0,
+      end: 8.0,
+    ).animate(CurvedAnimation(parent: _bounceController, curve: Curves.easeInOutSine));
     _pulseAnimation = Tween<double>(
       begin: 0.3,
       end: 0.6,
     ).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
-
-    // Start animations
     _bounceController.repeat(reverse: true);
     _pulseController.repeat(reverse: true);
   }
@@ -593,34 +508,31 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
         return Transform.translate(
           offset: Offset(0, _bounceAnimation.value),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
-                // Outer glow
                 BoxShadow(
                   color: AppColors.primary.withValues(alpha: 0.15),
-                  blurRadius: 12,
+                  blurRadius: 12.r,
                   spreadRadius: 0,
                   offset: const Offset(0, 2),
                 ),
-                // Inner shadow for depth
                 BoxShadow(
                   color: Colors.white.withValues(alpha: 0.1),
-                  blurRadius: 1,
+                  blurRadius: 1.r,
                   spreadRadius: 0,
                   offset: const Offset(0, 1),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(18.r),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                   decoration: BoxDecoration(
-                    // Liquid glass gradient
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -630,17 +542,15 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
                         AppColors.primary.withValues(alpha: _pulseAnimation.value * 0.08),
                       ],
                     ),
-                    // Glass border
                     border: Border.all(
                       color: AppColors.primary.withValues(alpha: _pulseAnimation.value * 0.4),
                       width: 0.8,
                     ),
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(18.r),
                   ),
                   child: Container(
-                    // Inner highlight for glass effect
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(18.r),
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -663,9 +573,9 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
                                   AppColors.primary.withValues(alpha: 0.7),
                                 ],
                               ).createShader(bounds),
-                          child: Icon(Icons.keyboard_double_arrow_down, color: Colors.white, size: 18),
+                          child: Icon(Icons.keyboard_double_arrow_down, color: Colors.white, size: 18.sp),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2.h),
                       ],
                     ),
                   ),
@@ -689,25 +599,15 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
 class AdaptiveHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double minExtentValue;
   final double maxExtentValue;
-  final Widget Function(BuildContext context, bool isCollapsed) builder;
-  // final Widget Function(BuildContext context) collapsedBuilder;
+  final Widget Function(BuildContext context, bool isExpanded) builder;
 
-  AdaptiveHeaderDelegate({
-    required this.minExtentValue,
-    required this.maxExtentValue,
-    required this.builder,
-    // required this.collapsedBuilder,
-  });
+  AdaptiveHeaderDelegate({required this.minExtentValue, required this.maxExtentValue, required this.builder});
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     final percentage = shrinkOffset / (maxExtent - minExtent);
-
-    if (percentage > 0.7) {
-      return builder(context, false);
-    } else {
-      return builder(context, true);
-    }
+    final isExpanded = percentage < 0.7;
+    return builder(context, isExpanded);
   }
 
   @override
