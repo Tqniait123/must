@@ -138,15 +138,16 @@ class MyPointsCardGradient extends StatelessWidget {
 // Design 2: Minimalist Card with Accent
 class MyPointsCardMinimal extends StatelessWidget {
   final bool isCollapsed;
+  final bool withAspectRatio;
 
-  const MyPointsCardMinimal({super.key, this.isCollapsed = false});
+  const MyPointsCardMinimal({super.key, this.isCollapsed = false, this.withAspectRatio = true});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserCubit, UserState>(
       builder:
           (BuildContext context, UserState state) => UnifiedCard(
-            aspectRatio: isCollapsed ? null : 0.9.r,
+            aspectRatio: withAspectRatio ? (isCollapsed ? null : 0.9.r) : null,
             isCollapsed: isCollapsed,
             backgroundColor: Colors.white,
             child: UnifiedCardContent(

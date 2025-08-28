@@ -383,7 +383,10 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
               builder: (context, constraints) {
                 return Row(
                   children: [
-                    Expanded(flex: 1, child: MyPointsCardMinimal(isCollapsed: !isExpanded)),
+                    Expanded(
+                      flex: 1,
+                      child: MyPointsCardMinimal(isCollapsed: !isExpanded, withAspectRatio: isInParking),
+                    ),
                     if (isInParking) ...[
                       SizedBox(width: 16.w),
                       Expanded(
