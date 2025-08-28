@@ -127,13 +127,15 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
     }
   }
 
-  // Updated method to parse various date formats and always return DateTime
   DateTime? _parseToDateTime(String dateText) {
     if (dateText.isEmpty) return null;
 
     try {
-      List<String> formats = [
-        'yyyy-MM-dd', // 2025-07-12 (target format)
+      // First, try the backend's expected format (yyyy-MM-dd)
+      return DateFormat('yyyy-MM-dd').parseStrict(dateText);
+    } catch (e) {
+      // If the primary format fails, try other common formats as fallback
+      List<String> fallbackFormats = [
         'dd/MM/yyyy', // 12/07/2025
         'd/M/yyyy', // 12/7/2025
         'MM/dd/yyyy', // 07/12/2025
@@ -142,15 +144,16 @@ class _AddEditCarBottomSheetState extends State<AddEditCarBottomSheet> {
         'dd-MM-yyyy', // 12-07-2025
       ];
 
-      for (String format in formats) {
+      for (String format in fallbackFormats) {
         try {
           return DateFormat(format).parseStrict(dateText);
         } catch (e) {
-          continue;
+          continue; // Try the next format
         }
       }
-      return null;
-    } catch (e) {
+
+      // Log the error for debugging
+      debugPrint('Failed to parse date: $dateText');
       return null;
     }
   }
