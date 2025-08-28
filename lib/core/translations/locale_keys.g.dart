@@ -1382,5 +1382,8 @@ abstract class  LocaleKeys {
   static const no_parking_spots_found = 'no_parking_spots_found';
   static const try_different_location = 'try_different_location';
   static const something_went_wrong = 'something_went_wrong';
+  static const offer_duration = 'offer_duration';
+  static const catch_this_offer = 'catch_this_offer';
+  static const coming_soon = 'coming_soon';
 
 }

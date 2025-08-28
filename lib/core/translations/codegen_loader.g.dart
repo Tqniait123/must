@@ -1402,7 +1402,10 @@ class CodegenLoader extends AssetLoader{
   "verify_now": "Verify Now",
   "no_parking_spots_found": "No parking spots found",
   "try_different_location": "Try a different location",
-  "something_went_wrong": "Something went wrong"
+  "something_went_wrong": "Something went wrong",
+  "offer_duration": "Offer Duration",
+  "catch_this_offer": "Catch This Offer",
+  "coming_soon": "Coming Soon"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2792,7 +2795,10 @@ static const Map<String,dynamic> _ar = {
   "no_parking_spots_found": "لا توجد أماكن انتظار متاحة",
   "try_different_location": "جرّب موقعًا آخر",
   "something_went_wrong": "حدث خطأ ما",
-  "location_permission_required": "إذن الموقع مطلوب"
+  "location_permission_required": "إذن الموقع مطلوب",
+  "offer_duration": "مدة العرض",
+  "catch_this_offer": "احصل على هذا العرض",
+  "coming_soon": "قريباً"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

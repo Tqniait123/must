@@ -1444,5 +1444,11 @@
   "no_parking_spots_found": "لا توجد أماكن انتظار متاحة",
   "try_different_location": "جرّب موقعًا آخر",
   "something_went_wrong": "حدث خطأ ما",
-  "location_permission_required": "إذن الموقع مطلوب"
+  "location_permission_required": "إذن الموقع مطلوب",
+
+    "offer_duration": "مدة العرض",
+
+    "catch_this_offer": "احصل على هذا العرض",
+    "coming_soon": "قريباً"
+
 }

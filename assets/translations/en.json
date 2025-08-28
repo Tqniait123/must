@@ -1444,6 +1444,12 @@
   "verify_now": "Verify Now",
   "no_parking_spots_found": "No parking spots found",
   "try_different_location": "Try a different location",
-  "something_went_wrong": "Something went wrong"
+  "something_went_wrong": "Something went wrong",
+
+    "offer_duration": "Offer Duration",
+
+    "catch_this_offer": "Catch This Offer",
+    "coming_soon": "Coming Soon"
+
 
 }
