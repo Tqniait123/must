@@ -25,6 +25,7 @@ import 'package:must_invest/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cubit.dart';
 import 'package:must_invest/features/auth/presentation/pages/otp_screen.dart';
 import 'package:must_invest/features/auth/presentation/widgets/sign_up_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,10 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
   String _biometricType = 'Face ID';
   IconData _biometricIcon = Icons.face;
   List<BiometricType> _availableBiometrics = [];
+  bool _hasDismissedBiometricPrompt = false; // Track dismissal state
 
   @override
   void initState() {
     super.initState();
+    _loadDismissalState(); // Load dismissal state
     _initializeBiometric();
   }
 
@@ -60,6 +63,25 @@ class _LoginScreenState extends State<LoginScreen> {
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Load dismissal state from SharedPreferences
+  Future<void> _loadDismissalState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _hasDismissedBiometricPrompt = prefs.getBool('hasDismissedBiometricPrompt') ?? false;
+    });
+    log('Loaded dismissal state: $_hasDismissedBiometricPrompt');
+  }
+
+  // Save dismissal state to SharedPreferences
+  Future<void> _saveDismissalState(bool dismissed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasDismissedBiometricPrompt', dismissed);
+    setState(() {
+      _hasDismissedBiometricPrompt = dismissed;
+    });
+    log('Saved dismissal state: $dismissed');
   }
 
   // ==================== BIOMETRIC INITIALIZATION ====================
@@ -99,8 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
         await _showQuickLoginBottomSheet();
       }
 
-      // Show enrollment prompt if biometric is available but not enrolled
-      if (_biometricStatus == BiometricStatus.availableButNotEnrolled) {
+      // Show enrollment prompt if biometric is available but not enrolled and not dismissed
+      if (_biometricStatus == BiometricStatus.availableButNotEnrolled && !_hasDismissedBiometricPrompt) {
         log('Showing biometric enrollment dialog...');
         await _showBiometricEnrollmentDialog();
       }
@@ -274,8 +296,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (status == BiometricStatus.available && !_isBiometricEnabled) {
       // Show setup dialog for enrolled biometrics
       await _showBiometricSetupBottomSheet();
-    } else if (status == BiometricStatus.availableButNotEnrolled) {
-      // Show enrollment dialog
+    } else if (status == BiometricStatus.availableButNotEnrolled && !_hasDismissedBiometricPrompt) {
+      // Show enrollment dialog only if not dismissed
       await _showBiometricEnrollmentDialog();
     }
   }
@@ -308,116 +330,118 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
             ),
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            const SizedBox(height: 24),
+
+            // Icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: Icon(Icons.fingerprint, size: 40, color: Theme.of(context).primaryColor),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            const SizedBox(height: 24),
+
+            // Title
+            Text(
+              LocaleKeys.biometric_authentication.tr(),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+
+            // Description
+            Text(
+              LocaleKeys.biometric_enrollment_description.tr(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+
+            // Buttons
+            Column(
               children: [
-                // Handle bar
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
-                ),
-                const SizedBox(height: 24),
-
-                // Icon
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(40),
+                // Use Device Password Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await _authenticateWithDeviceCredentials();
+                    },
+                    icon: Icon(Icons.lock_outline, size: 20),
+                    label: Text(LocaleKeys.use_device_password.tr()),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
-                  child: Icon(Icons.fingerprint, size: 40, color: Theme.of(context).primaryColor),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
-                // Title
-                Text(
-                  LocaleKeys.biometric_authentication.tr(),
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-
-                // Description
-                Text(
-                  LocaleKeys.biometric_enrollment_description.tr(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600, height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-
-                // Buttons
-                Column(
+                // Action buttons row
+                Row(
                   children: [
-                    // Use Device Password Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          await _saveDismissalState(true); // Save dismissal state
+                          Navigator.pop(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Text(LocaleKeys.later.tr()),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(context);
-                          await _authenticateWithDeviceCredentials();
+                          await _biometricService.openBiometricSettings();
                         },
-                        icon: Icon(Icons.lock_outline, size: 20),
-                        label: Text(LocaleKeys.use_device_password.tr()),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                          foregroundColor: Theme.of(context).primaryColor,
                         ),
+                        child: Text(LocaleKeys.open_settings.tr()),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Action buttons row
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            child: Text(LocaleKeys.later.tr()),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-                              await _biometricService.openBiometricSettings();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                              foregroundColor: Theme.of(context).primaryColor,
-                            ),
-                            child: Text(LocaleKeys.open_settings.tr()),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ],
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -473,13 +497,12 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => _QuickLoginBottomSheet(
-            biometricType: _biometricType,
-            biometricIcon: _biometricIcon,
-            onUseBiometric: () => Navigator.of(context).pop(true),
-            onUsePassword: () => Navigator.of(context).pop(false),
-          ),
+      builder: (context) => _QuickLoginBottomSheet(
+        biometricType: _biometricType,
+        biometricIcon: _biometricIcon,
+        onUseBiometric: () => Navigator.of(context).pop(true),
+        onUsePassword: () => Navigator.of(context).pop(false),
+      ),
     );
 
     if (shouldUseBiometric == true) {
@@ -492,13 +515,12 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => _BiometricSetupBottomSheet(
-            biometricType: _biometricType,
-            biometricIcon: _biometricIcon,
-            onEnable: () => Navigator.of(context).pop(true),
-            onSkip: () => Navigator.of(context).pop(false),
-          ),
+      builder: (context) => _BiometricSetupBottomSheet(
+        biometricType: _biometricType,
+        biometricIcon: _biometricIcon,
+        onEnable: () => Navigator.of(context).pop(true),
+        onSkip: () => Navigator.of(context).pop(false),
+      ),
     );
 
     if (shouldEnable == true) {
@@ -588,8 +610,8 @@ class _LoginScreenState extends State<LoginScreen> {
           40.gap,
           _buildActionButtons(),
           20.gap,
-          _buildGuestButton(), // Add guest button here
-          20.gap, // Reduced gap
+          _buildGuestButton(),
+          20.gap,
           _buildDivider(),
           20.gap,
           const SocialMediaButtons(),
@@ -601,8 +623,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // In your login screen, add the guest button
-  // Add this widget method to _LoginScreenState
   Widget _buildGuestButton() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -742,13 +762,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 showErrorToast(context, state.message);
               }
             },
-            builder:
-                (context, state) => CustomElevatedButton(
-                  heroTag: 'button',
-                  loading: state is AuthLoading,
-                  title: LocaleKeys.login.tr(),
-                  onPressed: _performRegularLogin,
-                ),
+            builder: (context, state) => CustomElevatedButton(
+              heroTag: 'button',
+              loading: state is AuthLoading,
+              title: LocaleKeys.login.tr(),
+              onPressed: _performRegularLogin,
+            ),
           ),
         ),
         20.gap,
@@ -778,56 +797,53 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // login_screen.dart
   void _showVerificationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => Container(
-            padding: EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.verified_user, size: 64, color: AppColors.primary),
-                SizedBox(height: 16),
-                Text(
-                  LocaleKeys.account_verification_required.tr(),
-                  style: context.bodyLarge.bold.copyWith(color: AppColors.black, fontSize: 20),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  LocaleKeys.account_verification_message.tr(),
-                  textAlign: TextAlign.center,
-                  style: context.bodyMedium.regular.copyWith(color: AppColors.grey, fontSize: 16),
-                ),
-                SizedBox(height: 24),
-                BlocConsumer<AuthCubit, AuthState>(
-                  builder:
-                      (BuildContext context, AuthState state) => CustomElevatedButton(
-                        loading: state is ResendOTPLoading,
-                        onPressed: () async {
-                          await AuthCubit.get(context).resendOTP("$_code${_phoneController.text}");
-                          context.pop(); // Close bottom sheet
-                          // showSuccessToast(context,  );
-                          context.push(
-                            Routes.otpScreen,
-                            extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
-                          );
-                        },
-                        title: LocaleKeys.verify_now.tr(),
-                      ),
-                  listener: (BuildContext context, AuthState state) {
-                    if (state is ResendOTPSuccess) {
-                      showSuccessToast(context, state.message, seconds: 15);
-                    }
-                  },
-                ),
-              ],
+      builder: (context) => Container(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.verified_user, size: 64, color: AppColors.primary),
+            SizedBox(height: 16),
+            Text(
+              LocaleKeys.account_verification_required.tr(),
+              style: context.bodyLarge.bold.copyWith(color: AppColors.black, fontSize: 20),
             ),
-          ),
+            SizedBox(height: 8),
+            Text(
+              LocaleKeys.account_verification_message.tr(),
+              textAlign: TextAlign.center,
+              style: context.bodyMedium.regular.copyWith(color: AppColors.grey, fontSize: 16),
+            ),
+            SizedBox(height: 24),
+            BlocConsumer<AuthCubit, AuthState>(
+              builder: (BuildContext context, AuthState state) => CustomElevatedButton(
+                loading: state is ResendOTPLoading,
+                onPressed: () async {
+                  await AuthCubit.get(context).resendOTP("$_code${_phoneController.text}");
+                  context.pop(); // Close bottom sheet
+                  context.push(
+                    Routes.otpScreen,
+                    extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
+                  );
+                },
+                title: LocaleKeys.verify_now.tr(),
+              ),
+              listener: (BuildContext context, AuthState state) {
+                if (state is ResendOTPSuccess) {
+                  showSuccessToast(context, state.message, seconds: 15);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
 // ==================== BOTTOM SHEET WIDGETS ====================
 
 class _QuickLoginBottomSheet extends StatelessWidget {
