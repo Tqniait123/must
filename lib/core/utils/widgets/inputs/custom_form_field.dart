@@ -43,6 +43,7 @@ class CustomTextFormField extends StatefulWidget {
     this.textAlign = TextAlign.start,
     this.inputFormatters,
     this.autofillHints,
+    this.styleColor,
   });
 
   final TextEditingController controller;
@@ -51,6 +52,7 @@ class CustomTextFormField extends StatefulWidget {
   final Widget? prefixIC;
   final Color? backgroundColor;
   final Color? hintColor;
+  final Color? styleColor;
   final Widget? suffixIC;
   final bool? isBordered;
   final String? title;
@@ -154,7 +156,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             textAlign: widget.textAlign,
             autofillHints: widget.autofillHints,
             textAlignVertical: TextAlignVertical.center,
-            style: AppStyles.medium12black.copyWith(fontSize: 15.r),
+            style: AppStyles.medium12black.copyWith(fontSize: 15.r, color: widget.styleColor ?? Colors.black),
             showCursor: !widget.readonly,
             onTap: widget.onTap,
 

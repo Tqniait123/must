@@ -100,6 +100,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
           controller: _searchController,
           backgroundColor: Color(0xff6468AC),
           isBordered: false,
+          styleColor: AppColors.white,
           margin: 0,
           prefixIC: AppIcons.searchIc.icon(),
           hint: LocaleKeys.find_an_easy_parking_spot.tr(),
