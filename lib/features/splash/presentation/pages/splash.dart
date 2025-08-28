@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/app_settings/cubit/settings_cubit.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
@@ -27,6 +28,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   late Animation<double> _fadeAnimation;
   late Animation<double> _positionAnimation;
   late Animation<double> _logoFadeAnimation;
+  bool _settingsLoaded = false;
 
   @override
   void initState() {
@@ -50,8 +52,44 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       end: -20.0,
     ).animate(CurvedAnimation(parent: _positionController, curve: Curves.easeOut));
 
-    // Start animations sequence
-    _startAnimationSequence();
+    final settingsCubit = AppSettingsCubit.get(context);
+    settingsCubit.getAppSettings().then((_) {
+      if (settingsCubit.state is AppSettingsSuccessState) {
+        _settingsLoaded = true;
+        _startAnimationSequence();
+      } else {
+        _showRetryButton();
+      }
+    });
+  }
+
+  void _showRetryButton() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(LocaleKeys.error.tr()), // Generic error title
+          content: Text(LocaleKeys.something_went_wrong.tr()), // Generic message
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                final settingsCubit = AppSettingsCubit.get(context);
+                settingsCubit.getAppSettings().then((_) {
+                  if (settingsCubit.state is AppSettingsSuccessState) {
+                    _settingsLoaded = true;
+                    _handleNavigation();
+                  } else {
+                    _showRetryButton(); // Retry if it fails again
+                  }
+                });
+              },
+              child: Text(LocaleKeys.retry.tr()),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _startAnimationSequence() async {

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:must_invest/config/app_settings/cubit/settings_cubit.dart';
 import 'package:must_invest/config/routes/app_router.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/strings.dart';
@@ -13,7 +14,7 @@ import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cub
 import 'package:must_invest/features/auth/presentation/languages_cubit/languages_cubit.dart';
 
 class MustInvest extends StatelessWidget {
-  MustInvest({super.key});
+  const MustInvest({super.key});
   // final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter
 
   @override
@@ -28,6 +29,7 @@ class MustInvest extends StatelessWidget {
             BlocProvider(create: (BuildContext context) => AuthCubit(sl())),
             BlocProvider(create: (BuildContext context) => UserCubit()),
             BlocProvider(create: (context) => LanguagesCubit(sl())),
+            BlocProvider(create: (context) => AppSettingsCubit(sl())),
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
@@ -79,5 +81,4 @@ class MustInvest extends StatelessWidget {
   // final GoRouter _router = GoRouter
 }
 
-
-  final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter
+final AppRouter appRouter = AppRouter(); // Create an instance of AppRouter
