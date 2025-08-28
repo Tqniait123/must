@@ -37,4 +37,6 @@ class EndPoints {
   static const String offers = 'offers';
   static const String deleteAccount = 'delete_account';
   static const String appSettings = 'app_settings';
+  static const String buyOffer = 'buy_offer';
+  
 }

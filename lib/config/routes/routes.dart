@@ -33,4 +33,6 @@ class Routes {
   static const String aboutUs = '/aboutUs';
   static const String settings = '/settings';
   static const String offers = '/offers';
+  static const String payment = '/payment';
+
 }

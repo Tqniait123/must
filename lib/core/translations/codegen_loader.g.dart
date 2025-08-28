@@ -1405,7 +1405,15 @@ class CodegenLoader extends AssetLoader{
   "something_went_wrong": "Something went wrong",
   "offer_duration": "Offer Duration",
   "catch_this_offer": "Catch This Offer",
-  "coming_soon": "Coming Soon"
+  "coming_soon": "Coming Soon",
+  "processing_purchase": "Processing purchase...",
+  "purchase_successful": "Purchase Successful",
+  "offer_purchased_successfully": "Offer purchased successfully!",
+  "purchase_failed": "Purchase Failed",
+  "continue_to_home": "Continue to Home",
+  "order_summary": "Order Summary",
+  "payment_error": "Payment Error",
+  "congratulations": "Congratulations!"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2798,7 +2806,15 @@ static const Map<String,dynamic> _ar = {
   "location_permission_required": "إذن الموقع مطلوب",
   "offer_duration": "مدة العرض",
   "catch_this_offer": "احصل على هذا العرض",
-  "coming_soon": "قريباً"
+  "coming_soon": "قريباً",
+  "processing_purchase": "جارٍ معالجة الشراء...",
+  "purchase_successful": "تم الشراء بنجاح",
+  "offer_purchased_successfully": "تم شراء العرض بنجاح!",
+  "purchase_failed": "فشل الشراء",
+  "continue_to_home": "العودة للرئيسية",
+  "order_summary": "ملخص الطلب",
+  "payment_error": "خطأ في الدفع",
+  "congratulations": "تهانينا!"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

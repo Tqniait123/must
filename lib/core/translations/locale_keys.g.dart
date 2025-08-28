@@ -1385,5 +1385,13 @@ abstract class  LocaleKeys {
   static const offer_duration = 'offer_duration';
   static const catch_this_offer = 'catch_this_offer';
   static const coming_soon = 'coming_soon';
+  static const processing_purchase = 'processing_purchase';
+  static const purchase_successful = 'purchase_successful';
+  static const offer_purchased_successfully = 'offer_purchased_successfully';
+  static const purchase_failed = 'purchase_failed';
+  static const continue_to_home = 'continue_to_home';
+  static const order_summary = 'order_summary';
+  static const payment_error = 'payment_error';
+  static const congratulations = 'congratulations';
 
 }

@@ -1,13 +1,24 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
+import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/congratulation_bototm_sheet.dart';
+import 'package:must_invest/core/utils/dialogs/error_toast.dart';
+import 'package:must_invest/core/utils/dialogs/toaster.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
+import 'package:must_invest/features/offers/data/models/buy_offer_params.dart';
 import 'package:must_invest/features/offers/data/models/offer_model.dart';
+import 'package:must_invest/features/offers/presentation/cubit/cubit/buy_offer_cubit.dart';
 
 class OfferWidget extends StatelessWidget {
   final Offer offer;
-  final VoidCallback? onCatchOffer;
+  final void Function(int offerId)? onCatchOffer;
 
   const OfferWidget({super.key, required this.offer, this.onCatchOffer});
 
@@ -15,133 +26,176 @@ class OfferWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isExpiringSoon = offer.isExpiringSoon;
 
-    return GestureDetector(
-      onTap: () => _showOfferDetails(context),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isExpiringSoon ? Colors.amber.shade300 : Colors.grey.shade200, width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 10,
-              spreadRadius: 1,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header: Points and Price
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Points Highlight
-                Row(
-                  children: [
-                    Icon(Icons.stars_rounded, color: Colors.amber.shade600, size: 24),
-                    6.gap,
-                    Text(
-                      '${offer.points} ${LocaleKeys.points.tr()}',
-                      style: context.titleLarge.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-                // Price
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(8)),
-                  child: Text(
-                    '${offer.price.toStringAsFixed(0)} ${LocaleKeys.egp.tr()}',
-                    style: context.titleMedium.copyWith(
-                      color: Colors.blue.shade800,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            10.gap,
+    return BlocProvider(
+      create: (context) => BuyOfferCubit(sl()),
+      child: BlocListener<BuyOfferCubit, BuyOfferState>(
+        listener: (context, state) async {
+          if (state is BuyOfferLoading) {
+            Toaster.showLoading();
+          } else if (state is BuyOfferSuccess) {
+            Toaster.closeLoading();
 
-            // Offer Name
-            Text(
-              offer.name,
-              style: context.bodyLarge.copyWith(color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 16),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            8.gap,
+            // Navigate to payment webview
+            final isSuccess = await context.push(Routes.payment, extra: state.paymentModel.paymentUrl);
 
-            // Brief Description
-            Text(
-              offer.brief,
-              style: context.bodyMedium.copyWith(color: Colors.grey.shade600, fontSize: 14, height: 1.4),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            12.gap,
-
-            // Expiry and Dates
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Expiry Status
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            if (isSuccess == true) {
+              context.updateUserPoints(context.user.points + offer.points);
+              CongratulationsBottomSheet.show(
+                context,
+                message: LocaleKeys.offer_purchased_successfully.tr(),
+                points: offer.points,
+                onContinue: () => context.go(Routes.homeUser),
+              );
+            } else {
+              showErrorToast(context, LocaleKeys.payment_error.tr());
+            }
+          } else if (state is BuyOfferError) {
+            Toaster.closeLoading();
+            showErrorToast(context, state.message);
+          }
+        },
+        child: Builder(
+          builder:
+              (innerContext) => GestureDetector(
+                onTap: () => _showOfferDetails(innerContext),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isExpiringSoon ? Colors.amber.shade50 : Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isExpiringSoon ? Colors.amber.shade300 : Colors.grey.shade200,
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(_getStatusIcon(), color: _getStatusColor(), size: 14),
-                      4.gap,
+                      // Header: Points and Price
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Points Highlight
+                          Row(
+                            children: [
+                              Icon(Icons.stars_rounded, color: Colors.amber.shade600, size: 24),
+                              6.gap,
+                              Text(
+                                '${offer.points} ${LocaleKeys.points.tr()}',
+                                style: context.titleLarge.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Price
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${offer.price.toStringAsFixed(0)} ${LocaleKeys.egp.tr()}',
+                              style: context.titleMedium.copyWith(
+                                color: Colors.blue.shade800,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      10.gap,
+
+                      // Offer Name
                       Text(
-                        _getExpiryText(context),
-                        style: context.bodySmall.copyWith(
-                          color: _getStatusColor(),
+                        offer.name,
+                        style: context.bodyLarge.copyWith(
+                          color: Colors.black87,
                           fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      8.gap,
+
+                      // Brief Description
+                      Text(
+                        offer.brief,
+                        style: context.bodyMedium.copyWith(color: Colors.grey.shade600, fontSize: 14, height: 1.4),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      12.gap,
+
+                      // Expiry and Dates
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Expiry Status
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: isExpiringSoon ? Colors.amber.shade50 : Colors.green.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(_getStatusIcon(), color: _getStatusColor(), size: 14),
+                                4.gap,
+                                Text(
+                                  _getExpiryText(context),
+                                  style: context.bodySmall.copyWith(
+                                    color: _getStatusColor(),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Expiry Date
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                LocaleKeys.expires.tr(),
+                                style: context.bodySmall.copyWith(color: Colors.grey.shade500, fontSize: 12),
+                              ),
+                              2.gap,
+                              Text(
+                                _formatDate(offer.expiredAt, context),
+                                style: context.bodySmall.copyWith(
+                                  color: isExpiringSoon ? Colors.amber.shade700 : Colors.black87,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                // Expiry Date
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      LocaleKeys.expires.tr(),
-                      style: context.bodySmall.copyWith(color: Colors.grey.shade500, fontSize: 12),
-                    ),
-                    2.gap,
-                    Text(
-                      _formatDate(offer.expiredAt, context),
-                      style: context.bodySmall.copyWith(
-                        color: isExpiringSoon ? Colors.amber.shade700 : Colors.black87,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+              ),
         ),
       ),
     );
@@ -152,7 +206,11 @@ class OfferWidget extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _OfferDetailsBottomSheet(offer: offer, onCatchOffer: onCatchOffer),
+      builder:
+          (bottomSheetContext) => BlocProvider.value(
+            value: context.read<BuyOfferCubit>(),
+            child: _OfferDetailsBottomSheet(offer: offer, onCatchOffer: onCatchOffer),
+          ),
     );
   }
 
@@ -186,11 +244,11 @@ class OfferWidget extends StatelessWidget {
     } else if (offer.isUpcoming) {
       final daysUntilStart = offer.startAt.difference(DateTime.now()).inDays;
       if (daysUntilStart == 0) {
-        return LocaleKeys.starts_today.tr(); // You'll need to add this key
+        return LocaleKeys.starts_today.tr();
       } else if (daysUntilStart == 1) {
-        return LocaleKeys.starts_tomorrow.tr(); // You'll need to add this key
+        return LocaleKeys.starts_tomorrow.tr();
       } else {
-        return LocaleKeys.starts_in_days.tr(args: [daysUntilStart.toString()]); // You'll need to add this key
+        return LocaleKeys.starts_in_days.tr(args: [daysUntilStart.toString()]);
       }
     }
 
@@ -225,7 +283,7 @@ class OfferWidget extends StatelessWidget {
 
 class _OfferDetailsBottomSheet extends StatelessWidget {
   final Offer offer;
-  final VoidCallback? onCatchOffer;
+  final void Function(int offerId)? onCatchOffer;
 
   const _OfferDetailsBottomSheet({required this.offer, this.onCatchOffer});
 
@@ -234,264 +292,155 @@ class _OfferDetailsBottomSheet extends StatelessWidget {
     final bool isExpiringSoon = offer.isExpiringSoon;
     final bool canCatchOffer = !offer.isExpired && !offer.isUpcoming;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          // Handle bar
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(top: 12),
-            decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+    return BlocBuilder<BuyOfferCubit, BuyOfferState>(
+      builder: (context, state) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           ),
-
-          // Content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header with points and price
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Points
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [Colors.amber.shade400, Colors.amber.shade600]),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(color: Colors.amber.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2)),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.stars_rounded, color: Colors.white, size: 24),
-                            8.gap,
-                            Text(
-                              '${offer.points}',
-                              style: context.titleLarge.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24,
-                              ),
-                            ),
-                            4.gap,
-                            Text(
-                              LocaleKeys.points.tr(),
-                              style: context.bodyMedium.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Price
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          border: Border.all(color: Colors.blue.shade200),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${offer.price.toStringAsFixed(0)} ${LocaleKeys.egp.tr()}',
-                          style: context.titleMedium.copyWith(
-                            color: Colors.blue.shade800,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  20.gap,
-
-                  // Offer name
-                  Text(
-                    offer.name,
-                    style: context.headlineSmall.copyWith(fontWeight: FontWeight.bold, color: Colors.black87),
-                  ),
-                  16.gap,
-
-                  // Status indicator
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _getStatusBackgroundColor(),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(_getStatusIcon(), color: _getStatusColor(), size: 16),
-                        6.gap,
-                        Text(
-                          _getExpiryText(context),
-                          style: context.bodyMedium.copyWith(color: _getStatusColor(), fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ),
-                  20.gap,
-
-                  // Description section
-                  Text(
-                    LocaleKeys.description.tr() ?? 'Description', // Add this key to your locale
-                    style: context.titleMedium.copyWith(fontWeight: FontWeight.bold, color: Colors.black87),
-                  ),
-                  8.gap,
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Text(
-                      offer.brief,
-                      style: context.bodyLarge.copyWith(color: Colors.grey.shade700, height: 1.5),
-                    ),
-                  ),
-                  20.gap,
-
-                  // Offer duration
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue.shade100),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.schedule_rounded, color: Colors.blue.shade700, size: 20),
-                            8.gap,
-                            Text(
-                              LocaleKeys.offer_duration.tr() ?? 'Offer Duration', // Add this key
-                              style: context.titleSmall.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue.shade800,
-                              ),
-                            ),
-                          ],
-                        ),
-                        12.gap,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  LocaleKeys.starts.tr() ?? 'Starts',
-                                  style: context.bodySmall.copyWith(color: Colors.grey.shade600),
-                                ),
-                                4.gap,
-                                Text(
-                                  _formatDate(offer.startAt, context),
-                                  style: context.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.blue.shade800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  LocaleKeys.expires.tr(),
-                                  style: context.bodySmall.copyWith(color: Colors.grey.shade600),
-                                ),
-                                4.gap,
-                                Text(
-                                  _formatDate(offer.expiredAt, context),
-                                  style: context.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: isExpiringSoon ? Colors.amber.shade700 : Colors.blue.shade800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12, bottom: 20),
+                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
               ),
-            ),
-          ),
 
-          // Action button
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
-              ],
-            ),
-            child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed:
-                      canCatchOffer
-                          ? () {
-                            Navigator.pop(context);
-                            onCatchOffer?.call();
-                          }
-                          : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: canCatchOffer ? Colors.amber.shade600 : Colors.grey.shade300,
-                    foregroundColor: Colors.white,
-                    elevation: canCatchOffer ? 3 : 0,
-                    shadowColor: Colors.amber.withOpacity(0.3),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child:
-                      canCatchOffer
-                          ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+              // Minimal Content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with points and offer name
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: [Colors.amber.shade400, Colors.amber.shade600]),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.stars_rounded, size: 24),
-                              8.gap,
+                              const Icon(Icons.stars_rounded, color: Colors.white, size: 20),
+                              6.gap,
                               Text(
-                                '${LocaleKeys.catch_this_offer.tr() ?? 'Catch This Offer'} ${offer.points}',
-                                style: context.titleMedium.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                                '${offer.points}',
+                                style: context.titleMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                               ),
                             ],
-                          )
-                          : Text(
-                            offer.isExpired
-                                ? (LocaleKeys.expired.tr())
-                                : (LocaleKeys.coming_soon.tr() ?? 'Coming Soon'),
-                            style: context.titleMedium.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade600,
-                            ),
                           ),
+                        ),
+                        12.gap,
+                        Expanded(
+                          child: Text(
+                            offer.name,
+                            style: context.titleMedium.copyWith(fontWeight: FontWeight.bold, color: Colors.black87),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    16.gap,
+
+                    // Price and Status Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Price
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            '${offer.price.toStringAsFixed(0)} ${LocaleKeys.egp.tr()}',
+                            style: context.bodyLarge.copyWith(color: Colors.blue.shade800, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+
+                        // Status
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: _getStatusBackgroundColor(),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(_getStatusIcon(), color: _getStatusColor(), size: 14),
+                              4.gap,
+                              Text(
+                                _getExpiryText(context),
+                                style: context.bodySmall.copyWith(
+                                  color: _getStatusColor(),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    16.gap,
+
+                    // Expires date
+                    Text(
+                      '${LocaleKeys.expires.tr()}: ${_formatDate(offer.expiredAt, context)}',
+                      style: context.bodyMedium.copyWith(
+                        color: isExpiringSoon ? Colors.amber.shade700 : Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    24.gap,
+                  ],
                 ),
               ),
-            ),
+
+              // Action button with CustomElevatedButton
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
+                  ],
+                ),
+                child: SafeArea(
+                  child: CustomElevatedButton(
+                    title:
+                        canCatchOffer
+                            ? '${LocaleKeys.catch_this_offer.tr()} (${offer.points})'
+                            : offer.isExpired
+                            ? LocaleKeys.expired.tr()
+                            : LocaleKeys.coming_soon.tr(),
+                    icon: canCatchOffer ? Icons.stars_rounded : null,
+                    textColor: Colors.white,
+                    isDisabled: !canCatchOffer || state is BuyOfferLoading,
+                    withShadow: canCatchOffer,
+                    onPressed: canCatchOffer && state is! BuyOfferLoading ? () => _handlePurchase(context) : null,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  void _handlePurchase(BuildContext context) {
+    final buyOfferParams = BuyOfferParams(offerId: offer.id);
+    context.read<BuyOfferCubit>().buyOffer(buyOfferParams);
+    onCatchOffer?.call(offer.id);
+    Navigator.pop(context); // Close bottom sheet before navigating
   }
 
   IconData _getStatusIcon() {
@@ -536,11 +485,11 @@ class _OfferDetailsBottomSheet extends StatelessWidget {
     } else if (offer.isUpcoming) {
       final daysUntilStart = offer.startAt.difference(DateTime.now()).inDays;
       if (daysUntilStart == 0) {
-        return LocaleKeys.starts_today.tr() ?? 'Starts Today';
+        return LocaleKeys.starts_today.tr();
       } else if (daysUntilStart == 1) {
-        return LocaleKeys.starts_tomorrow.tr() ?? 'Starts Tomorrow';
+        return LocaleKeys.starts_tomorrow.tr();
       } else {
-        return LocaleKeys.starts_in_days.tr(args: [daysUntilStart.toString()]) ?? 'Starts in $daysUntilStart days';
+        return LocaleKeys.starts_in_days.tr(args: [daysUntilStart.toString()]);
       }
     }
 
@@ -549,14 +498,13 @@ class _OfferDetailsBottomSheet extends StatelessWidget {
     if (difference.inDays == 0) {
       final hours = difference.inHours;
       if (hours <= 1) {
-        return LocaleKeys.expires_soon.tr() ?? 'Expires Soon';
+        return LocaleKeys.expires_soon.tr();
       }
-      return LocaleKeys.expires_today.tr() ?? 'Expires Today';
+      return LocaleKeys.expires_today.tr();
     } else if (difference.inDays <= 3) {
-      return LocaleKeys.expires_in_days.tr(args: [difference.inDays.toString()]) ??
-          'Expires in ${difference.inDays} days';
+      return LocaleKeys.expires_in_days.tr(args: [difference.inDays.toString()]);
     } else {
-      return LocaleKeys.active.tr() ?? 'Active';
+      return LocaleKeys.active.tr();
     }
   }
 

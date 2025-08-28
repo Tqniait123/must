@@ -1449,7 +1449,16 @@
     "offer_duration": "Offer Duration",
 
     "catch_this_offer": "Catch This Offer",
-    "coming_soon": "Coming Soon"
+    "coming_soon": "Coming Soon",
+    "processing_purchase": "Processing purchase...",
+  "purchase_successful": "Purchase Successful",
+  "offer_purchased_successfully": "Offer purchased successfully!",
+  "purchase_failed": "Purchase Failed",
+
+  "continue_to_home": "Continue to Home",
+  "order_summary": "Order Summary",
+  "payment_error": "Payment Error",
+  "congratulations": "Congratulations!"
 
 
 }
