@@ -65,5 +65,26 @@
     <string>https</string>
     <string>http</string>
 </array>
+<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.292970330572-aijd2lr2vk79p1ompaha2rfg6r328jvg</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.devunity.sera</string>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GIDClientID</key>
+	<string>292970330572-aijd2lr2vk79p1ompaha2rfg6r328jvg.apps.googleusercontent.com</string>
 </dict>
 </plist>

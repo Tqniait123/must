@@ -5,18 +5,20 @@ class LoginWithGoogleParams {
   final String id;
   final String? deviceToken;
 
-  LoginWithGoogleParams(
-      {required this.email,
-      required this.displayName,
-      required this.deviceToken,
-      required this.id,
-      required this.photoUrl});
+  LoginWithGoogleParams({
+    required this.email,
+    required this.displayName,
+    required this.deviceToken,
+    required this.id,
+    required this.photoUrl,
+  });
 
   Map<String, dynamic> toJson(String? deviceToken) => {
-        'email': email,
-        'name': displayName,
-        'photoUrl': photoUrl,
-        'google_id': id,
-        'device_token': deviceToken ?? this.deviceToken,
-      };
+    'email': email,
+    'name': displayName,
+    'image': photoUrl,
+    'social_media_id': id,
+    'device_token': deviceToken ?? this.deviceToken,
+    'provider': 'google',
+  };
 }

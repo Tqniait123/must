@@ -61,6 +61,8 @@ dependencies:
   # intl_phone_number_input: ^0.7.4
   country_phone_validator: ^1.0.1
   lottie: ^3.3.1
+  google_sign_in: ^7.1.1
+  google_sign_in_ios: ^6.1.0
 
 # Add this at the bottom if you still get dependency conflicts
 dependency_overrides:

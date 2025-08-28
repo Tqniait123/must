@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -7,6 +11,7 @@ import 'package:must_invest/features/auth/data/models/city.dart';
 import 'package:must_invest/features/auth/data/models/country.dart';
 import 'package:must_invest/features/auth/data/models/governorate.dart';
 import 'package:must_invest/features/auth/data/models/login_params.dart';
+import 'package:must_invest/features/auth/data/models/login_with_google_params.dart';
 import 'package:must_invest/features/auth/data/models/register_params.dart';
 import 'package:must_invest/features/auth/data/models/reset_password_params.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
@@ -72,25 +77,86 @@ class AuthRepoImpl implements AuthRepo {
 
   @override
   Future<Either<AuthModel, AppError>> loginWithGoogle() async {
-    throw UnimplementedError();
-    // try {
-    //   final response = await _remoteDataSource.loginWithGoogle();
+    try {
+      // Sign out any existing user to ensure clean sign-in
+      await GoogleSignIn.instance.signOut();
 
-    //   if (response.isSuccess) {
-    //     _localDataSource.saveToken(response.accessToken ?? '');
-    //     return Left(response.data!);
-    //   } else {
-    //     return Right(
-    //       AppError(
-    //         message: response.errorMessage,
-    //         apiResponse: response,
-    //         type: ErrorType.api,
-    //       ),
-    //     );
-    //   }
-    // } catch (e) {
-    //   return Right(AppError(message: e.toString(), type: ErrorType.unknown));
-    // }
+      // Check if Google Sign-In is available on this platform
+      if (!GoogleSignIn.instance.supportsAuthenticate()) {
+        return Right(AppError(message: 'Google Sign-In is not supported on this platform', type: ErrorType.api));
+      }
+
+      // Attempt to sign in with Google
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+
+      // Get authentication details
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+      // Create user parameters
+      LoginWithGoogleParams user = LoginWithGoogleParams(
+        displayName: googleUser.displayName ?? '',
+        email: googleUser.email,
+        id: googleUser.id,
+        photoUrl: googleUser.photoUrl ?? '',
+        deviceToken: '', // You might want to get FCM token here
+      );
+
+      log('Google Sign-In successful for user: ${googleUser.email}');
+
+      // Call your backend API
+      final response = await _remoteDataSource.loginWithGoogle(user);
+
+      if (response.isSuccess) {
+        // Save token locally
+        await _localDataSource.saveToken(response.accessToken ?? '');
+        log('Authentication successful, token saved');
+        return Left(response.data!);
+      } else {
+        return Right(
+          AppError(
+            message: response.errorMessage ?? 'Authentication failed',
+            apiResponse: response,
+            type: ErrorType.api,
+          ),
+        );
+      }
+    } on GoogleSignInException catch (e) {
+      // Handle specific Google Sign-In exceptions
+      // String errorMessage = _getGoogleSignInErrorMessage(e);
+      log('GoogleSignInException: ${e.toString()}');
+
+      return Right(AppError(message: 'An error occurred during Google Sign-In', type: ErrorType.api));
+    } on PlatformException catch (e) {
+      // Handle platform-specific exceptions
+      String errorMessage = _getPlatformExceptionMessage(e);
+      log('PlatformException during Google Sign-In: ${e.toString()}');
+
+      return Right(AppError(message: errorMessage, type: ErrorType.api));
+    } catch (e) {
+      // Handle any other unexpected errors
+      log('Unexpected error during Google Sign-In: ${e.toString()}');
+      return Right(AppError(message: 'An unexpected error occurred during sign-in', type: ErrorType.unknown));
+    }
+  }
+
+  // Helper method to get user-friendly error messages for platform exceptions
+  String _getPlatformExceptionMessage(PlatformException e) {
+    switch (e.code) {
+      case 'sign_in_failed':
+        return 'Sign-in failed. Please try again';
+      case 'network_error':
+        return 'Network error. Please check your internet connection';
+      case 'sign_in_canceled':
+        return 'Sign-in was cancelled';
+      default:
+        // Handle specific Google Play Services errors
+        if (e.message?.contains('ApiException: 10') == true) {
+          return 'Configuration error. Please check your app setup';
+        } else if (e.message?.contains('ApiException: 7') == true) {
+          return 'Network error. Please try again';
+        }
+        return 'Sign-in failed: ${e.message ?? 'Unknown error'}';
+    }
   }
 
   @override

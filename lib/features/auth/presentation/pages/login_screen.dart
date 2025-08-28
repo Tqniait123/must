@@ -330,118 +330,119 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        ),
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             ),
-            const SizedBox(height: 24),
-
-            // Icon
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(Icons.fingerprint, size: 40, color: Theme.of(context).primaryColor),
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
             ),
-            const SizedBox(height: 24),
-
-            // Title
-            Text(
-              LocaleKeys.biometric_authentication.tr(),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-
-            // Description
-            Text(
-              LocaleKeys.biometric_enrollment_description.tr(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600, height: 1.5),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-
-            // Buttons
-            Column(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Use Device Password Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await _authenticateWithDeviceCredentials();
-                    },
-                    icon: Icon(Icons.lock_outline, size: 20),
-                    label: Text(LocaleKeys.use_device_password.tr()),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
 
-                // Action buttons row
-                Row(
+                // Icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(Icons.fingerprint, size: 40, color: Theme.of(context).primaryColor),
+                ),
+                const SizedBox(height: 24),
+
+                // Title
+                Text(
+                  LocaleKeys.biometric_authentication.tr(),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+
+                // Description
+                Text(
+                  LocaleKeys.biometric_enrollment_description.tr(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600, height: 1.5),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+
+                // Buttons
+                Column(
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          await _saveDismissalState(true); // Save dismissal state
-                          Navigator.pop(context);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: Text(LocaleKeys.later.tr()),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
+                    // Use Device Password Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
                         onPressed: () async {
                           Navigator.pop(context);
-                          await _biometricService.openBiometricSettings();
+                          await _authenticateWithDeviceCredentials();
                         },
+                        icon: Icon(Icons.lock_outline, size: 20),
+                        label: Text(LocaleKeys.use_device_password.tr()),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                          foregroundColor: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
                         ),
-                        child: Text(LocaleKeys.open_settings.tr()),
                       ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Action buttons row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () async {
+                              await _saveDismissalState(true); // Save dismissal state
+                              Navigator.pop(context);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: Text(LocaleKeys.later.tr()),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _biometricService.openBiometricSettings();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                              foregroundColor: Theme.of(context).primaryColor,
+                            ),
+                            child: Text(LocaleKeys.open_settings.tr()),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -497,12 +498,13 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _QuickLoginBottomSheet(
-        biometricType: _biometricType,
-        biometricIcon: _biometricIcon,
-        onUseBiometric: () => Navigator.of(context).pop(true),
-        onUsePassword: () => Navigator.of(context).pop(false),
-      ),
+      builder:
+          (context) => _QuickLoginBottomSheet(
+            biometricType: _biometricType,
+            biometricIcon: _biometricIcon,
+            onUseBiometric: () => Navigator.of(context).pop(true),
+            onUsePassword: () => Navigator.of(context).pop(false),
+          ),
     );
 
     if (shouldUseBiometric == true) {
@@ -515,12 +517,13 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _BiometricSetupBottomSheet(
-        biometricType: _biometricType,
-        biometricIcon: _biometricIcon,
-        onEnable: () => Navigator.of(context).pop(true),
-        onSkip: () => Navigator.of(context).pop(false),
-      ),
+      builder:
+          (context) => _BiometricSetupBottomSheet(
+            biometricType: _biometricType,
+            biometricIcon: _biometricIcon,
+            onEnable: () => Navigator.of(context).pop(true),
+            onSkip: () => Navigator.of(context).pop(false),
+          ),
     );
 
     if (shouldEnable == true) {
@@ -762,12 +765,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 showErrorToast(context, state.message);
               }
             },
-            builder: (context, state) => CustomElevatedButton(
-              heroTag: 'button',
-              loading: state is AuthLoading,
-              title: LocaleKeys.login.tr(),
-              onPressed: _performRegularLogin,
-            ),
+            builder:
+                (context, state) => CustomElevatedButton(
+                  heroTag: 'button',
+                  loading: state is AuthLoading,
+                  title: LocaleKeys.login.tr(),
+                  onPressed: _performRegularLogin,
+                ),
           ),
         ),
         20.gap,
@@ -800,46 +804,48 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showVerificationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.verified_user, size: 64, color: AppColors.primary),
-            SizedBox(height: 16),
-            Text(
-              LocaleKeys.account_verification_required.tr(),
-              style: context.bodyLarge.bold.copyWith(color: AppColors.black, fontSize: 20),
+      builder:
+          (context) => Container(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.verified_user, size: 64, color: AppColors.primary),
+                SizedBox(height: 16),
+                Text(
+                  LocaleKeys.account_verification_required.tr(),
+                  style: context.bodyLarge.bold.copyWith(color: AppColors.black, fontSize: 20),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  LocaleKeys.account_verification_message.tr(),
+                  textAlign: TextAlign.center,
+                  style: context.bodyMedium.regular.copyWith(color: AppColors.grey, fontSize: 16),
+                ),
+                SizedBox(height: 24),
+                BlocConsumer<AuthCubit, AuthState>(
+                  builder:
+                      (BuildContext context, AuthState state) => CustomElevatedButton(
+                        loading: state is ResendOTPLoading,
+                        onPressed: () async {
+                          await AuthCubit.get(context).resendOTP("$_code${_phoneController.text}");
+                          context.pop(); // Close bottom sheet
+                          context.push(
+                            Routes.otpScreen,
+                            extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
+                          );
+                        },
+                        title: LocaleKeys.verify_now.tr(),
+                      ),
+                  listener: (BuildContext context, AuthState state) {
+                    if (state is ResendOTPSuccess) {
+                      showSuccessToast(context, state.message, seconds: 15);
+                    }
+                  },
+                ),
+              ],
             ),
-            SizedBox(height: 8),
-            Text(
-              LocaleKeys.account_verification_message.tr(),
-              textAlign: TextAlign.center,
-              style: context.bodyMedium.regular.copyWith(color: AppColors.grey, fontSize: 16),
-            ),
-            SizedBox(height: 24),
-            BlocConsumer<AuthCubit, AuthState>(
-              builder: (BuildContext context, AuthState state) => CustomElevatedButton(
-                loading: state is ResendOTPLoading,
-                onPressed: () async {
-                  await AuthCubit.get(context).resendOTP("$_code${_phoneController.text}");
-                  context.pop(); // Close bottom sheet
-                  context.push(
-                    Routes.otpScreen,
-                    extra: {'phone': "$_code${_phoneController.text}", 'flow': OtpFlow.registration},
-                  );
-                },
-                title: LocaleKeys.verify_now.tr(),
-              ),
-              listener: (BuildContext context, AuthState state) {
-                if (state is ResendOTPSuccess) {
-                  showSuccessToast(context, state.message, seconds: 15);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -1092,16 +1098,22 @@ class SocialMediaButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: CustomElevatedButton(
-            heroTag: 'google',
-            height: 48,
-            icon: AppIcons.google,
-            iconColor: null,
-            textColor: AppColors.black,
-            isBordered: true,
-            backgroundColor: AppColors.white,
-            title: LocaleKeys.google.tr(),
-            onPressed: () {},
+          child: BlocBuilder<AuthCubit, AuthState>(
+            builder:
+                (BuildContext context, AuthState state) => CustomElevatedButton(
+                  // loading: state is AuthLoading,
+                  heroTag: 'google',
+                  height: 48,
+                  icon: AppIcons.google,
+                  iconColor: null,
+                  textColor: AppColors.black,
+                  isBordered: true,
+                  backgroundColor: AppColors.white,
+                  title: LocaleKeys.google.tr(),
+                  onPressed: () {
+                    context.read<AuthCubit>().loginWithGoogle();
+                  },
+                ),
           ),
         ),
       ],

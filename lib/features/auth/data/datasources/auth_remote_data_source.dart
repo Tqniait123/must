@@ -99,7 +99,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     return dioClient.request<AuthModel>(
       method: RequestMethod.post,
       EndPoints.loginWithGoogle,
-      // data: loginWithGoogleParams.toJson(deviceToken ?? ''),
+      data: loginWithGoogleParams.toJson( ''),
       fromJson: (json) => AuthModel.fromJson(json as Map<String, dynamic>),
       onSuccess: () {
         // fcmService.subscribeToTopic(Constants.allTopic);
