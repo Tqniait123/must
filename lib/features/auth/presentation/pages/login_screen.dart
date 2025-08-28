@@ -46,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isBiometricEnabled = false;
   bool _isCheckingBiometrics = false;
   String _biometricType = 'Face ID';
+  IconData _biometricIcon = Icons.face;
   List<BiometricType> _availableBiometrics = [];
 
   @override
@@ -88,6 +89,10 @@ class _LoginScreenState extends State<LoginScreen> {
       _biometricType = _getBiometricTypeName(_availableBiometrics);
       log('Determined biometric type: $_biometricType');
 
+      // Determine biometric icon
+      _biometricIcon = _getBiometricIcon(_availableBiometrics);
+      log('Determined biometric icon: $_biometricIcon');
+
       // Show quick login if biometric is enabled and available
       if (_isBiometricEnabled && _biometricStatus == BiometricStatus.available) {
         log('Showing quick login bottom sheet...');
@@ -123,6 +128,19 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Biometric';
     }
     return 'Face ID'; // Default
+  }
+
+  IconData _getBiometricIcon(List<BiometricType> biometrics) {
+    if (biometrics.contains(BiometricType.face)) {
+      return Icons.face;
+    } else if (biometrics.contains(BiometricType.fingerprint)) {
+      return Icons.fingerprint;
+    } else if (biometrics.contains(BiometricType.iris)) {
+      return Icons.remove_red_eye;
+    } else if (biometrics.isNotEmpty) {
+      return Icons.security;
+    }
+    return Icons.face; // Default
   }
 
   // ==================== BIOMETRIC LOGIN ====================
@@ -458,6 +476,7 @@ class _LoginScreenState extends State<LoginScreen> {
       builder:
           (context) => _QuickLoginBottomSheet(
             biometricType: _biometricType,
+            biometricIcon: _biometricIcon,
             onUseBiometric: () => Navigator.of(context).pop(true),
             onUsePassword: () => Navigator.of(context).pop(false),
           ),
@@ -476,6 +495,7 @@ class _LoginScreenState extends State<LoginScreen> {
       builder:
           (context) => _BiometricSetupBottomSheet(
             biometricType: _biometricType,
+            biometricIcon: _biometricIcon,
             onEnable: () => Navigator.of(context).pop(true),
             onSkip: () => Navigator.of(context).pop(false),
           ),
@@ -735,7 +755,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Expanded(
           child: CustomElevatedButton(
             heroTag: 'faceId',
-            icon: AppIcons.faceIdIc,
+            icon: _biometricIcon,
             title: _biometricType,
             loading: _isCheckingBiometrics,
             onPressed: _shouldShowBiometricButton ? _handleBiometricButtonPress : null,
@@ -812,6 +832,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class _QuickLoginBottomSheet extends StatelessWidget {
   final String biometricType;
+  final IconData biometricIcon;
   final VoidCallback onUseBiometric;
   final VoidCallback onUsePassword;
 
@@ -819,6 +840,7 @@ class _QuickLoginBottomSheet extends StatelessWidget {
     required this.biometricType,
     required this.onUseBiometric,
     required this.onUsePassword,
+    required this.biometricIcon,
   });
 
   @override
@@ -849,11 +871,7 @@ class _QuickLoginBottomSheet extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
-                child: Icon(
-                  biometricType == 'Face ID' ? Icons.face : Icons.fingerprint,
-                  size: 40,
-                  color: AppColors.primary,
-                ),
+                child: Icon(biometricIcon, size: 40, color: AppColors.primary),
               ),
               24.gap,
               // Title
@@ -903,10 +921,16 @@ class _QuickLoginBottomSheet extends StatelessWidget {
 
 class _BiometricSetupBottomSheet extends StatelessWidget {
   final String biometricType;
+  final IconData biometricIcon;
   final VoidCallback onEnable;
   final VoidCallback onSkip;
 
-  const _BiometricSetupBottomSheet({required this.biometricType, required this.onEnable, required this.onSkip});
+  const _BiometricSetupBottomSheet({
+    required this.biometricType,
+    required this.onEnable,
+    required this.onSkip,
+    required this.biometricIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -993,7 +1017,7 @@ class _BiometricSetupBottomSheet extends StatelessWidget {
                     child: CustomElevatedButton(
                       heroTag: 'enable_biometric',
                       title: LocaleKeys.enable.tr(),
-                      icon: AppIcons.faceIdIc,
+                      icon: biometricIcon,
                       backgroundColor: AppColors.secondary,
                       textColor: Colors.white,
                       onPressed: onEnable,

@@ -18,7 +18,7 @@ class CustomElevatedButton extends StatefulWidget {
   final String title;
   final bool isFilled;
   final bool loading;
-  final String? icon;
+  final dynamic icon; // Changed from String? to dynamic to support both String and IconData
   final Color? iconColor;
   final Color? backgroundColor;
   final Color? textColor;
@@ -32,7 +32,6 @@ class CustomElevatedButton extends StatefulWidget {
   final bool withFlipIcon;
   final String? heroTag;
   final double padding;
-
   final BorderRadiusGeometry? borderRadius;
   final IconPosition iconPosition;
   final IconType iconType;
@@ -44,7 +43,7 @@ class CustomElevatedButton extends StatefulWidget {
     required this.onPressed,
     this.height = 60,
     this.padding = 24,
-    this.icon,
+    this.icon, // Now accepts both String and IconData
     this.iconColor = AppColors.white,
     this.textColor = AppColors.white,
     this.backgroundColor = AppColors.primary,
@@ -73,7 +72,6 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> with Single
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
     _scaleAnimation = Tween<double>(
       begin: 1.0,
@@ -91,6 +89,34 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> with Single
     if (widget.onPressed != null) {
       widget.onPressed!();
     }
+  }
+
+  Widget? _buildIcon() {
+    if (widget.icon == null) return null;
+
+    if (widget.icon is String) {
+      return SvgPicture.asset(
+        widget.icon as String,
+        colorFilter: widget.iconColor != null ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn) : null,
+      );
+    } else if (widget.icon is IconData) {
+      return Icon(widget.icon as IconData, color: widget.iconColor);
+    }
+    return null;
+  }
+
+  Widget? _buildFlippedIcon(BuildContext context) {
+    if (widget.icon == null || !widget.withFlipIcon) return _buildIcon();
+
+    if (widget.icon is String) {
+      return SvgPicture.asset(
+        widget.icon as String,
+        colorFilter: widget.iconColor != null ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn) : null,
+      ).flippedForLocale(context);
+    } else if (widget.icon is IconData) {
+      return Icon(widget.icon as IconData, color: widget.iconColor);
+    }
+    return null;
   }
 
   @override
@@ -133,9 +159,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> with Single
                               width: 1.0,
                             )
                             : null,
-
                     borderRadius: widget.borderRadius ?? BorderRadius.circular(15),
-
                     color:
                         widget.isDisabled
                             ? AppColors.disableColor
@@ -171,13 +195,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> with Single
                               children: [
                                 if (widget.icon != null &&
                                     (widget.iconType == IconType.leading || widget.iconType == IconType.center)) ...[
-                                  SvgPicture.asset(
-                                    widget.icon!,
-                                    colorFilter:
-                                        widget.iconColor != null
-                                            ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
-                                            : null,
-                                  ),
+                                  _buildIcon() ?? const SizedBox.shrink(),
                                   7.pw,
                                 ],
                                 Expanded(
@@ -197,23 +215,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> with Single
                                 if (widget.icon != null &&
                                     (widget.iconType == IconType.trailing || widget.iconType == IconType.center)) ...[
                                   7.pw,
-                                  if (widget.withFlipIcon) ...[
-                                    SvgPicture.asset(
-                                      widget.icon!,
-                                      colorFilter:
-                                          widget.iconColor != null
-                                              ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
-                                              : null,
-                                    ).flippedForLocale(context),
-                                  ] else ...[
-                                    SvgPicture.asset(
-                                      widget.icon!,
-                                      colorFilter:
-                                          widget.iconColor != null
-                                              ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
-                                              : null,
-                                    ),
-                                  ],
+                                  _buildFlippedIcon(context) ?? const SizedBox.shrink(),
                                 ],
                               ],
                             ),
