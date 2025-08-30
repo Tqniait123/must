@@ -78,8 +78,10 @@ class AuthRepoImpl implements AuthRepo {
   @override
   Future<Either<AuthModel, AppError>> loginWithGoogle() async {
     try {
-      // Sign out any existing user to ensure clean sign-in
-      await GoogleSignIn.instance.signOut();
+      // Initialize GoogleSignIn with serverClientId for Android
+      await GoogleSignIn.instance.initialize(
+        serverClientId: '292970330572-3l6t8obv09qsjpi7s22j93plkm5gq8n4.apps.googleusercontent.com',
+      );
 
       // Check if Google Sign-In is available on this platform
       if (!GoogleSignIn.instance.supportsAuthenticate()) {
