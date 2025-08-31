@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
@@ -10,7 +11,9 @@ import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/dialogs/congratulation_bototm_sheet.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
+import 'package:must_invest/core/utils/dialogs/toaster.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_back_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 import 'package:must_invest/core/utils/widgets/buttons/notifications_button.dart';
@@ -136,24 +139,56 @@ class MyCardsScreen extends StatelessWidget {
                         child: BlocProvider(
                           create: (BuildContext context) => HomeCubit(sl()),
                           child: BlocConsumer<HomeCubit, HomeState>(
-                            listener: (BuildContext context, HomeState state) {
+                            listener: (BuildContext context, HomeState state) async {
+                              if (state is HomeLoading) {
+                                Toaster.showLoading();
+                              }
                               // Handle side effects here if needed
                               if (state is HomeError) {
+                                Toaster.closeLoading();
                                 showErrorToast(context, state.message);
                                 // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
                               }
                               if (state is HomeSuccess) {
-                                context.pop();
-                                context.updateUserPoints(state.points.toInt());
-                                showSuccessToast(
-                                  context,
-                                  LocaleKeys.points_added_successfully.tr(
-                                    namedArgs: {
-                                      "newPoints": amountController.text.trim(),
-                                      "allPoints": state.points.toString(),
+                                Toaster.closeLoading();
+
+                                // Navigate to payment webview
+                                final isSuccess = await context.push(Routes.payment, extra: state.paymentUrl);
+
+                                if (isSuccess == true) {
+                                  // Check if the context is still valid
+                                  if (!context.mounted) return;
+
+                                  final newPointsAdded = context.convertMoneyToPoints(
+                                    double.parse(amountController.text.trim()),
+                                  );
+                                  final allUserPoints = context.user.points + newPointsAdded;
+
+                                  context.updateUserPoints(context.user.points + newPointsAdded);
+
+                                  // Check again before showing bottom sheet
+                                  if (!context.mounted) return;
+
+                                  CongratulationsBottomSheet.show(
+                                    context,
+                                    message: LocaleKeys.points_added_successfully.tr(
+                                      namedArgs: {
+                                        'newPoints': newPointsAdded.toString(),
+                                        'allPoints': allUserPoints.toString(),
+                                      },
+                                    ),
+                                    points: newPointsAdded,
+                                    onContinue: () {
+                                      if (context.mounted) {
+                                        context.go(Routes.homeUser);
+                                      }
                                     },
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  if (context.mounted) {
+                                    showErrorToast(context, LocaleKeys.payment_error.tr());
+                                  }
+                                }
                               }
                             },
                             builder:

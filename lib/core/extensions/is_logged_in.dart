@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:must_invest/config/app_settings/cubit/settings_cubit.dart';
 import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
@@ -8,12 +9,16 @@ import 'package:must_invest/features/auth/presentation/cubit/user_cubit/user_cub
 
 extension UserCubitX on BuildContext {
   UserCubit get userCubit => UserCubit.get(this);
+  AppSettingsCubit get settingsCubit => AppSettingsCubit.get(this);
 
   bool get isLoggedIn => userCubit.isLoggedIn();
   bool get isVerified => user.verified ?? false;
   void setCurrentUser(User user) => userCubit.setCurrentUser(user);
   void updateUserPoints(int points) => userCubit.updateUserPoints(points);
   User get user => UserCubit.get(this).currentUser!;
+  int convertMoneyToPoints(double amount) => settingsCubit.convertMoneyToPoints(amount) ?? 0;
+  double convertPointsToMoney(int points) => settingsCubit.convertPointsToMoney(points) ?? 0.0;
+  int getAllPoints() => userCubit.currentUser!.points ?? 0;
 
   /// Checks user verification and guest status, executes function if verified and logged in
   /// Otherwise shows appropriate bottom sheet

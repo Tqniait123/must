@@ -12,12 +12,12 @@ class HomeInitial extends HomeState {}
 class HomeLoading extends HomeState {}
 
 class HomeSuccess extends HomeState {
-  final double points;
+  final String paymentUrl;
 
-  const HomeSuccess(this.points);
+  const HomeSuccess(this.paymentUrl);
 
   @override
-  List<Object> get props => [points];
+  List<Object> get props => [paymentUrl];
 }
 
 class HomeError extends HomeState {
@@ -28,7 +28,6 @@ class HomeError extends HomeState {
   @override
   List<Object> get props => [message];
 }
-
 
 class WithdrawPointsLoading extends HomeState {}
 

@@ -15,7 +15,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       emit(HomeLoading());
       final result = await _repository.chargePoints(equivalentMoney);
-      result.fold((points) => emit(HomeSuccess(points)), (error) => emit(HomeError(error.message)));
+      result.fold((paymentUrl) => emit(HomeSuccess(paymentUrl)), (error) => emit(HomeError(error.message)));
     } on AppError catch (e) {
       emit(HomeError(e.message));
     } catch (e) {

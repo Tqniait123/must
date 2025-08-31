@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
-import 'package:must_invest/features/home/data/models/charge_points_response.dart';
+import 'package:must_invest/features/offers/data/models/payment_model.dart';
 
 import '../datasources/home_remote_data_source.dart';
 
 abstract class HomeRepo {
-  Future<Either<double, AppError>> chargePoints(String equivalentMoney);
+  Future<Either<String, AppError>> chargePoints(String equivalentMoney);
   Future<Either<void, AppError>> pointsWithdrawn(int id);
 }
 
@@ -17,12 +17,12 @@ class HomeRepoImpl implements HomeRepo {
   HomeRepoImpl(this._remoteDataSource, this._localDataSource);
 
   @override
-  Future<Either<double, AppError>> chargePoints(String equivalentMoney) async {
+  Future<Either<String, AppError>> chargePoints(String equivalentMoney) async {
     final token = _localDataSource.getToken();
     try {
       final result = await _remoteDataSource.chargePoints(equivalentMoney, token ?? '');
       if (result.isSuccess) {
-        return Left((result.data as ChargePointsResponse).points.toDouble());
+        return Left((result.data as PaymentModel).paymentUrl);
       } else {
         return Right(AppError(message: result.errorMessage, apiResponse: result, type: ErrorType.api));
       }
