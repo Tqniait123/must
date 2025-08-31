@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:must_invest/core/theme/colors.dart';
 
 class UnifiedCard extends StatelessWidget {
@@ -8,7 +9,7 @@ class UnifiedCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? backgroundColor;
   final List<Color>? gradientColors;
-  final double? aspectRatio; // New parameter for aspect ratio control
+  final double? aspectRatio;
 
   const UnifiedCard({
     super.key,
@@ -17,7 +18,7 @@ class UnifiedCard extends StatelessWidget {
     this.onTap,
     this.backgroundColor,
     this.gradientColors,
-    this.aspectRatio, // Optional aspect ratio (width/height)
+    this.aspectRatio,
   });
 
   @override
@@ -38,24 +39,23 @@ class UnifiedCard extends StatelessWidget {
                 gradientColors != null
                     ? LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: gradientColors!)
                     : null,
-            borderRadius: BorderRadius.circular(isCollapsed ? 12 : 16),
+            borderRadius: BorderRadius.circular(isCollapsed ? 12.r : 16.r),
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withOpacity(0.2),
                 spreadRadius: 0,
-                blurRadius: isCollapsed ? 15 : 20,
-                offset: Offset(0, isCollapsed ? 3 : 4),
+                blurRadius: isCollapsed ? 15.r : 20.r,
+                offset: Offset(0, isCollapsed ? 3.h : 4.h),
               ),
             ],
           ),
-          padding: EdgeInsets.all(isCollapsed ? 12 : 20),
-          width: MediaQuery.sizeOf(context).width,
-          child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(isCollapsed ? 12 : 16), child: child),
+          padding: EdgeInsets.all(isCollapsed ? 12.w : 20.w),
+          width: 1.sw, // العرض كله
+          child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(isCollapsed ? 12.r : 16.r), child: child),
         ),
       ),
     );
 
-    // Wrap with AspectRatio if aspectRatio is provided
     if (aspectRatio != null) {
       return AspectRatio(aspectRatio: aspectRatio!, child: cardContent);
     }
@@ -90,7 +90,7 @@ class UnifiedCardContent extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             children: [
@@ -99,12 +99,12 @@ class UnifiedCardContent extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 child: Container(
-                  width: isCollapsed ? 3 : 4,
-                  height: isCollapsed ? 36 : 48,
-                  decoration: BoxDecoration(color: accentColor, borderRadius: BorderRadius.circular(2)),
+                  width: isCollapsed ? 3.w : 4.w,
+                  height: isCollapsed ? 36.h : 48.h,
+                  decoration: BoxDecoration(color: accentColor, borderRadius: BorderRadius.circular(2.r)),
                 ),
               ),
-              SizedBox(width: isCollapsed ? 12 : 16),
+              SizedBox(width: isCollapsed ? 12.w : 16.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,16 +116,16 @@ class UnifiedCardContent extends StatelessWidget {
                       child: AutoSizeText(
                         title,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: isCollapsed ? 12 : 14,
+                          fontSize: isCollapsed ? 12.sp : 14.sp,
                           color: accentColor,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
-                        minFontSize: 10,
+                        minFontSize: 10.sp,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    SizedBox(height: isCollapsed ? 2 : 4),
+                    SizedBox(height: isCollapsed ? 2.h : 4.h),
                     Row(
                       children: [
                         Expanded(
@@ -136,18 +136,18 @@ class UnifiedCardContent extends StatelessWidget {
                             child: AutoSizeText(
                               mainText,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: isCollapsed ? 18 : 24,
+                                fontSize: isCollapsed ? 18.sp : 24.sp,
                                 fontWeight: FontWeight.bold,
                                 color: accentColor,
                               ),
                               maxLines: 1,
-                              minFontSize: 12,
+                              minFontSize: 12.sp,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
                         if (subtitle != null) ...[
-                          SizedBox(width: isCollapsed ? 6 : 8),
+                          SizedBox(width: isCollapsed ? 6.w : 8.w),
                           Flexible(
                             child: AnimatedScale(
                               scale: isCollapsed ? 0.9 : 1.0,
@@ -155,11 +155,12 @@ class UnifiedCardContent extends StatelessWidget {
                               curve: Curves.easeInOut,
                               child: AutoSizeText(
                                 subtitle!,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.copyWith(fontSize: isCollapsed ? 12 : 14, color: accentColor),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontSize: isCollapsed ? 12.sp : 14.sp,
+                                  color: accentColor,
+                                ),
                                 maxLines: 1,
-                                minFontSize: 10,
+                                minFontSize: 10.sp,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -171,18 +172,18 @@ class UnifiedCardContent extends StatelessWidget {
                 ),
               ),
               if (icon != null && isCollapsed) ...[
-                SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 AnimatedScale(
                   scale: isCollapsed ? 0.8 : 1.0,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
-                  child: Icon(icon, color: accentColor, size: 16),
+                  child: Icon(icon, color: accentColor, size: 16.sp),
                 ),
               ],
             ],
           ),
           if (!isCollapsed && actionButton != null) ...[
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             AnimatedScale(
               scale: isCollapsed ? 0.8 : 1.0,
               duration: const Duration(milliseconds: 300),

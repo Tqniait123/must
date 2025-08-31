@@ -33,32 +33,19 @@ class OptionSelector<T> extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null) ...[
-          Text(
-            title ?? '',
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(color: AppColors.grey4A),
-          ),
+          Text(title ?? '', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.grey4A)),
           8.ph,
         ],
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: _buildRows(context),
-            ),
+            Column(crossAxisAlignment: CrossAxisAlignment.center, children: _buildRows(context)),
 
             // Add a Text widget to display the validation message.
             if (validationMessage != null && showValidation)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  validationMessage,
-                  style: context.textTheme.bodySmall!.copyWith(
-                    color: Colors.red[600],
-                  ),
-                ),
+                child: Text(validationMessage, style: context.textTheme.bodySmall!.copyWith(color: Colors.red[600])),
               ),
           ],
         ),
@@ -70,17 +57,9 @@ class OptionSelector<T> extends StatelessWidget {
     List<Widget> rows = [];
     for (int i = 0; i < options.length; i += 2) {
       Widget leftOption = _buildOption(context, i);
-      Widget rightOption =
-          i + 1 < options.length
-              ? _buildOption(context, i + 1)
-              : const SizedBox();
+      Widget rightOption = i + 1 < options.length ? _buildOption(context, i + 1) : const SizedBox();
 
-      rows.add(
-        Container(
-          margin: const EdgeInsets.only(bottom: 8.0),
-          child: Row(children: [leftOption, rightOption]),
-        ),
-      );
+      rows.add(Container(margin: const EdgeInsets.only(bottom: 8.0), child: Row(children: [leftOption, rightOption])));
     }
 
     return rows;
@@ -93,12 +72,8 @@ class OptionSelector<T> extends StatelessWidget {
     final isSelected = option == value;
     final selectedColor =
         isLight
-            ? (isSelected
-                ? Theme.of(context).colorScheme.primary
-                : AppColors.white)
-            : (isSelected
-                ? Theme.of(context).colorScheme.primary
-                : AppColors.black);
+            ? (isSelected ? Theme.of(context).colorScheme.primary : AppColors.white)
+            : (isSelected ? Theme.of(context).colorScheme.primary : AppColors.black);
 
     return Expanded(
       child: Padding(
@@ -113,9 +88,7 @@ class OptionSelector<T> extends StatelessWidget {
           ),
           child: MaterialButton(
             elevation: 0.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0.r),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0.r)),
             onPressed: () {
               if (option == value) {
                 // The same option is being clicked, so unselect it.
@@ -133,7 +106,7 @@ class OptionSelector<T> extends StatelessWidget {
                     isLight
                         ? (isSelected ? Colors.white : AppColors.black)
                         : (isSelected ? AppColors.black : AppColors.white),
-                fontSize: 18.sp,
+                fontSize: 18.r,
                 fontWeight: FontWeight.w400,
               ),
             ),

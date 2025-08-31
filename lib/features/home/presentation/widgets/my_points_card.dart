@@ -147,7 +147,7 @@ class MyPointsCardMinimal extends StatelessWidget {
     return BlocBuilder<UserCubit, UserState>(
       builder:
           (BuildContext context, UserState state) => UnifiedCard(
-            aspectRatio: withAspectRatio ? (isCollapsed ? null : 0.9.r) : null,
+            aspectRatio: withAspectRatio ? (isCollapsed ? null : 1.1.r) : null,
             isCollapsed: isCollapsed,
             backgroundColor: Colors.white,
             child: UnifiedCardContent(

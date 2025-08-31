@@ -12,9 +12,7 @@ import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.da
 void showGuestLoginBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-    ),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
     backgroundColor: Colors.white,
     isScrollControlled: true,
     builder: (context) {
@@ -34,10 +32,7 @@ void showGuestLoginBottomSheet(BuildContext context) {
             Text(
               LocaleKeys.login_to_access_all_features
                   .tr(), // "To enjoy full app features, please log in or create an account."
-              style: context.theme.textTheme.bodyMedium!.copyWith(
-                color: Colors.black54,
-                height: 1.5,
-              ),
+              style: context.theme.textTheme.bodyMedium!.copyWith(color: Colors.black54, height: 1.5),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -61,18 +56,12 @@ void showGuestLoginBottomSheet(BuildContext context) {
                     },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       padding: EdgeInsets.symmetric(vertical: 14.h),
                     ),
                     child: Text(
                       LocaleKeys.continue_anyway.tr(), // "Continue Anyway"
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
-                      ),
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14.r),
                     ),
                   ),
                 ),

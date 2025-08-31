@@ -40,7 +40,7 @@ class _UnifiedParkingTimerView extends StatelessWidget {
 
         return UnifiedCard(
           isCollapsed: isCollapsed,
-          aspectRatio: isCollapsed ? null : 0.9.r,
+          aspectRatio: isCollapsed ? null : 1.1.r,
           backgroundColor: Colors.white,
           child: UnifiedCardContent(
             isCollapsed: isCollapsed,

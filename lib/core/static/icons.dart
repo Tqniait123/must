@@ -33,6 +33,7 @@ static const String eyeSlashIc = '$_iconsPath/eye_slash_ic.svg';
 static const String offersIc = '$_iconsPath/offers_ic.svg';
 static const String google = '$_iconsPath/google.svg';
 static const String onBoarding3 = '$_iconsPath/on_boarding_3.svg';
+static const String arrowBackIc = '$_iconsPath/arrow_back_ic.svg';
 static const String searchIc = '$_iconsPath/search_ic.svg';
 static const String qrCodeIc = '$_iconsPath/qr_code_ic.svg';
 static const String termsIc = '$_iconsPath/terms_ic.svg';

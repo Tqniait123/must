@@ -13,6 +13,8 @@ class NotificationsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomIconButton(
+      // width: 51.r,
+      // height: 51.r,
       iconAsset: AppIcons.notificationsIc,
       iconColor: iconColor,
       color: color ?? Color(0xff6468AC),

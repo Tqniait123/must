@@ -576,7 +576,7 @@ class _AnimatedScrollHintState extends State<AnimatedScrollHint> with TickerProv
                                   AppColors.primary.withValues(alpha: 0.7),
                                 ],
                               ).createShader(bounds),
-                          child: Icon(Icons.keyboard_double_arrow_down, color: Colors.white, size: 18.sp),
+                          child: Icon(Icons.keyboard_double_arrow_down, color: Colors.white, size: 18.r),
                         ),
                         SizedBox(height: 2.h),
                       ],

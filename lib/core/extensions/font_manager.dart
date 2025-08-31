@@ -18,22 +18,22 @@ class FontWeightManager {
 class FontSize {
   const FontSize._();
 
-  static double s8 = 8.0.sp;
-  static double s10 = 10.0.sp;
-  static double s11 = 11.0.sp;
-  static double s12 = 12.0.sp;
-  static double s13 = 13.0.sp;
-  static double s14 = 14.0.sp;
-  static double s16 = 16.0.sp;
-  static double s17 = 17.0.sp;
-  static double s18 = 18.0.sp;
-  static double s20 = 20.0.sp;
-  static double s22 = 22.0.sp;
-  static double s24 = 24.0.sp;
-  static double s28 = 28.0.sp;
-  static double s32 = 32.0.sp;
-  static double s40 = 40.0.sp;
-  static double s50 = 50.0.sp;
-  static double s56 = 56.0.sp;
-  static double s64 = 64.0.sp;
+  static double s8 = 8.0.r;
+  static double s10 = 10.0.r;
+  static double s11 = 11.0.r;
+  static double s12 = 12.0.r;
+  static double s13 = 13.0.r;
+  static double s14 = 14.0.r;
+  static double s16 = 16.0.r;
+  static double s17 = 17.0.r;
+  static double s18 = 18.0.r;
+  static double s20 = 20.0.r;
+  static double s22 = 22.0.r;
+  static double s24 = 24.0.r;
+  static double s28 = 28.0.r;
+  static double s32 = 32.0.r;
+  static double s40 = 40.0.r;
+  static double s50 = 50.0.r;
+  static double s56 = 56.0.r;
+  static double s64 = 64.0.r;
 }

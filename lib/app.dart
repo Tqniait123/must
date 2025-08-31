@@ -20,9 +20,11 @@ class MustInvest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 800),
+      designSize: const Size(400, 900),
       minTextAdapt: true,
       splitScreenMode: true,
+      // Force ScreenUtil to ignore device text scale factor
+      fontSizeResolver: (fontSize, instance) => fontSize.toDouble(),
       builder: (_, __) {
         return MultiBlocProvider(
           providers: [
@@ -39,7 +41,19 @@ class MustInvest extends StatelessWidget {
             title: Strings.appName,
             theme: lightTheme(context),
             builder: (context, child) {
+              // Override all scaling to be 1.0 for consistent UI across devices
+              child = MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(0.9),
+                  // Reset device pixel ratio for consistent component sizing
+                  devicePixelRatio: 0.8,
+                  navigationMode: NavigationMode.directional,
+                ),
+                child: child!,
+              );
+
               child = BotToastInit()(context, child);
+
               return Scaffold(
                 body: child,
                 floatingActionButton:
