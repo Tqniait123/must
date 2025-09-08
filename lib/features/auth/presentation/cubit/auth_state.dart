@@ -31,7 +31,11 @@ class AuthError extends AuthState {
 
 class ForgetPasswordLoading extends AuthState {}
 
-class ForgetPasswordSentOTP extends AuthState {}
+class ForgetPasswordSentOTP extends AuthState {
+  final String message;
+
+  const ForgetPasswordSentOTP({required this.message});
+}
 
 class ForgetPasswordError extends AuthState {
   final String message;

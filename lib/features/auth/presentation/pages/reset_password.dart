@@ -27,8 +27,7 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,23 +42,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomBackButton(),
-                  Text(
-                    LocaleKeys.reset_password.tr(),
-                    style: context.titleLarge.copyWith(),
-                  ),
+                  Text(LocaleKeys.reset_password.tr(), style: context.titleLarge.copyWith()),
                   51.gap,
                 ],
               ),
               46.gap,
-              Text(
-                LocaleKeys.new_password.tr(),
-                style: context.bodyMedium.copyWith(color: AppColors.primary),
-              ),
+              Text(LocaleKeys.new_password.tr(), style: context.bodyMedium.copyWith(color: AppColors.primary)),
               Text(
                 LocaleKeys.enter_the_new_password.tr(),
-                style: context.bodyMedium.regular.s14.copyWith(
-                  color: AppColors.grey60,
-                ),
+                style: context.bodyMedium.regular.s14.copyWith(color: AppColors.grey60),
               ),
               // 48.gap,
               48.gap,
@@ -68,10 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: Stack(
                   children: [
                     Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(40),
-                      ),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(40)),
                       child: Column(
                         children: [
                           CustomTextFormField(
@@ -79,6 +67,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             controller: passwordController,
                             hint: LocaleKeys.password.tr(),
                             title: LocaleKeys.password.tr(),
+                            isPassword: true,
                           ),
                           16.gap,
                           CustomTextFormField(
@@ -86,6 +75,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             controller: confirmPasswordController,
                             hint: LocaleKeys.password_confirmation.tr(),
                             title: LocaleKeys.password_confirmation.tr(),
+                            isPassword: true,
                           ),
                           78.gap,
                         ],
@@ -113,29 +103,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 }
               },
               builder:
-                  (BuildContext context, AuthState state) =>
-                      CustomElevatedButton(
-                        loading: state is ResetPasswordLoading,
-                        title: LocaleKeys.reset_password.tr(),
-                        onPressed: () {
-                          if (passwordController.text !=
-                              confirmPasswordController.text) {
-                            showErrorToast(
-                              context,
-                              LocaleKeys.passwords_dont_match.tr(),
-                            );
-                            return;
-                          }
+                  (BuildContext context, AuthState state) => CustomElevatedButton(
+                    loading: state is ResetPasswordLoading,
+                    title: LocaleKeys.reset_password.tr(),
+                    onPressed: () {
+                      if (passwordController.text != confirmPasswordController.text) {
+                        showErrorToast(context, LocaleKeys.passwords_dont_match.tr());
+                        return;
+                      }
 
-                          context.read<AuthCubit>().resetPassword(
-                            ResetPasswordParams(
-                              password: passwordController.text,
-                              phone: widget.phone,
-                              confirmPassword: confirmPasswordController.text,
-                            ),
-                          );
-                        },
-                      ).paddingAll(32),
+                      context.read<AuthCubit>().resetPassword(
+                        ResetPasswordParams(
+                          password: passwordController.text,
+                          phone: widget.phone,
+                          confirmPassword: confirmPasswordController.text,
+                        ),
+                      );
+                    },
+                  ).paddingAll(32),
             ),
           ),
         ],

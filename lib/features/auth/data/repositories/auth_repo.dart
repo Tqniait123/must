@@ -26,7 +26,7 @@ abstract class AuthRepo {
   Future<Either<AuthModel, AppError>> verifyRegistration(VerifyParams params);
   Future<Either<void, AppError>> verifyPasswordReset(VerifyParams params);
   Future<Either<String, AppError>> resendOTP(String phone);
-  Future<Either<void, AppError>> forgetPassword(String email);
+  Future<Either<String, AppError>> forgetPassword(String email);
   Future<Either<void, AppError>> resetPassword(ResetPasswordParams params);
   Future<Either<List<Country>, AppError>> getCountries(); // List<Country>
   Future<Either<List<Governorate>, AppError>> getGovernorates(int countryId); // List<Governorate>
@@ -204,12 +204,12 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<void, AppError>> forgetPassword(String email) async {
+  Future<Either<String, AppError>> forgetPassword(String email) async {
     try {
       final response = await _remoteDataSource.forgetPassword(email);
 
       if (response.isSuccess) {
-        return const Left(null);
+        return Left(response.message);
       } else {
         return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
       }

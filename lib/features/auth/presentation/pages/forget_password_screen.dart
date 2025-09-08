@@ -121,6 +121,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   showErrorToast(context, state.message);
                 }
                 if (state is ForgetPasswordSentOTP) {
+                  showSuccessToast(context, state.message, seconds: 15);
                   context.push(
                     Routes.otpScreen,
                     extra: {'phone': "$_code${phoneController.text}", 'flow': OtpFlow.passwordReset},
