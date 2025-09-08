@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:must_invest/core/services/biometric_service_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String kIsDark = 'isDark';
@@ -89,5 +90,39 @@ class MustInvestPreferences {
 
   String? getLastSeenNotificationsTime() {
     return _preferences.getString('last_seen_notifications_time');
+  }
+
+  // Method to update biometric phone number after phone verification
+  Future<bool> updateBiometricPhoneAfterVerification(String verifiedPhone) async {
+    try {
+      // Update the phone number in biometric service
+      final result = await BiometricService2.updatePhoneInCredentials(verifiedPhone);
+      if (result) {
+        log('Biometric phone number updated successfully to: $verifiedPhone');
+      } else {
+        log('No biometric credentials to update or update failed');
+      }
+      return result;
+    } catch (e) {
+      log('Error updating biometric phone number: $e');
+      return false;
+    }
+  }
+
+  // General method to sync biometric data with user data changes
+  Future<bool> syncBiometricWithUserData(String newPhone) async {
+    try {
+      // This can be called when user data changes (not just verification)
+      final result = await BiometricService2.updatePhoneFromUserData(newPhone);
+      if (result) {
+        log('Biometric data synced successfully with new phone: $newPhone');
+      } else {
+        log('Biometric sync not needed or failed');
+      }
+      return result;
+    } catch (e) {
+      log('Error syncing biometric data: $e');
+      return false;
+    }
   }
 }

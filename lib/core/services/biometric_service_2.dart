@@ -90,6 +90,73 @@ class BiometricService2 {
     }
   }
 
+  // Update phone number in saved credentials (called after OTP verification)
+  static Future<bool> updatePhoneInCredentials(String newPhone) async {
+    try {
+      // Check if biometric is enabled and we have saved credentials
+      final isBiometricEnabled = await BiometricService2.isBiometricEnabled();
+      final hasSavedCredentials = await BiometricService2.hasSavedCredentials();
+      
+      if (isBiometricEnabled && hasSavedCredentials) {
+        // Get the current saved password to preserve it
+        final savedPassword = await getSavedPassword();
+        if (savedPassword != null) {
+          // Update the phone number while keeping the same password
+          final normalizedPhone = _normalizePhone(newPhone);
+          await _storage.write(key: _phoneKey, value: normalizedPhone);
+          
+          // Also update the remembered phone
+          await saveRememberedPhone(newPhone);
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Method to be called from shared preferences or when user data changes
+  static Future<bool> updatePhoneFromUserData(String newPhone) async {
+    try {
+      // This method can be called from anywhere in the app to sync biometric phone
+      final normalizedPhone = _normalizePhone(newPhone);
+      
+      // Check if we have biometric enabled
+      final isBiometricEnabled = await BiometricService2.isBiometricEnabled();
+      if (isBiometricEnabled) {
+        // Update phone in credentials
+        final result = await updatePhoneInCredentials(newPhone);
+        if (result) {
+          return true;
+        }
+        
+        // If no saved credentials but biometric is enabled, save the phone for future use
+        await saveRememberedPhone(newPhone);
+        return true;
+      }
+      
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Check if saved phone matches the provided phone
+  static Future<bool> isPhoneMatching(String phoneToCheck) async {
+    try {
+      final savedPhone = await getSavedPhone();
+      if (savedPhone == null) return false;
+      
+      final normalizedSaved = _normalizePhone(savedPhone);
+      final normalizedCheck = _normalizePhone(phoneToCheck);
+      
+      return normalizedSaved == normalizedCheck;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // ==================== END OF NEW FUNCTIONS ====================
 
   // Check if biometric authentication is enabled

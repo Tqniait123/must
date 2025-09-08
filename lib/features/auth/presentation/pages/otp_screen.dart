@@ -7,6 +7,8 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/preferences/shared_pref.dart';
+import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
@@ -153,6 +155,17 @@ class _OtpScreenState extends State<OtpScreen> {
                   listener: (BuildContext context, AuthState state) async {
                     if (state is AuthSuccess) {
                       UserCubit.get(context).setCurrentUser(state.user);
+                      
+                      // Update biometric phone number after successful verification
+                      if (widget.flow == OtpFlow.registration) {
+                        try {
+                          await sl<MustInvestPreferences>().updateBiometricPhoneAfterVerification(widget.phone);
+                        } catch (e) {
+                          // Log error but don't block the flow
+                          print('Error updating biometric phone after verification: $e');
+                        }
+                      }
+                      
                       _handleNavigationAfterVerification();
                     }
                     if (state is AuthError) {
