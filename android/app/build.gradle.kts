@@ -34,7 +34,7 @@ android {
 
     defaultConfig {
         applicationId = "com.tqniait.mustUser"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
