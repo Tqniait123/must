@@ -1,13 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:must_invest/core/extensions/html_extension.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/widgets/logo_widget.dart';
 import 'package:must_invest/features/profile/data/models/about_us_model.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_cubit.dart';
 import 'package:must_invest/features/profile/presentation/cubit/pages_state.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutUsScreen extends StatefulWidget {
@@ -137,7 +136,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> with TickerProviderStateM
         icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
-      // actions: [IconButton(icon: const Icon(Icons.share_rounded, color: Colors.white), onPressed: _shareAboutUs)],
     );
   }
 
@@ -240,64 +238,23 @@ class _AboutUsScreenState extends State<AboutUsScreen> with TickerProviderStateM
     );
   }
 
+  // This is now much simpler thanks to the extension!
   Widget _buildAboutContent(String htmlContent) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Container(
-        margin: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Html(
-            data: _cleanHtmlContent(htmlContent),
-            style: {
-              "body": Style(
-                fontSize: FontSize(16),
-                lineHeight: const LineHeight(1.6),
-                color: Colors.grey[800],
-                padding: HtmlPaddings.all(20),
-              ),
-              "h1": Style(
-                fontSize: FontSize(24),
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-                margin: Margins.only(bottom: 16),
-              ),
-              "h2": Style(
-                fontSize: FontSize(20),
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-                margin: Margins.only(top: 20, bottom: 12),
-              ),
-              "h3": Style(
-                fontSize: FontSize(18),
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-                margin: Margins.only(top: 16, bottom: 8),
-              ),
-              "p": Style(margin: Margins.only(bottom: 12)),
-              "ul": Style(margin: Margins.only(left: 16, bottom: 12)),
-              "ol": Style(margin: Margins.only(left: 16, bottom: 12)),
-              "li": Style(margin: Margins.only(bottom: 8)),
-              "a": Style(color: Theme.of(context).primaryColor, textDecoration: TextDecoration.underline),
-              "strong": Style(fontWeight: FontWeight.bold),
-              "em": Style(fontStyle: FontStyle.italic),
-              "blockquote": Style(
-                backgroundColor: Colors.grey[100],
-                padding: HtmlPaddings.all(16),
-                border: Border(left: BorderSide(color: Theme.of(context).primaryColor, width: 4)),
-                margin: Margins.only(left: 16, right: 16, bottom: 16),
-              ),
-            },
-            onLinkTap: (url, context, attributes) {
-              if (url != null) {
-                _launchUrl(url);
-              }
-            },
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: htmlContent.toHtml(
+          context: context,
+          config: HtmlConfig(
+            backgroundColor: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
+            padding: const EdgeInsets.all(20),
+            fontSize: 16,
+            lineHeight: 1.6,
+            onLinkTap: _launchUrl,
+            showDebugLogs: true, // Set to false in production
           ),
         ),
       ),
@@ -315,45 +272,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> with TickerProviderStateM
     );
   }
 
-  String _cleanHtmlContent(String htmlContent) {
-    // Remove escape characters and clean the HTML
-    String cleaned = htmlContent
-        .replaceAll('\\"', '"')
-        .replaceAll('\\/', '/')
-        .replaceAll('&amp;', '&')
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#39;', "'");
-
-    // Remove wrapping quotes if they exist
-    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-      cleaned = cleaned.substring(1, cleaned.length - 1);
-    }
-
-    return cleaned;
-  }
-
   void _scrollToTop() {
     _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-  }
-
-  void _shareAboutUs() {
-    Share.share(
-      'Learn more about us', // You can customize this message
-      subject: LocaleKeys.about_us.tr(),
-    );
-  }
-
-  void _handleMenuAction(String action) {
-    switch (action) {
-      case 'copy':
-        // _copyToClipboard();
-        break;
-      case 'refresh':
-        PagesCubit.get(context).getAboutUs(lang: widget.language);
-        break;
-    }
   }
 
   Future<void> _launchUrl(String url) async {
