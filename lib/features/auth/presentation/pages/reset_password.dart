@@ -7,6 +7,7 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
 import 'package:must_invest/core/extensions/widget_extensions.dart';
+import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -28,6 +29,14 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,11 +103,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           BlocProvider(
             create: (BuildContext context) => AuthCubit(sl()),
             child: BlocConsumer<AuthCubit, AuthState>(
-              listener: (BuildContext context, AuthState state) {
+              listener: (BuildContext context, AuthState state) async {
                 if (state is AuthError) {
                   showErrorToast(context, state.message);
                 }
                 if (state is ResetPasswordSuccess) {
+                  // Update biometric password if the phone matches saved biometric phone
+                  try {
+                    await sl<MustInvestPreferences>().updateBiometricPasswordAfterReset(
+                      widget.phone,
+                      passwordController.text,
+                    );
+                  } catch (e) {
+                    // Log error but don't block the flow
+                    print('Error updating biometric password after reset: $e');
+                  }
+
                   context.go(Routes.login);
                 }
               },

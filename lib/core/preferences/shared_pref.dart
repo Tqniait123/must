@@ -125,4 +125,21 @@ class MustInvestPreferences {
       return false;
     }
   }
+
+  // Method to update biometric password after password reset
+  Future<bool> updateBiometricPasswordAfterReset(String phone, String newPassword) async {
+    try {
+      // Update the password in biometric service if phone matches
+      final result = await BiometricService2.updatePasswordInCredentials(phone, newPassword);
+      if (result) {
+        log('Biometric password updated successfully for phone: $phone');
+      } else {
+        log('No matching biometric credentials to update or update failed');
+      }
+      return result;
+    } catch (e) {
+      log('Error updating biometric password: $e');
+      return false;
+    }
+  }
 }

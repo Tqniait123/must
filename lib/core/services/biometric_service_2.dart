@@ -157,6 +157,32 @@ class BiometricService2 {
     }
   }
 
+  // Update password in saved credentials (called after password reset)
+  static Future<bool> updatePasswordInCredentials(String phone, String newPassword) async {
+    try {
+      // Check if biometric is enabled and we have saved credentials
+      final isBiometricEnabled = await BiometricService2.isBiometricEnabled();
+      final hasSavedCredentials = await BiometricService2.hasSavedCredentials();
+      
+      if (isBiometricEnabled && hasSavedCredentials) {
+        // Check if the phone matches the saved phone
+        final isMatching = await isPhoneMatching(phone);
+        if (isMatching) {
+          // Update the password while keeping the same phone
+          final normalizedPhone = _normalizePhone(phone);
+          await Future.wait([
+            _storage.write(key: _phoneKey, value: normalizedPhone),
+            _storage.write(key: _passwordKey, value: newPassword),
+          ]);
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // ==================== END OF NEW FUNCTIONS ====================
 
   // Check if biometric authentication is enabled
