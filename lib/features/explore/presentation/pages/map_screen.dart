@@ -1699,6 +1699,7 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
                 ),
               ),
             ),
+            
 
           // Navigation arrows for multiple images
           if (widget.images.length > 1) ...[
