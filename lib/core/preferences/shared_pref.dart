@@ -95,7 +95,7 @@ class MustInvestPreferences {
   // Method to update biometric phone number after phone verification
   Future<bool> updateBiometricPhoneAfterVerification(String verifiedPhone) async {
     try {
-      // Update the phone number in biometric service
+      // Update the phone number in biometric service 
       final result = await BiometricService2.updatePhoneInCredentials(verifiedPhone);
       if (result) {
         log('Biometric phone number updated successfully to: $verifiedPhone');
