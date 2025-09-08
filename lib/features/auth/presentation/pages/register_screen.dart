@@ -347,7 +347,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           SignUpButton(
             isLogin: false,
             onTap: () {
-              context.pop();
+              // context.pop();
+              context.go(Routes.login);
             },
           ),
           30.gap, // Add extra bottom padding
