@@ -100,13 +100,14 @@ class ProfileScreen extends StatelessWidget {
                 context.push(Routes.myCars);
               },
             ),
-          ProfileItemWidget(
-            title: LocaleKeys.offers.tr(),
-            iconPath: AppIcons.offersIc,
-            onPressed: () {
-              context.push(Routes.offers);
-            },
-          ),
+          if (context.isLoggedIn)
+            ProfileItemWidget(
+              title: LocaleKeys.offers.tr(),
+              iconPath: AppIcons.offersIc,
+              onPressed: () {
+                context.push(Routes.offers);
+              },
+            ),
           if (context.isLoggedIn)
             ProfileItemWidget(
               title: LocaleKeys.my_cards.tr(),
