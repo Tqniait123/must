@@ -5,6 +5,7 @@ import 'package:must_invest/config/routes/routes.dart';
 import 'package:must_invest/core/extensions/is_logged_in.dart';
 import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
@@ -187,16 +188,17 @@ class ProfileScreen extends StatelessWidget {
               },
             ),
           20.gap,
-          CustomElevatedButton(
-            icon: AppIcons.supportIc,
-            onPressed: () {
-              context.push(Routes.contactUs);
-            },
-            title: LocaleKeys.how_can_we_help_you.tr(),
-          ),
-          40.gap,
+
+          // 40.gap,
         ],
       ),
+      bottomNavigationBar: CustomElevatedButton(
+        icon: AppIcons.supportIc,
+        onPressed: () {
+          context.push(Routes.contactUs);
+        },
+        title: LocaleKeys.how_can_we_help_you.tr(),
+      ).paddingSymmetric(40, 0).paddingBottom(40),
     );
   }
 }
