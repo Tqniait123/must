@@ -372,6 +372,16 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     });
   }
 
+  // Helper method to get visible parkings based on route state
+  List<Parking> _getVisibleParkings(List<Parking> parkings) {
+    // If route is showing, only show the selected parking
+    if (_showRoute && _selectedParking != null) {
+      return parkings.where((parking) => parking.id == _selectedParking!.id).toList();
+    }
+    // If no route is showing, show all parkings
+    return parkings;
+  }
+
   // UPDATED: Navigate to parking from list with improved logic
   void _navigateToParkingFromList(Parking parking) {
     final parkingLocation = LatLng(parking.lat.toDouble(), parking.lng.toDouble());
@@ -677,10 +687,11 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                       controller: _parkingListController,
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: parkings.length,
+                      itemCount: _getVisibleParkings(parkings).length,
                       separatorBuilder: (context, index) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
-                        final parking = parkings[index];
+                        final visibleParkings = _getVisibleParkings(parkings);
+                        final parking = visibleParkings[index];
                         final distance =
                             _currentLocation != null
                                 ? _calculateDistance(
@@ -937,138 +948,154 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
 
                 // Parking markers with improved tags design
-                ...parkings.map((parking) {
-                  final parkingLocation = LatLng(parking.lat.toDouble(), parking.lng.toDouble());
-                  final distance =
-                      _currentLocation != null ? _calculateDistance(_currentLocation!, parkingLocation) : 0.0;
+                // Hide other parkings when route is shown, only show selected parking
+                ...parkings
+                    .where((parking) {
+                      // If route is showing, only show the selected parking
+                      if (_showRoute && _selectedParking != null) {
+                        return parking.id == _selectedParking!.id;
+                      }
+                      // If no route is showing, show all parkings
+                      return true;
+                    })
+                    .map((parking) {
+                      final parkingLocation = LatLng(parking.lat.toDouble(), parking.lng.toDouble());
+                      final distance =
+                          _currentLocation != null ? _calculateDistance(_currentLocation!, parkingLocation) : 0.0;
 
-                  return Marker(
-                    width: 200.0,
-                    height: 150.0,
-                    point: parkingLocation,
-                    child: GestureDetector(
-                      onTap: () => _selectParkingFromMap(parking), // UPDATED: Use new method
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Enhanced Tags container with better design
-                          if (_isMostPopular(parking) || _isMostWanted(parking))
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 6),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Most Popular Tag
-                                  if (_isMostPopular(parking))
-                                    _buildTag(
-                                      image: Icon(Icons.star_rounded, color: Colors.white, size: 16),
-                                      backgroundColor: Colors.orange.shade400,
-                                      shadowColor: Colors.orange.shade400.withOpacity(0.3),
-                                      isSelected: _selectedParking?.id == parking.id,
-                                    ),
-
-                                  // Spacing between tags
-                                  if (_isMostPopular(parking) && _isMostWanted(parking)) const SizedBox(width: 6),
-
-                                  // Most Wanted Tag
-                                  if (_isMostWanted(parking))
-                                    _buildTag(
-                                      image: Icon(Icons.local_fire_department_rounded, color: Colors.white, size: 16),
-                                      backgroundColor: Colors.purple.shade400,
-                                      shadowColor: Colors.purple.shade400.withOpacity(0.3),
-                                      isSelected: _selectedParking?.id == parking.id,
-                                    ),
-                                ],
-                              ),
-                            ),
-
-                          // Main marker with selection container
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Price container
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: _selectedParking?.id == parking.id ? 12 : 10,
-                                    vertical: _selectedParking?.id == parking.id ? 14 : 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: parking.isBusy ? Colors.red : Colors.green,
-                                    borderRadius: BorderRadius.circular(18),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.25),
-                                        spreadRadius: _selectedParking?.id == parking.id ? 3 : 1,
-                                        blurRadius: _selectedParking?.id == parking.id ? 12 : 8,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
+                      return Marker(
+                        width: 200.0,
+                        height: 150.0,
+                        point: parkingLocation,
+                        child: GestureDetector(
+                          onTap: () => _selectParkingFromMap(parking), // UPDATED: Use new method
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Enhanced Tags container with better design
+                              if (_isMostPopular(parking) || _isMostWanted(parking))
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 6),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      // Car icon when selected
-                                      if (_selectedParking?.id == parking.id) ...[
-                                        Container(
-                                          padding: const EdgeInsets.all(6),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.9),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: AppIcons.carIc.icon(color: AppColors.primary),
+                                      // Most Popular Tag
+                                      if (_isMostPopular(parking))
+                                        _buildTag(
+                                          image: Icon(Icons.star_rounded, color: Colors.white, size: 16),
+                                          backgroundColor: Colors.orange.shade400,
+                                          shadowColor: Colors.orange.shade400.withOpacity(0.3),
+                                          isSelected: _selectedParking?.id == parking.id,
                                         ),
-                                        const SizedBox(width: 8),
-                                      ],
 
-                                      // Price text
-                                      AnimatedDefaultTextStyle(
-                                        duration: const Duration(milliseconds: 300),
-                                        style: context.bodyMedium.copyWith(
-                                          fontSize: _selectedParking?.id == parking.id ? 15 : 13,
-                                          color: Colors.white,
-                                          fontWeight:
-                                              _selectedParking?.id == parking.id ? FontWeight.w700 : FontWeight.w600,
-                                          shadows: [
-                                            Shadow(
-                                              color: Colors.black.withOpacity(0.3),
-                                              offset: const Offset(0, 1),
-                                              blurRadius: 2,
-                                            ),
-                                          ],
+                                      // Spacing between tags
+                                      if (_isMostPopular(parking) && _isMostWanted(parking)) const SizedBox(width: 6),
+
+                                      // Most Wanted Tag
+                                      if (_isMostWanted(parking))
+                                        _buildTag(
+                                          image: Icon(
+                                            Icons.local_fire_department_rounded,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                          backgroundColor: Colors.purple.shade400,
+                                          shadowColor: Colors.purple.shade400.withOpacity(0.3),
+                                          isSelected: _selectedParking?.id == parking.id,
                                         ),
-                                        child: Text(parking.getNameByLocale(context)),
-                                      ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
 
-                          // Enhanced Triangle pointer
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            height: _selectedParking?.id == parking.id ? 16 : 12,
-                            width: _selectedParking?.id == parking.id ? 24 : 20,
-                            child: CustomPaint(
-                              size: Size(
-                                _selectedParking?.id == parking.id ? 24 : 20,
-                                _selectedParking?.id == parking.id ? 16 : 12,
+                              // Main marker with selection container
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Price container
+                                    AnimatedContainer(
+                                      duration: const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: _selectedParking?.id == parking.id ? 12 : 10,
+                                        vertical: _selectedParking?.id == parking.id ? 14 : 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: parking.isBusy ? Colors.red : Colors.green,
+                                        borderRadius: BorderRadius.circular(18),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.25),
+                                            spreadRadius: _selectedParking?.id == parking.id ? 3 : 1,
+                                            blurRadius: _selectedParking?.id == parking.id ? 12 : 8,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Car icon when selected
+                                          if (_selectedParking?.id == parking.id) ...[
+                                            Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.9),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: AppIcons.carIc.icon(color: AppColors.primary),
+                                            ),
+                                            const SizedBox(width: 8),
+                                          ],
+
+                                          // Price text
+                                          AnimatedDefaultTextStyle(
+                                            duration: const Duration(milliseconds: 300),
+                                            style: context.bodyMedium.copyWith(
+                                              fontSize: _selectedParking?.id == parking.id ? 15 : 13,
+                                              color: Colors.white,
+                                              fontWeight:
+                                                  _selectedParking?.id == parking.id
+                                                      ? FontWeight.w700
+                                                      : FontWeight.w600,
+                                              shadows: [
+                                                Shadow(
+                                                  color: Colors.black.withOpacity(0.3),
+                                                  offset: const Offset(0, 1),
+                                                  blurRadius: 2,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(parking.getNameByLocale(context)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              painter: _TrianglePainter(color: parking.isBusy ? Colors.red : Colors.green),
-                            ),
+
+                              // Enhanced Triangle pointer
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                height: _selectedParking?.id == parking.id ? 16 : 12,
+                                width: _selectedParking?.id == parking.id ? 24 : 20,
+                                child: CustomPaint(
+                                  size: Size(
+                                    _selectedParking?.id == parking.id ? 24 : 20,
+                                    _selectedParking?.id == parking.id ? 16 : 12,
+                                  ),
+                                  painter: _TrianglePainter(color: parking.isBusy ? Colors.red : Colors.green),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                        ),
+                      );
+                    }),
               ],
             ),
 
