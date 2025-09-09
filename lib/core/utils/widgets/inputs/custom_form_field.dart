@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:must_invest/core/extensions/flipped_for_lcale.dart';
 import 'package:must_invest/core/extensions/sized_box.dart';
+import 'package:must_invest/core/functions/unfocus.dart';
 import 'package:must_invest/core/static/app_styles.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -159,6 +160,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             style: AppStyles.medium12black.copyWith(fontSize: 15.r, color: widget.styleColor ?? Colors.black),
             showCursor: !widget.readonly,
             onTap: widget.onTap,
+            onTapOutside: (_) => dismissKeyboard(),
 
             validator: _compositeValidator,
             autovalidateMode: AutovalidateMode.onUserInteraction,
