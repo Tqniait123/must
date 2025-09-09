@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:must_invest/core/api/response/response.dart';
 import 'package:must_invest/core/errors/app_exception.dart';
+import 'package:must_invest/core/translations/locale_keys.g.dart';
 
 class NoInternetException extends AppException {
   NoInternetException() : super('no internet connection');
@@ -28,8 +28,6 @@ class UnauthenticatedException extends AppException {
   UnauthenticatedException() : super("User Unauthenticated");
 }
 
-
-
 class ServerException extends AppException {
-  ServerException() : super("Something went wrong");
+  ServerException() : super(LocaleKeys.something_went_wrong.tr());
 }

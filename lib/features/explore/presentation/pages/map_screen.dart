@@ -1234,17 +1234,17 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           style: TextStyle(fontSize: 14, color: AppColors.primary.withValues(alpha: 0.7)),
                         ),
                         // Distance display
-                        if (_currentLocation != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            '📍 ${_formatDistance(distance)} ${LocaleKeys.map_away.tr()}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.primary.withValues(alpha: 0.7),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                        // if (_currentLocation != null) ...[
+                        //   const SizedBox(height: 4),
+                        //   Text(
+                        //     '📍 ${_formatDistance(distance)} ${LocaleKeys.map_away.tr()}',
+                        //     style: TextStyle(
+                        //       fontSize: 14,
+                        //       color: AppColors.primary.withValues(alpha: 0.7),
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // ],
                       ],
                     ),
                   ),
@@ -1699,8 +1699,6 @@ class _ImageGalleryScreenState extends State<ImageGalleryScreen> {
                 ),
               ),
             ),
-            
-
 
           // Navigation arrows for multiple images
           if (widget.images.length > 1) ...[

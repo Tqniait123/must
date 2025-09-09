@@ -57,6 +57,7 @@ final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<v
 class AppRouter {
   // Create a GoRouter instance
   final GoRouter router = GoRouter(
+
     initialLocation: Routes.initialRoute,
     navigatorKey: rootNavigatorKey,
     errorPageBuilder: (context, state) {
@@ -76,6 +77,10 @@ class AppRouter {
     routes: [
       // Define routes using GoRoute
       GoRoute(
+        redirect: (context, state) {
+          
+        },
+
         path: Routes.initialRoute,
         builder: (context, state) {
           // Return the SplashScreen widget
