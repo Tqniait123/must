@@ -8,6 +8,7 @@ import 'package:must_invest/core/extensions/num_extension.dart';
 import 'package:must_invest/core/extensions/string_to_icon.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/functions/unfocus.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/icons.dart';
 import 'package:must_invest/core/theme/colors.dart';
@@ -114,6 +115,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 iconAsset: AppIcons.cameraIc,
                 color: AppColors.primary,
                 onPressed: () {
+                  dismissKeyboard();
                   context.checkVerifiedAndGuestOrDo(
                     () => showAllCarsBottomSheet(
                       context,
@@ -132,6 +134,7 @@ class UserHomeHeaderWidget extends StatelessWidget {
                 iconAsset: AppIcons.qrCodeIc,
                 color: AppColors.primary,
                 onPressed: () {
+                  dismissKeyboard();
                   context.checkVerifiedAndGuestOrDo(
                     () => showAllCarsBottomSheet(context, title: LocaleKeys.my_cars.tr(), onChooseCar: onChooseCar),
                   );
