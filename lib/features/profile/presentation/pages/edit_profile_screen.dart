@@ -702,7 +702,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         pickedImage: profileImage,
                         onPick: (file) {
                           // Use the reusable dialog instead of direct file picking
-                          _showProfileImageSourceDialog();
+                          // _showProfileImageSourceDialog();
+                          setState(() {
+                            profileImage = file;
+                          });
                         },
                       ),
                     ),
@@ -715,12 +718,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       isRequired: true,
                       hint: LocaleKeys.full_name.tr(),
                       title: LocaleKeys.full_name.tr(),
-                      // validator: (value) {
-                      //   if (value?.isEmpty ?? true) {
-                      //     return LocaleKeys.name_is_required.tr();
-                      //   }
-                      //   return null;
-                      // },
+                      validator: (text) {
+                        if (text == null || text.isEmpty) {
+                          return LocaleKeys.please_enter_full_name.tr();
+                        }
+                        // Check if text contains special characters or numbers
+                        if (!RegExp(r'^[\p{L}\s]+$', unicode: true).hasMatch(text)) {
+                          return LocaleKeys.name_should_not_contain_special_characters.tr();
+                        }
+                        return null;
+                      },
                     ),
                     16.gap,
                     CustomPhoneFormField(
