@@ -4,11 +4,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:must_invest/core/extensions/text_style_extension.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/extensions/widget_extensions.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
+import 'package:must_invest/core/utils/widgets/buttons/custom_elevated_button.dart';
 
 class EmptyStateWidget extends StatelessWidget {
-  const EmptyStateWidget({super.key});
+  final VoidCallback? onReload;
+  const EmptyStateWidget({super.key, this.onReload});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,8 @@ class EmptyStateWidget extends StatelessWidget {
           LocaleKeys.try_different_location.tr(),
           style: context.bodySmall.regular.s14.copyWith(color: AppColors.primary.withValues(alpha: 0.5)),
         ),
+        const SizedBox(height: 20),
+        CustomElevatedButton(title: LocaleKeys.try_again.tr(), onPressed: onReload).paddingHorizontal(40),
       ],
     );
   }

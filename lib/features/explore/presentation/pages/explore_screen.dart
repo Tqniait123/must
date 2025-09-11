@@ -514,21 +514,24 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           );
                         }
 
-                        // Add smooth transition only after AI thinking completes (for nearest)
-                        // or show results immediately for other filters
-                        Widget resultsList = ListView.separated(
-                          key: ValueKey('parking_list'),
-                          physics: const BouncingScrollPhysics(),
-                          shrinkWrap: false,
-                          padding: EdgeInsets.zero,
-                          itemCount: state.parkings.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 16),
-                          itemBuilder: (context, index) {
-                            return ParkingCard(parking: state.parkings[index]);
+                        // Wrap list with RefreshIndicator
+                        Widget resultsList = RefreshIndicator.adaptive(
+                          onRefresh: () async {
+                            await _exploreCubit.getAllParkings(filter: _createFilterWithSearch());
                           },
+                          child: ListView.separated(
+                            key: ValueKey('parking_list'),
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            shrinkWrap: false,
+                            padding: EdgeInsets.zero,
+                            itemCount: state.parkings.length,
+                            separatorBuilder: (context, index) => const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              return ParkingCard(parking: state.parkings[index]);
+                            },
+                          ),
                         );
 
-                        // Only add smooth transition animation for nearest filter
                         if (_selectedSortBy == SortBy.nearest) {
                           return AnimatedSwitcher(
                             duration: const Duration(milliseconds: 800),
@@ -547,7 +550,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             child: resultsList,
                           );
                         } else {
-                          // Show results immediately for other filters
                           return resultsList;
                         }
                       } else if (state is ParkingsError) {

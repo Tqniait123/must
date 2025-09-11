@@ -421,23 +421,35 @@ class _HomeUserState extends State<HomeUser> with WidgetsBindingObserver, RouteA
     }
 
     if (state is! ParkingsSuccess || state.parkings.isEmpty) {
-      return Padding(padding: EdgeInsets.symmetric(horizontal: 24.w), child: const EmptyStateWidget());
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: EmptyStateWidget(
+          onReload: () {
+            _exploreCubit.getAllParkings();
+          },
+        ),
+      );
     }
 
     final parkings = state.parkings;
 
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: parkings.length + 1,
-      itemBuilder: (context, index) {
-        if (index == parkings.length) {
-          return SizedBox(height: 30.h);
-        }
-        return Padding(
-          padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 16.h),
-          child: ParkingCard(parking: parkings[index]),
-        );
+    return RefreshIndicator.adaptive(
+      onRefresh: () async {
+        await _exploreCubit.getAllParkings();
       },
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: parkings.length + 1,
+        itemBuilder: (context, index) {
+          if (index == parkings.length) {
+            return SizedBox(height: 30.h);
+          }
+          return Padding(
+            padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 16.h),
+            child: ParkingCard(parking: parkings[index]),
+          );
+        },
+      ),
     );
   }
 }

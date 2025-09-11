@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/app.dart';
+import 'package:must_invest/core/connection/internet_service.dart';
 import 'package:must_invest/core/observers/bloc_observer.dart';
 import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/static/locales.dart';
@@ -53,6 +54,7 @@ Future<void> main() async {
 
   // Initialize the dependency injection container
   await initLocator(sharedPreferences);
+  await InternetService().initialize();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize FCM
