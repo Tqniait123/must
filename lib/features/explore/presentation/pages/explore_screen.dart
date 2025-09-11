@@ -513,6 +513,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             ),
                           );
                         }
+                        
 
                         // Wrap list with RefreshIndicator
                         Widget resultsList = RefreshIndicator.adaptive(
