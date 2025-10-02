@@ -943,7 +943,7 @@ class _QuickLoginBottomSheet extends StatelessWidget {
 
 class _BiometricSetupBottomSheet extends StatelessWidget {
   final String biometricType;
-  final IconData biometricIcon;
+  final IconData biometricIcon; 
   final VoidCallback onEnable;
   final VoidCallback onSkip;
 
