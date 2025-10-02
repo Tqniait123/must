@@ -1413,7 +1413,11 @@ class CodegenLoader extends AssetLoader{
   "continue_to_home": "Continue to Home",
   "order_summary": "Order Summary",
   "payment_error": "Payment Error",
-  "congratulations": "Congratulations!"
+  "congratulations": "Congratulations!",
+  "take_photo": "Take Photo",
+  "car_parking_location": "Car Parking Location",
+  "upload_image_to_remember_location": "Upload an image to easily find your car later",
+  "tap_to_upload_image": "Tap to upload image"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2814,7 +2818,11 @@ static const Map<String,dynamic> _ar = {
   "continue_to_home": "العودة للرئيسية",
   "order_summary": "ملخص الطلب",
   "payment_error": "خطأ في الدفع",
-  "congratulations": "تهانينا!"
+  "congratulations": "تهانينا!",
+  "take_photo": "التقاط صورة",
+  "car_parking_location": "موقع ركن السيارة",
+  "upload_image_to_remember_location": "ارفع صورة لتتمكن من إيجاد سيارتك بسهولة لاحقاً",
+  "tap_to_upload_image": "اضغط لرفع صورة"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

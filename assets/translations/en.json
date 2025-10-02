@@ -1458,7 +1458,14 @@
   "continue_to_home": "Continue to Home",
   "order_summary": "Order Summary",
   "payment_error": "Payment Error",
-  "congratulations": "Congratulations!"
+  "congratulations": "Congratulations!",
+
+    "take_photo": "Take Photo",
+
+    "car_parking_location": "Car Parking Location",
+    "upload_image_to_remember_location": "Upload an image to easily find your car later",
+    "tap_to_upload_image": "Tap to upload image"
+
 
 
 }

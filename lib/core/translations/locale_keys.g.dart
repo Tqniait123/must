@@ -1393,5 +1393,9 @@ abstract class  LocaleKeys {
   static const order_summary = 'order_summary';
   static const payment_error = 'payment_error';
   static const congratulations = 'congratulations';
+  static const take_photo = 'take_photo';
+  static const car_parking_location = 'car_parking_location';
+  static const upload_image_to_remember_location = 'upload_image_to_remember_location';
+  static const tap_to_upload_image = 'tap_to_upload_image';
 
 }

@@ -1458,6 +1458,12 @@
   "continue_to_home": "العودة للرئيسية",
   "order_summary": "ملخص الطلب",
   "payment_error": "خطأ في الدفع",
-  "congratulations": "تهانينا!"
+  "congratulations": "تهانينا!",
+
+    "take_photo": "التقاط صورة",
+
+    "car_parking_location": "موقع ركن السيارة",
+    "upload_image_to_remember_location": "ارفع صورة لتتمكن من إيجاد سيارتك بسهولة لاحقاً",
+    "tap_to_upload_image": "اضغط لرفع صورة"
 
 }
