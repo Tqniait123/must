@@ -1464,6 +1464,11 @@
 
     "car_parking_location": "موقع ركن السيارة",
     "upload_image_to_remember_location": "ارفع صورة لتتمكن من إيجاد سيارتك بسهولة لاحقاً",
-    "tap_to_upload_image": "اضغط لرفع صورة"
+    "tap_to_upload_image": "اضغط لرفع صورة",
+  "parking_id_not_found": "لم يتم العثور على معرف موقف السيارات",
+  "image_uploaded_successfully": "تم رفع الصورة بنجاح",
+  "uploading": "جاري الرفع...",
+  "uploaded": "تم الرفع",
+  "supported_formats": "JPG، PNG (الحد الأقصى 5 ميجابايت)"
 
 }

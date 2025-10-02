@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:must_invest/core/api/dio_client.dart';
 import 'package:must_invest/core/api/end_points.dart';
 import 'package:must_invest/core/api/response/response.dart';
@@ -19,6 +21,7 @@ abstract class PagesRemoteDataSource {
   Future<ApiResponse<PrivacyPolicyModel>> getPrivacyPolicy(String? lang);
   Future<ApiResponse<ContactUsModel>> getContactUs(String? lang);
   Future<ApiResponse<AboutUsModel>> getAboutUs(String? lang);
+  Future<ApiResponse<void>> uploadCarParkingImage(String token, int parkingId, PlatformFile image);
 }
 
 class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
@@ -92,6 +95,25 @@ class PagesRemoteDataSourceImpl implements PagesRemoteDataSource {
       EndPoints.startParking,
       options: token.toAuthorizationOptions(),
       data: params.toJson(),
+      fromJson: (json) => (),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> uploadCarParkingImage(String token, int parkingId, PlatformFile image) async {
+    final formData = FormData.fromMap({
+      'car_place': MultipartFile.fromBytes(
+        image.bytes!,
+        filename: image.name,
+      ),
+    });
+
+    return dioClient.request<void>(
+      method: RequestMethod.post,
+      EndPoints.uploadCarPlace(parkingId),
+      options: token.toAuthorizationOptions(),
+      data: formData,
+      contentType: ContentType.formData,
       fromJson: (json) => (),
     );
   }

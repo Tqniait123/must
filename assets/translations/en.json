@@ -1464,7 +1464,13 @@
 
     "car_parking_location": "Car Parking Location",
     "upload_image_to_remember_location": "Upload an image to easily find your car later",
-    "tap_to_upload_image": "Tap to upload image"
+    "tap_to_upload_image": "Tap to upload image",
+    "parking_id_not_found": "Parking ID not found",
+    "image_uploaded_successfully": "Image uploaded successfully",
+    "uploading": "Uploading...",
+    "uploaded": "Uploaded",
+    "supported_formats": "JPG, PNG (Max 5MB)"
+
 
 
 

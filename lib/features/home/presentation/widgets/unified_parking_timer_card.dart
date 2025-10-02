@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
@@ -7,11 +8,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:must_invest/core/extensions/theme_extension.dart';
+import 'package:must_invest/core/services/di.dart';
 import 'package:must_invest/core/theme/colors.dart';
 import 'package:must_invest/core/translations/locale_keys.g.dart';
 import 'package:must_invest/core/utils/dialogs/error_toast.dart';
 import 'package:must_invest/core/utils/dialogs/image_source_dialog.dart';
 import 'package:must_invest/features/home/presentation/widgets/unified_card_widget.dart';
+import 'package:must_invest/features/profile/presentation/cubit/profile_cubit.dart';
 
 import '../cubit/parking_timer_cubit.dart';
 import '../cubit/parking_timer_state.dart';
@@ -19,22 +22,27 @@ import '../cubit/parking_timer_state.dart';
 class UnifiedParkingTimerCard extends StatelessWidget {
   final DateTime startTime;
   final bool isCollapsed;
+  final int? parkingId;
 
-  const UnifiedParkingTimerCard({super.key, required this.startTime, this.isCollapsed = false});
+  const UnifiedParkingTimerCard({super.key, required this.startTime, this.isCollapsed = false, this.parkingId});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ParkingTimerCubit(startTime: startTime),
-      child: _UnifiedParkingTimerView(isCollapsed: isCollapsed),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ParkingTimerCubit(startTime: startTime)),
+        BlocProvider(create: (context) => ProfileCubit(sl())),
+      ],
+      child: _UnifiedParkingTimerView(isCollapsed: isCollapsed, parkingId: parkingId),
     );
   }
 }
 
 class _UnifiedParkingTimerView extends StatelessWidget {
   final bool isCollapsed;
+  final int? parkingId;
 
-  const _UnifiedParkingTimerView({required this.isCollapsed});
+  const _UnifiedParkingTimerView({required this.isCollapsed, this.parkingId});
 
   @override
   Widget build(BuildContext context) {
@@ -112,21 +120,25 @@ class _UnifiedParkingTimerView extends StatelessWidget {
     final points = totalMinutes * 5;
     final parkingDuration = _formatDuration(elapsed);
 
+    // Get ProfileCubit from the current context before showing bottom sheet
+    final profileCubit = context.read<ProfileCubit>();
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder:
-          (context) => _PaymentBottomSheet(
-            parkingDuration: parkingDuration,
-            points: points,
-            onShareLogs: () {
-              Navigator.pop(context);
-              cubit.shareLogs();
-            },
-            onImageSelected: (PlatformFile? image) {
-              log('Image selected: $image');
-            },
+          (bottomSheetContext) => BlocProvider.value(
+            value: profileCubit,
+            child: _PaymentBottomSheet(
+              parkingDuration: parkingDuration,
+              points: points,
+              parkingId: parkingId,
+              onShareLogs: () {
+                Navigator.pop(bottomSheetContext);
+                cubit.shareLogs();
+              },
+            ),
           ),
     );
   }
@@ -143,16 +155,14 @@ class _UnifiedParkingTimerView extends StatelessWidget {
 class _PaymentBottomSheet extends StatefulWidget {
   final String parkingDuration;
   final int points;
+  final int? parkingId;
   final VoidCallback onShareLogs;
-  final PlatformFile? carParkingImage;
-  final Function(PlatformFile?) onImageSelected;
 
   const _PaymentBottomSheet({
     required this.parkingDuration,
     required this.points,
     required this.onShareLogs,
-    this.carParkingImage,
-    required this.onImageSelected,
+    this.parkingId,
   });
 
   @override
@@ -160,7 +170,9 @@ class _PaymentBottomSheet extends StatefulWidget {
 }
 
 class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
-  // Show dialog to select image source
+  PlatformFile? _carParkingImage;
+  bool _isUploading = false;
+
   Future<void> _showImageSourceDialog() async {
     await ImageSourceDialog.show(
       context: context,
@@ -173,7 +185,6 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
     );
   }
 
-  // Handle image picking from different sources
   Future<void> _pickImageFromSource(ImageSourceType sourceType) async {
     try {
       if (sourceType == ImageSourceType.camera) {
@@ -192,12 +203,18 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
             bytes: bytes,
             path: image.path,
           );
-          widget.onImageSelected(platformFile);
+          setState(() {
+            _carParkingImage = platformFile;
+          });
+          _uploadImage(platformFile);
         }
       } else {
         final result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
         if (result != null && result.files.isNotEmpty) {
-          widget.onImageSelected(result.files.first);
+          setState(() {
+            _carParkingImage = result.files.first;
+          });
+          _uploadImage(result.files.first);
         }
       }
     } catch (e) {
@@ -206,12 +223,41 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
     }
   }
 
+  Future<void> _uploadImage(PlatformFile image) async {
+    // if (widget.parkingId == null) {
+    //   showErrorToast(context, LocaleKeys.parking_id_not_found.tr());
+    //   return;
+    // }
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    final profileCubit = context.read<ProfileCubit>();
+    await profileCubit.uploadCarParkingImage(widget.parkingId ?? 0, image);
+
+    if (mounted) {
+      final state = profileCubit.state;
+      if (state is UploadCarImageSuccess) {
+        showSuccessToast(context, LocaleKeys.image_uploaded_successfully.tr());
+      } else if (state is UploadCarImageError) {
+        showErrorToast(context, state.message);
+        setState(() {
+          _carParkingImage = null;
+        });
+      }
+      setState(() {
+        _isUploading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.5,
+      initialChildSize: 0.55,
       minChildSize: 0.4,
-      maxChildSize: 0.7,
+      maxChildSize: 0.75,
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
@@ -224,15 +270,12 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Drag handle
                 Container(
                   width: 48,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
                 ),
-
-                // Parking duration
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -254,114 +297,220 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-
-                // Points to pay
+                const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          LocaleKeys.points_to_pay.tr(),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "${widget.points} ${LocaleKeys.points_unit.tr()}",
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        Theme.of(context).colorScheme.primary.withOpacity(0.05),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 1),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        LocaleKeys.points_to_pay.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${widget.points} ${LocaleKeys.points_unit.tr()}",
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // Car parking image section
+                const SizedBox(height: 24),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.directions_car, size: 18, color: Theme.of(context).colorScheme.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          LocaleKeys.car_parking_location.tr(),
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(Icons.directions_car, size: 20, color: Theme.of(context).colorScheme.primary),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                LocaleKeys.car_parking_location.tr(),
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                LocaleKeys.upload_image_to_remember_location.tr(),
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      LocaleKeys.upload_image_to_remember_location.tr(),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Image upload/preview box
+                    const SizedBox(height: 16),
                     GestureDetector(
-                      onTap: _showImageSourceDialog,
+                      onTap: _isUploading ? null : _showImageSourceDialog,
                       child: Container(
-                        height: 120,
+                        height: 140,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color:
-                              widget.carParkingImage == null
-                                  ? Theme.of(context).colorScheme.surfaceContainerHighest
+                              _carParkingImage == null
+                                  ? Theme.of(context).colorScheme.primary.withOpacity(0.03)
                                   : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3), width: 1.5),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child:
-                            widget.carParkingImage == null
-                                ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.add_photo_alternate_outlined,
-                                      size: 40,
-                                      color: Theme.of(context).colorScheme.primary,
+                            _isUploading
+                                ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        LocaleKeys.uploading.tr(),
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                : _carParkingImage == null
+                                ? CustomPaint(
+                                  painter: DashedBorderPainter(
+                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                                    strokeWidth: 2,
+                                    dashWidth: 8,
+                                    dashSpace: 6,
+                                    borderRadius: 16,
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.cloud_upload_outlined,
+                                            size: 36,
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          LocaleKeys.tap_to_upload_image.tr(),
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          LocaleKeys.supported_formats.tr(),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      LocaleKeys.tap_to_upload_image.tr(),
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
-                                    ),
-                                  ],
+                                  ),
                                 )
                                 : ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(16),
                                   child: Stack(
                                     fit: StackFit.expand,
                                     children: [
-                                      Image.memory(widget.carParkingImage!.bytes!, fit: BoxFit.cover),
+                                      Image.memory(_carParkingImage!.bytes!, fit: BoxFit.cover),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [Colors.transparent, Colors.black.withOpacity(0.3)],
+                                          ),
+                                        ),
+                                      ),
                                       Positioned(
-                                        top: 8,
-                                        right: 8,
+                                        top: 12,
+                                        right: 12,
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.6),
-                                            shape: BoxShape.circle,
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(10),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.2),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
                                           ),
-                                          child: IconButton(
-                                            icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                                            onPressed: _showImageSourceDialog,
-                                            padding: const EdgeInsets.all(8),
-                                            constraints: const BoxConstraints(),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              borderRadius: BorderRadius.circular(10),
+                                              onTap: _showImageSourceDialog,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(10),
+                                                child: Icon(
+                                                  Icons.edit,
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 12,
+                                        left: 12,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(Icons.check_circle, color: Colors.white, size: 16),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                LocaleKeys.uploaded.tr(),
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -372,23 +521,24 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-
-                // Points rate info
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.info_outline, size: 16, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        LocaleKeys.points_rate_info.tr(),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 18, color: Colors.grey[700]),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          LocaleKeys.points_rate_info.tr(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -396,5 +546,61 @@ class _PaymentBottomSheetState extends State<_PaymentBottomSheet> {
         );
       },
     );
+  }
+}
+
+class DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashWidth;
+  final double dashSpace;
+  final double borderRadius;
+
+  DashedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.dashWidth,
+    required this.dashSpace,
+    required this.borderRadius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = strokeWidth
+          ..style = PaintingStyle.stroke;
+
+    final path =
+        Path()..addRRect(
+          RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), Radius.circular(borderRadius)),
+        );
+
+    final dashPath = _createDashedPath(path);
+    canvas.drawPath(dashPath, paint);
+  }
+
+  Path _createDashedPath(Path source) {
+    final Path dest = Path();
+    for (final PathMetric metric in source.computeMetrics()) {
+      double distance = 0.0;
+      while (distance < metric.length) {
+        final double length = dashWidth;
+        final double end = distance + length;
+        dest.addPath(metric.extractPath(distance, end.clamp(0.0, metric.length)), Offset.zero);
+        distance = end + dashSpace;
+      }
+    }
+    return dest;
+  }
+
+  @override
+  bool shouldRepaint(DashedBorderPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.dashWidth != dashWidth ||
+        oldDelegate.dashSpace != dashSpace ||
+        oldDelegate.borderRadius != borderRadius;
   }
 }

@@ -1397,5 +1397,10 @@ abstract class  LocaleKeys {
   static const car_parking_location = 'car_parking_location';
   static const upload_image_to_remember_location = 'upload_image_to_remember_location';
   static const tap_to_upload_image = 'tap_to_upload_image';
+  static const parking_id_not_found = 'parking_id_not_found';
+  static const image_uploaded_successfully = 'image_uploaded_successfully';
+  static const uploading = 'uploading';
+  static const uploaded = 'uploaded';
+  static const supported_formats = 'supported_formats';
 
 }

@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/core/preferences/shared_pref.dart';
 import 'package:must_invest/features/auth/data/models/user.dart';
@@ -21,6 +22,7 @@ abstract class PagesRepo {
   Future<Either<ContactUsModel, AppError>> getContactUs(String? lang);
   Future<Either<UserWithMessage, AppError>> updateProfile(UpdateProfileParams params);
   Future<Either<void, AppError>> startParking(ParkingProcessModel params);
+  Future<Either<void, AppError>> uploadCarParkingImage(int parkingId, PlatformFile image);
 }
 
 class PagesRepoImpl implements PagesRepo {
@@ -130,6 +132,22 @@ class PagesRepoImpl implements PagesRepo {
     try {
       final token = _localDataSource.getToken();
       final response = await _remoteDataSource.startParking(token ?? '', params);
+
+      if (response.isSuccess) {
+        return const Left(null);
+      } else {
+        return Right(AppError(message: response.errorMessage, apiResponse: response, type: ErrorType.api));
+      }
+    } catch (e) {
+      return Right(AppError(message: e.toString(), type: ErrorType.unknown));
+    }
+  }
+
+  @override
+  Future<Either<void, AppError>> uploadCarParkingImage(int parkingId, PlatformFile image) async {
+    try {
+      final token = _localDataSource.getToken();
+      final response = await _remoteDataSource.uploadCarParkingImage(token ?? '', parkingId, image);
 
       if (response.isSuccess) {
         return const Left(null);

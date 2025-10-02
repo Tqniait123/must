@@ -42,3 +42,16 @@ class StartParkingError extends ProfileState {
   @override
   List<Object> get props => [message];
 }
+
+class UploadCarImageLoading extends ProfileState {}
+
+class UploadCarImageSuccess extends ProfileState {}
+
+class UploadCarImageError extends ProfileState {
+  final String message;
+
+  const UploadCarImageError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

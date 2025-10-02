@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:must_invest/core/errors/app_error.dart';
 import 'package:must_invest/features/profile/data/models/parking_process_model.dart';
@@ -38,6 +39,21 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(StartParkingError(e.message));
     } catch (e) {
       emit(StartParkingError(e.toString()));
+    }
+  }
+
+  Future<void> uploadCarParkingImage(int parkingId, PlatformFile image) async {
+    try {
+      emit(UploadCarImageLoading());
+      final response = await _repository.uploadCarParkingImage(parkingId, image);
+      response.fold(
+        (_) => emit(UploadCarImageSuccess()),
+        (error) => emit(UploadCarImageError(error.message)),
+      );
+    } on AppError catch (e) {
+      emit(UploadCarImageError(e.message));
+    } catch (e) {
+      emit(UploadCarImageError(e.toString()));
     }
   }
 }

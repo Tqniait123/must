@@ -1417,7 +1417,12 @@ class CodegenLoader extends AssetLoader{
   "take_photo": "Take Photo",
   "car_parking_location": "Car Parking Location",
   "upload_image_to_remember_location": "Upload an image to easily find your car later",
-  "tap_to_upload_image": "Tap to upload image"
+  "tap_to_upload_image": "Tap to upload image",
+  "parking_id_not_found": "Parking ID not found",
+  "image_uploaded_successfully": "Image uploaded successfully",
+  "uploading": "Uploading...",
+  "uploaded": "Uploaded",
+  "supported_formats": "JPG, PNG (Max 5MB)"
 };
 static const Map<String,dynamic> _ar = {
   "field_is_required": {
@@ -2822,7 +2827,12 @@ static const Map<String,dynamic> _ar = {
   "take_photo": "التقاط صورة",
   "car_parking_location": "موقع ركن السيارة",
   "upload_image_to_remember_location": "ارفع صورة لتتمكن من إيجاد سيارتك بسهولة لاحقاً",
-  "tap_to_upload_image": "اضغط لرفع صورة"
+  "tap_to_upload_image": "اضغط لرفع صورة",
+  "parking_id_not_found": "لم يتم العثور على معرف موقف السيارات",
+  "image_uploaded_successfully": "تم رفع الصورة بنجاح",
+  "uploading": "جاري الرفع...",
+  "uploaded": "تم الرفع",
+  "supported_formats": "JPG، PNG (الحد الأقصى 5 ميجابايت)"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

@@ -38,5 +38,5 @@ class EndPoints {
   static const String deleteAccount = 'delete_account';
   static const String appSettings = 'app_settings';
   static const String buyOffer = 'buy_offer';
-  
+  static String uploadCarPlace(int parkingId) => 'parking/$parkingId/car_place';
 }
